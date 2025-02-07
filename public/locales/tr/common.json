@@ -1,0 +1,42 @@
+{
+  "welcome": {
+    "title": "Hoşgeldiniz! 🌟",
+    "description": "Almanca kelime bilginizi test edin ve eğlenin!",
+    "startGame": "Oyuna Başla",
+    "letsgo": "Hadi gidelim",
+    "enterYourName": "Adınız"
+  },
+  "game": {
+    "question": "Doğru kelimeyi seçin:",
+    "correct": "Doğru! 🎉",
+    "wrong": "Yanlış! 😢",
+    "selectOptionFirst": "Lütfen önce bir seçenek seçin.",
+    "timeLeft": "Kalan Zaman",
+    "submitAnswer": "Cevabı Gönder",
+    "youWon": "Kazandınız! 🎉",
+    "gameOver": "Oyun Bitti!",
+    "score": "Puan",
+    "level": "Seviye",
+    "badge": "Rozet",
+    "points": "Puanlar",
+    "playAgain": "Tekrar Oyna",
+    "goHome": "Anasayfaya git",
+    "levelBeginner": "Başlangıç",
+    "levelIntermediate": "Orta",
+    "levelAdvanced": "İleri",
+    "levelExpert": "Uzman",
+    "badgeMaster": "🏆 Usta",
+    "badgePro": "🥈 Profesyonel",
+    "badgeNovice": "🥉 Çaylak",
+    "badgeNoob": "🤓 Acemi"
+  },
+  "leaderboard": {
+    "title": "Lider Tablosu",
+    "rank": "Sıra",
+    "player": "Oyuncu",
+    "score": "Skor",
+    "level": "Seviye",
+    "badge": "Rozet",
+    "points": "Puanlar"
+  }
+}

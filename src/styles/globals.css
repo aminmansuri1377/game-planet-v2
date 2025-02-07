@@ -1,0 +1,245 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: Inter;
+  src: url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+}
+@font-face {
+  font-family: "PEYDA-THIN";
+  src: url("../../public/font/Peyda-Thin.ttf");
+}
+@font-face {
+  font-family: "PEYDA-REGULAR";
+  src: url("../../public/font/Peyda-Regular.ttf");
+}
+@font-face {
+  font-family: "PEYDA-MEDIUM";
+  src: url("../../public/font/Peyda-Medium.ttf");
+}
+@font-face {
+  font-family: "PEYDA-BOLD";
+  src: url("../../public/font/Peyda-Bold.ttf");
+}
+@font-face {
+  font-family: "PEYDA-BLACK";
+  src: url("../../public/font/Peyda-Black.ttf");
+}
+/* body {
+  direction: rtl;
+} */
+body {
+  font-family: "Inter", sans-serif;
+  background-color: "#fff";
+  margin: 0;
+}
+
+html,
+body,
+#__next {
+  height: 100%;
+}
+
+button {
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.3s, transform 0.1s;
+}
+
+button:hover {
+  background-color: #1e40af; /* Darker shade for hover */
+}
+
+button:active {
+  background-color: #1d4ed8; /* Even darker shade for active */
+  transform: scale(0.98); /* Slightly scale down */
+}
+
+button:disabled {
+  opacity: 60%;
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  width: 100px;
+  height: 100px;
+  pointer-events: none;
+  transform: scale(0);
+  animation: ripple-animation 0.6s linear;
+}
+
+@keyframes ripple-animation {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+button:active .ripple {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+}
+
+@keyframes expand {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+  50% {
+    width: 48px;
+    height: 48px;
+    opacity: 0.7;
+  }
+  100% {
+    width: 192px;
+    height: 192px;
+    opacity: 0;
+  }
+}
+
+@keyframes float1 {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes float2 {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-30px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes float3 {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.6);
+  opacity: 0;
+  animation: fadeIn 1.5s infinite;
+}
+
+.particle-1 {
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  animation-delay: 0.3s;
+}
+
+.particle-2 {
+  width: 20px;
+  height: 20px;
+  top: 30%;
+  left: 40%;
+  animation-delay: 0.5s;
+}
+
+.particle-3 {
+  width: 12px;
+  height: 12px;
+  top: 70%;
+  left: 60%;
+  animation-delay: 0.7s;
+}
+
+.floating-1 {
+  top: 20%;
+  left: 15%;
+  animation: float1 5s infinite ease-in-out;
+}
+
+.floating-2 {
+  top: 40%;
+  left: 70%;
+  animation: float2 4s infinite ease-in-out;
+}
+
+.floating-3 {
+  top: 60%;
+  left: 30%;
+  animation: float3 6s infinite ease-in-out;
+}
+
+.animate-expand {
+  animation: expand 2s infinite ease-in-out;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 2s forwards;
+}
+
+@keyframes glow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.glow-effect {
+  background: linear-gradient(-290deg, #00154b, #8001c5, #cf0dcb);
+  background-size: 200% 200%;
+  animation: glow 10s ease infinite;
+}
+
+.glow-text {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7),
+    0 0 20px rgba(255, 255, 255, 0.6);
+}
+.border-gradient {
+  border-image: linear-gradient(
+    to top,
+    rgb(128, 0, 128),
+    pink,
+    rgb(255, 0, 191),
+    rgb(128, 0, 128),
+    pink,
+    rgb(255, 0, 191)
+  );
+}
+* {
+  -webkit-tap-highlight-color: transparent !important;
+}

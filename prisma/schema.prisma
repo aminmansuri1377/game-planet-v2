@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  name         String?
+  password     String    // Add this line
+  role         UserRole  @default(BUYER)
+  sellerOrders Order[]   @relation("SellerOrders")
+  orders       Order[]   @relation("UserOrders")
+  products     Product[] @relation("SellerProducts")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+model Product {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  inventory   Int         @default(0) // Number of available items
+  sendingType SendingType[] // Array of sending types
+  sellerId    Int
+  orders      Order[]     @relation("ProductOrders")
+  seller      User        @relation("SellerProducts", fields: [sellerId], references: [id])
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Order {
+  id          Int         @id @default(autoincrement())
+  productId   Int
+  userId      Int
+  sellerId    Int
+  status      String
+  sendingType SendingType // Add this line
+  product     Product     @relation("ProductOrders", fields: [productId], references: [id])
+  seller      User        @relation("SellerOrders", fields: [sellerId], references: [id])
+  user        User        @relation("UserOrders", fields: [userId], references: [id])
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+enum UserRole {
+  BUYER
+  SELLER
+  APP_MANAGER
+}
+enum SendingType {
+  SELLER_SENDS
+  BUYER_PICKS_UP
+}
