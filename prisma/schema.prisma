@@ -40,6 +40,8 @@ model Order {
   sellerId    Int
   status      String
   sendingType SendingType // Add this line
+  startDate     DateTime?   // Nullable column
+  endDate       DateTime?
   product     Product     @relation("ProductOrders", fields: [productId], references: [id])
   seller      User        @relation("SellerOrders", fields: [sellerId], references: [id])
   user        User        @relation("UserOrders", fields: [userId], references: [id])

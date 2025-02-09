@@ -11,6 +11,7 @@ import ToastContent from "@/components/ui/ToastContent";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import CustomModal from "@/components/ui/CustomModal";
 import DeviceCard from "@/components/ui/DeviceCard";
+import CustomDatePicker from "@/components/ui/CustomDatePicker";
 
 function SingleProductPage() {
   const { t } = useTranslation();
@@ -75,11 +76,17 @@ function SingleProductPage() {
     }
     setOpen(false);
   };
-
+  const [rangeDate, setRangeDate] = useState<any>([]);
+  const handleDateChange = (dates: any) => {
+    if (Array.isArray(dates)) {
+      const formattedDates = dates.map((date) => date?.format?.("YYYY-MM-DD"));
+      setRangeDate(formattedDates);
+    }
+  };
   if (isLoading) return <Loading />;
   if (error) return <p>Error: {error.message}</p>;
   if (!productData) return <p>Product not found</p>;
-
+  console.log("range", rangeDate);
   return (
     <div>
       <div onClick={() => router.back()}>
@@ -97,7 +104,15 @@ function SingleProductPage() {
           <p className="font-PeydaBold text-sm">{productData.description}</p>
         </div>
       )}
-
+      <div className="flex justify-center">
+        <CustomDatePicker
+          range
+          textBtn="بازه زمانی را مشخص کنید"
+          value={rangeDate}
+          onChange={handleDateChange}
+          dateSeparator=" تا "
+        />
+      </div>
       <CustomButton
         onClick={() => setOpen(true)}
         title={t("rent.order")}

@@ -1,5 +1,5 @@
-import { FC, ReactNode } from "react"            
-                                         import { useTranslation } from "react-i18next";;
+import { FC, ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import Spinner from "./Spinner";
 
 interface IButtonProps {
