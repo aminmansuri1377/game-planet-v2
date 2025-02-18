@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { trpc } from "../../../../utils/trpc";
-import Box from "@/components/Box";
-import TicketOrder from "@/components/TicketOrder";
-import Loading from "@/components/ui/Loading";
-import { useAuthRedirect } from "@/components/hooks/useAuthRedirect";
-import ToastContent from "@/components/ui/ToastContent";
+import Box from "../../../components/Box";
+import TicketOrder from "../../../components/TicketOrder";
+import Loading from "../../../components/ui/Loading";
+import { useAuthRedirect } from "../../../components/hooks/useAuthRedirect";
+import ToastContent from "../../../components/ui/ToastContent";
 import { toast } from "react-hot-toast";
 import { LuArrowBigRightDash } from "react-icons/lu";
 import { LuArrowBigLeftDash } from "react-icons/lu";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useRouter } from "next/router";
+import jalaali from "jalaali-js";
 
 function index() {
   const router = useRouter();
@@ -43,7 +44,15 @@ function index() {
     },
   });
   const { t } = useTranslation();
-
+  const gregorianToPersian = (date: Date): string => {
+    const gregorianDate = new Date(date);
+    const { jy, jm, jd } = jalaali.toJalaali(
+      gregorianDate.getFullYear(),
+      gregorianDate.getMonth() + 1, // Months are 0-based in JS
+      gregorianDate.getDate()
+    );
+    return `${jy}/${jm}/${jd}`; // Format: YYYY/MM/DD
+  };
   const handleStatusChange = (id: number, newStatus: string) => {
     updateOrderStatus.mutate({ id, status: newStatus });
   };
@@ -83,6 +92,9 @@ function index() {
                 <TicketOrder data={i} handleStatusChange={handleStatusChange} />
                 <p className="font-PeydaBold text-sm">
                   Sending Type: {i.sendingType}
+                  start date: {gregorianToPersian(new Date(i?.startDate))}
+                  end date: {gregorianToPersian(new Date(i?.endDate))}
+                  total Price : {i?.totalPrice}
                 </p>
               </Box>
             </div>

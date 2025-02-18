@@ -1,12 +1,9 @@
-import React from "react"                                
-                     import { useTranslation } from "react-i18next";;
+import React from "react";
+import { useTranslation } from "react-i18next";
 
-function OrderTicketStatus({ Icon, text, isActive, handleClick }) {
+function OrderTicketStatus({ Icon, text, isActive }) {
   return (
-    <button
-      onClick={handleClick}
-      className="flex my-3 justify-between w-full bg-slate-400 bg-opacity-50 rounded-lg p-2 items-center"
-    >
+    <button className="flex my-3 justify-between w-full bg-slate-400 bg-opacity-50 rounded-lg p-2 items-center">
       <Icon
         size={30}
         className="my-1 mx-1"

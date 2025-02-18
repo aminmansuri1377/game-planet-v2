@@ -34,12 +34,14 @@ export const gameRouter = router({
   createProduct: procedure
     .input(
       z.object({
-        sellerId: z.number(), // Seller ID
+        sellerId: z.number(),
         name: z.string(),
         description: z.string(),
         price: z.number(),
-        inventory: z.number(), // Number of available items
-        sendingType: z.array(z.enum(["SELLER_SENDS", "BUYER_PICKS_UP"])), // Array of sending types
+        inventory: z.number(),
+        sendingType: z.array(z.enum(["SELLER_SENDS", "BUYER_PICKS_UP"])),
+        categoryId: z.number(),
+        guarantyId: z.number(),
       })
     )
     .mutation(async ({ input }) => {
@@ -50,7 +52,30 @@ export const gameRouter = router({
           description: input.description,
           price: input.price,
           inventory: input.inventory,
-          sendingType: input.sendingType, // Save sending types
+          sendingType: input.sendingType,
+          categoryId: input.categoryId,
+          guarantyId: input.guarantyId,
+        },
+      });
+    }),
+
+  getProductsByCategory: procedure
+    .input(z.object({ categoryId: z.number() }))
+    .query(async ({ input }) => {
+      return await prisma.product.findMany({
+        where: { categoryId: input.categoryId },
+      });
+    }),
+
+  searchProducts: procedure
+    .input(z.object({ query: z.string() }))
+    .query(async ({ input }) => {
+      return await prisma.product.findMany({
+        where: {
+          name: {
+            contains: input.query,
+            mode: "insensitive",
+          },
         },
       });
     }),
@@ -93,6 +118,10 @@ export const gameRouter = router({
     .query(async ({ input }) => {
       return await prisma.product.findUnique({
         where: { id: input.id },
+        include: {
+          category: true,
+          guaranty: true,
+        },
       });
     }),
 
@@ -123,6 +152,7 @@ export const gameRouter = router({
         },
       });
     }),
+
   // Create an order (for BUYER)
   createOrder: procedure
     .input(
@@ -131,19 +161,52 @@ export const gameRouter = router({
         userId: z.number(), // Buyer ID
         sellerId: z.number(), // Seller ID
         status: z.string().default("waiting for confirmation"),
-        sendingType: z.enum(["SELLER_SENDS", "BUYER_PICKS_UP"]), // Add this line
+        sendingType: z.enum(["SELLER_SENDS", "BUYER_PICKS_UP"]),
+        startDate: z.string().transform((val) => new Date(val)), // Parse string to Date
+        endDate: z.string().transform((val) => new Date(val)),
+        totalPrice: z.number(),
       })
     )
     .mutation(async ({ input }) => {
-      return await prisma.order.create({
-        data: {
-          productId: input.productId,
-          userId: input.userId,
-          sellerId: input.sellerId,
-          status: input.status,
-          sendingType: input.sendingType, // Add this line
-        },
+      // Start a transaction to ensure atomicity
+      const result = await prisma.$transaction(async (prisma) => {
+        // Check if the product has enough inventory
+        const product = await prisma.product.findUnique({
+          where: { id: input.productId },
+        });
+
+        if (!product || product.inventory < 1) {
+          throw new Error("Product is out of stock");
+        }
+
+        // Create the order
+        const order = await prisma.order.create({
+          data: {
+            productId: input.productId,
+            userId: input.userId,
+            sellerId: input.sellerId,
+            status: input.status,
+            sendingType: input.sendingType,
+            startDate: input.startDate,
+            endDate: input.endDate,
+            totalPrice: input.totalPrice,
+          },
+        });
+
+        // Decrement the product's inventory
+        await prisma.product.update({
+          where: { id: input.productId },
+          data: {
+            inventory: {
+              decrement: 1,
+            },
+          },
+        });
+
+        return order;
       });
+
+      return result;
     }),
 
   // Get orders for a seller (for SELLER or APP_MANAGER)
@@ -196,7 +259,33 @@ export const gameRouter = router({
         data: { status: input.status },
       });
     }),
+  increaseProductInventory: procedure
+    .input(
+      z.object({
+        productId: z.number(), // Product ID
+      })
+    )
+    .mutation(async ({ input }) => {
+      const product = await prisma.product.findUnique({
+        where: { id: input.productId },
+      });
 
+      if (!product) {
+        throw new Error("Product not found");
+      }
+
+      // Increment the inventory by 1
+      const updatedProduct = await prisma.product.update({
+        where: { id: input.productId },
+        data: {
+          inventory: {
+            increment: 1,
+          },
+        },
+      });
+
+      return updatedProduct;
+    }),
   // Get all users (for APP_MANAGER)
   getAllUsers: procedure
     .input(
@@ -240,5 +329,64 @@ export const gameRouter = router({
       return await prisma.product.delete({
         where: { id: input.productId },
       });
+    }),
+  ///////////////category
+  createCategory: procedure
+    .input(z.object({ name: z.string() }))
+    .mutation(async ({ input }) => {
+      return await prisma.category.create({
+        data: {
+          name: input.name,
+        },
+      });
+    }),
+
+  getCategories: procedure.query(async () => {
+    return await prisma.category.findMany();
+  }),
+
+  getCategoryById: procedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ input }) => {
+      return await prisma.category.findUnique({
+        where: { id: input.id },
+        include: { products: true },
+      });
+    }),
+  //////////////////guaranty
+  createGuaranty: procedure
+    .input(z.object({ text: z.string() }))
+    .mutation(async ({ input }) => {
+      return await prisma.guaranty.create({
+        data: {
+          text: input.text,
+        },
+      });
+    }),
+
+  getGuaranty: procedure.query(async () => {
+    return await prisma.guaranty.findMany();
+  }),
+  getProductNames: procedure
+    .input(
+      z.object({
+        query: z.string(), // Search query
+      })
+    )
+    .query(async ({ input }) => {
+      return await prisma.product
+        .findMany({
+          where: {
+            name: {
+              contains: input.query,
+              mode: "insensitive", // Case-insensitive search
+            },
+          },
+          select: {
+            name: true, // Only fetch the product name
+          },
+          take: 5, // Limit the number of suggestions
+        })
+        .then((products) => products.map((p) => p.name));
     }),
 });

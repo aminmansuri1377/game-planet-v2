@@ -1,10 +1,10 @@
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { trpc } from "../../../../utils/trpc";
-import Box from "@/components/Box";
-import CustomButton from "@/components/ui/CustomButton";
-import Loading from "@/components/ui/Loading";
-import { useAuthRedirect } from "@/components/hooks/useAuthRedirect"; // Named import
+import Box from "../../../components/Box";
+import CustomButton from "../../../components/ui/CustomButton";
+import Loading from "../../../components/ui/Loading";
+import { useAuthRedirect } from "../../../components/hooks/useAuthRedirect"; // Named import
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { AiTwotoneDelete } from "react-icons/ai";
 import { useSession } from "next-auth/react";

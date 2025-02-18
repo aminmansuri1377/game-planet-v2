@@ -19,16 +19,36 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }
+model Category {
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  products    Product[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+model Guaranty {
+  id          Int         @id @default(autoincrement())
+  text        String      @unique
+  products    Product[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
 model Product {
   id          Int         @id @default(autoincrement())
   name        String
   description String
   price       Float
-  inventory   Int         @default(0) // Number of available items
-  sendingType SendingType[] // Array of sending types
+  inventory   Int         @default(0)
+  sendingType SendingType[]
+  categoryId  Int?
+  category    Category?    @relation(fields: [categoryId], references: [id])
+  guarantyId  Int?
+  guaranty    Guaranty?    @relation(fields: [guarantyId], references: [id])
   sellerId    Int
-  orders      Order[]     @relation("ProductOrders")
   seller      User        @relation("SellerProducts", fields: [sellerId], references: [id])
+  orders      Order[]     @relation("ProductOrders")
+  images      String[]    
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
@@ -42,6 +62,7 @@ model Order {
   sendingType SendingType // Add this line
   startDate     DateTime?   // Nullable column
   endDate       DateTime?
+  totalPrice  Float
   product     Product     @relation("ProductOrders", fields: [productId], references: [id])
   seller      User        @relation("SellerOrders", fields: [sellerId], references: [id])
   user        User        @relation("UserOrders", fields: [userId], references: [id])

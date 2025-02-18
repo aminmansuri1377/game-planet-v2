@@ -1,7 +1,7 @@
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import CustomButton from "@/components/ui/CustomButton";
+import CustomButton from "../../components/ui/CustomButton";
 import { useTranslation } from "react-i18next";
 
 const SellerHomePage = () => {

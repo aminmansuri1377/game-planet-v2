@@ -1,4 +1,4 @@
-import AdminPassModal from "@/components/AdminPassModal";
+import AdminPassModal from "../components/AdminPassModal";
 import { useRouter } from "next/router";
 import React from "react";
 import Cookies from "js-cookie";

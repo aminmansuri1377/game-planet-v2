@@ -1,8 +1,8 @@
-import CustomButton from "@/components/ui/CustomButton";
+import CustomButton from "../../components/ui/CustomButton";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAuthRedirect } from "@/components/hooks/useAuthRedirect";
+import { useAuthRedirect } from "../../components/hooks/useAuthRedirect";
 import Cookies from "js-cookie";
 import { HiOutlineSquaresPlus } from "react-icons/hi2";
 

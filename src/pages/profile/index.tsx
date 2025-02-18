@@ -1,4 +1,4 @@
-import Box from "@/components/Box";
+import Box from "../../components/Box";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { IoPersonSharp } from "react-icons/io5";
@@ -12,8 +12,8 @@ import { useSession, signOut } from "next-auth/react";
 import { useSetRecoilState, useResetRecoilState } from "recoil";
 import { sessionAtom } from "../../../store/atoms/sessionAtom";
 import { useRecoilValue } from "recoil";
-import Button from "@/components/Button";
-import Loading from "@/components/ui/Loading";
+import Button from "../../components/Button";
+import Loading from "../../components/ui/Loading";
 function profile() {
   const { t } = useTranslation();
   const { data: session, status } = useSession();

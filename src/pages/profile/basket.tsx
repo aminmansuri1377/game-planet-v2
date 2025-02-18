@@ -2,12 +2,15 @@ import React from "react";
 import { useRouter } from "next/router";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { FaShoppingBasket } from "react-icons/fa";
-import TicketBasket from "@/components/basket/TicketBasket";
+import TicketBasket from "../../components/basket/TicketBasket";
 import { trpc } from "../../../utils/trpc";
 import { useSession } from "next-auth/react";
-import Loading from "@/components/ui/Loading";
+import Loading from "../../components/ui/Loading";
 import { useTranslation } from "react-i18next";
 import { FcBinoculars } from "react-icons/fc";
+import jalaali from "jalaali-js";
+import ToastContent from "../../components/ui/ToastContent";
+import toast from "react-hot-toast";
 
 function Basket() {
   const { t } = useTranslation();
@@ -25,6 +28,33 @@ function Basket() {
 
   const handleBack = () => {
     router.back();
+  };
+  const updateOrderStatus = trpc.main.updateOrderStatus.useMutation({
+    onSuccess: () => {
+      toast.custom(
+        <ToastContent
+          type="success"
+          message="Order status updated successfully!"
+        />
+      );
+      router.reload();
+    },
+    onError: (err) => {
+      toast.custom(<ToastContent type="error" message={err?.message} />);
+    },
+  });
+
+  const handleStatusChange = (id: number, newStatus: string) => {
+    updateOrderStatus.mutate({ id, status: newStatus });
+  };
+  const gregorianToPersian = (date: Date): string => {
+    const gregorianDate = new Date(date);
+    const { jy, jm, jd } = jalaali.toJalaali(
+      gregorianDate.getFullYear(),
+      gregorianDate.getMonth() + 1, // Months are 0-based in JS
+      gregorianDate.getDate()
+    );
+    return `${jy}/${jm}/${jd}`; // Format: YYYY/MM/DD
   };
 
   if (isLoading) return <Loading />;
@@ -50,9 +80,15 @@ function Basket() {
               .reverse()
               .map((order, index) => (
                 <div key={index}>
-                  <TicketBasket data={order} />
+                  <TicketBasket
+                    data={order}
+                    handleStatusChange={handleStatusChange}
+                  />
                   <p className="font-PeydaBold text-sm">
                     Sending Type: {order.sendingType}
+                    start date: {gregorianToPersian(new Date(order?.startDate))}
+                    end date: {gregorianToPersian(new Date(order?.endDate))}
+                    total Price : {order?.totalPrice}
                   </p>
                 </div>
               ))}

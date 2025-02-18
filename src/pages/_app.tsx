@@ -4,7 +4,7 @@ import { appWithTranslation } from "next-i18next";
 import "../../i18n";
 import type { AppType } from "next/app";
 import { trpc } from "../../utils/trpc";
-import Header from "@/components/Header";
+import Header from "../components/Header";
 import { SessionProvider } from "next-auth/react";
 import { RecoilRoot } from "recoil";
 import RecoilNexus from "recoil-nexus";

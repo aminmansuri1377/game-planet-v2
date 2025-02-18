@@ -1,4 +1,4 @@
-import { AppRouter } from "@/server/routers/_app";
+import { AppRouter } from "../src/server/routers/_app";
 import { httpBatchLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 

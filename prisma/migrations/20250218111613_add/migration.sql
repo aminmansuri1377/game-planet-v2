@@ -1,11 +1,15 @@
 -- CreateEnum
 CREATE TYPE "UserRole" AS ENUM ('BUYER', 'SELLER', 'APP_MANAGER');
 
+-- CreateEnum
+CREATE TYPE "SendingType" AS ENUM ('SELLER_SENDS', 'BUYER_PICKS_UP');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "name" TEXT,
+    "password" TEXT NOT NULL,
     "role" "UserRole" NOT NULL DEFAULT 'BUYER',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -14,11 +18,35 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
+CREATE TABLE "Category" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Guaranty" (
+    "id" SERIAL NOT NULL,
+    "text" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Guaranty_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Product" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
+    "inventory" INTEGER NOT NULL DEFAULT 0,
+    "sendingType" "SendingType"[],
+    "categoryId" INTEGER,
+    "guarantyId" INTEGER,
     "sellerId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -33,6 +61,10 @@ CREATE TABLE "Order" (
     "userId" INTEGER NOT NULL,
     "sellerId" INTEGER NOT NULL,
     "status" TEXT NOT NULL,
+    "sendingType" "SendingType" NOT NULL,
+    "startDate" TIMESTAMP(3),
+    "endDate" TIMESTAMP(3),
+    "totalPrice" DOUBLE PRECISION NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -41,6 +73,18 @@ CREATE TABLE "Order" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Guaranty_text_key" ON "Guaranty"("text");
+
+-- AddForeignKey
+ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Product" ADD CONSTRAINT "Product_guarantyId_fkey" FOREIGN KEY ("guarantyId") REFERENCES "Guaranty"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

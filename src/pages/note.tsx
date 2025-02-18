@@ -1,4 +1,4 @@
-import CustomButton from "@/components/ui/CustomButton";
+import CustomButton from "../components/ui/CustomButton";
 import React from "react";
 import { useTranslation } from "react-i18next";
 

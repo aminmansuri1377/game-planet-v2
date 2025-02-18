@@ -9,8 +9,9 @@ import { MdCancel } from "react-icons/md";
 import DateObject from "react-date-object";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
+import CustomButton from "../ui/CustomButton";
 
-function TicketBasket({ data }) {
+function TicketBasket({ data, handleStatusChange }) {
   const readDateOrder = new DateObject({
     date: data?.createdAt,
     calendar: persian,
@@ -46,6 +47,12 @@ function TicketBasket({ data }) {
                   <h1 className=" font-PeydaBold text-blue-400">
                     {t("rent.sent")}
                   </h1>
+                  <h1>do you Received it ok? </h1>
+                  <CustomButton
+                    type="primary-btn"
+                    title="yes"
+                    onClick={() => handleStatusChange(data.id, "delivered")}
+                  />
                 </div>
               ) : data?.status === "delivered" ? (
                 <div>

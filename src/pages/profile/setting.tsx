@@ -1,4 +1,4 @@
-import Box from "@/components/Box";
+import Box from "../../components/Box";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -9,8 +9,8 @@ import { IoIosNotificationsOutline } from "react-icons/io";
 import { LuWallet2 } from "react-icons/lu";
 import { HiOutlineLogout } from "react-icons/hi";
 import { signOut } from "next-auth/react";
-import CustomModal from "@/components/ui/CustomModal";
-import EditProfile from "@/components/EditProfile";
+import CustomModal from "../../components/ui/CustomModal";
+import EditProfile from "../../components/EditProfile";
 
 function setting() {
   const router = useRouter();

@@ -1,156 +1,127 @@
-import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
+// pages/admin/categories.tsx
+import { useForm, SubmitHandler } from "react-hook-form";
 import { trpc } from "../../../../utils/trpc";
-import { MdDeleteForever } from "react-icons/md";
-import CustomButton from "@/components/ui/CustomButton";
-import { useAuthRedirect } from "@/components/hooks/useAuthRedirect";
+import CustomButton from "../../../components/ui/CustomButton";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
-import ToastContent from "@/components/ui/ToastContent";
+import ToastContent from "../../../components/ui/ToastContent";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 
-type PackageInput = {
+type CategoryInput = {
   name: string;
-  price: number;
-  inventory: number;
+};
+type GuarantyInput = {
+  text: string;
 };
 
-type ProductInput = {
-  name: string;
-  info: string;
-  initialPrice: number;
-  everyNight: number;
-  everyController: number;
-  installation: number;
-  packages: PackageInput[];
-};
-
-export default function CreateProductForm() {
+export default function CategoryManagementPage() {
   const router = useRouter();
-  const handleBack = () => {
-    router.back();
-  };
-  const { register, handleSubmit, control, reset } = useForm<ProductInput>({
-    defaultValues: {
-      packages: [{ name: "", price: 0 }],
-    },
-  });
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "packages",
-  });
+  const { data: session } = useSession();
+
+  const { register, handleSubmit, reset } = useForm<CategoryInput>();
+  const {
+    register: GuarantyRegister,
+    handleSubmit: GuarantyHandel,
+    reset: GuarantyReset,
+  } = useForm<GuarantyInput>();
+
   const { t } = useTranslation();
-  const createProduct = trpc.main.createProduct.useMutation({
+  const createCategory = trpc.main.createCategory.useMutation({
     onSuccess: () => {
       toast.custom(
-        <ToastContent type="success" message="Order created successfully!" />
-      ); //   refetch();
+        <ToastContent type="success" message="Category created successfully!" />
+      );
       reset();
     },
     onError: (err) => {
-      {
-        toast.custom(<ToastContent type="error" message={err?.message} />);
-      }
+      toast.custom(<ToastContent type="error" message={err?.message} />);
     },
   });
 
-  const onSubmit: SubmitHandler<ProductInput> = (data) => {
-    createProduct.mutate(data);
+  const onSubmit: SubmitHandler<CategoryInput> = (data) => {
+    if (!session?.user?.id) {
+      toast.custom(
+        <ToastContent
+          type="error"
+          message="You must be logged in to create a category."
+        />
+      );
+      return;
+    }
+
+    createCategory.mutate(data);
   };
-  const { isAuthenticated, isMounted } = useAuthRedirect();
+  const createGuaranty = trpc.main.createGuaranty.useMutation({
+    onSuccess: () => {
+      toast.custom(
+        <ToastContent type="success" message="Guaranty created successfully!" />
+      );
+      GuarantyReset();
+    },
+    onError: (err) => {
+      toast.custom(<ToastContent type="error" message={err?.message} />);
+    },
+  });
 
-  if (!isMounted) {
-    return null;
-  }
+  const onSubmitGuaranty: SubmitHandler<GuarantyInput> = (data) => {
+    if (!session?.user?.id) {
+      toast.custom(
+        <ToastContent
+          type="error"
+          message="You must be logged in to create a Guaranty."
+        />
+      );
+      return;
+    }
 
-  if (!isAuthenticated) {
-    return null;
-  }
+    createGuaranty.mutate(data);
+  };
 
   return (
     <div>
-      <div onClick={handleBack}>
+      <div onClick={() => router.back()}>
         <FaArrowLeftLong />
       </div>
-      <form onSubmit={handleSubmit(onSubmit)} className=" mx-auto text-center">
-        <h2 className=" font-PeydaBold text-lg">{t("rent.productCreation")}</h2>
+      <form onSubmit={handleSubmit(onSubmit)} className="mx-auto text-center">
+        <h2 className="font-PeydaBold text-lg">Create Category</h2>
+
+        {/* Category Name */}
         <input
           className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
           type="text"
-          placeholder={t("rent.productName")}
+          placeholder="Category Name"
           {...register("name", { required: true })}
         />
 
+        {/* Submit Button */}
+        <CustomButton
+          title="Create Category"
+          type="primary-btn"
+          loading={createCategory.isLoading}
+        />
+      </form>
+      <form
+        onSubmit={GuarantyHandel(onSubmitGuaranty)}
+        className="mx-auto text-center"
+      >
+        <h2 className="font-PeydaBold text-lg">Create guaranty</h2>
+
+        {/* Category Name */}
         <input
           className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
           type="text"
-          placeholder={t("rent.description")}
-          {...register("info")}
-        />
-        <input
-          className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
-          type="number"
-          placeholder={t("rent.initialPrice")}
-          {...register("initialPrice", { valueAsNumber: true })}
-        />
-        <input
-          className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
-          type="number"
-          placeholder={t("rent.nightPrice")}
-          {...register("everyNight", { valueAsNumber: true })}
-        />
-        <input
-          className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
-          type="number"
-          placeholder={t("rent.controllerPrice")}
-          {...register("everyController", { valueAsNumber: true })}
-        />
-        <input
-          className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
-          type="number"
-          placeholder={t("rent.shippingAndInstallationPrice")}
-          {...register("installation", { valueAsNumber: true })}
+          placeholder="guaranty Name"
+          {...GuarantyRegister("text", { required: true })}
         />
 
-        <h3 className=" text-end font-PeydaBold text-sm">:پکیج ها</h3>
-        {fields.map((field, index) => (
-          <div key={field.id}>
-            <input
-              className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
-              type="text"
-              placeholder={t("rent.packageName")}
-              {...register(`packages.${index}.name`, { required: true })}
-            />
-            <input
-              className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
-              type="number"
-              placeholder={t("rent.packagePrice")}
-              {...register(`packages.${index}.price`, { valueAsNumber: true })}
-            />
-            <input
-              className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
-              type="number"
-              placeholder={t("rent.packageInventory")}
-              {...register(`packages.${index}.inventory`, {
-                valueAsNumber: true,
-              })}
-            />
-            <MdDeleteForever onClick={() => remove(index)} size={40} />
-            {/* <h6 className=" font-PeydaThin text-sm">حذف</h6> */}
-          </div>
-        ))}
-
+        {/* Submit Button */}
         <CustomButton
-          onClick={() => append({ name: "", price: 0 })}
+          title="Create Category"
           type="primary-btn"
-          title={t("rent.addPackage")}
-        ></CustomButton>
-        <div></div>
-        <CustomButton
-          title={t("rent.create")}
-          type="primary-btn"
-          loading={createProduct.isLoading}
-        ></CustomButton>
+          loading={createGuaranty.isLoading}
+        />
       </form>
     </div>
   );

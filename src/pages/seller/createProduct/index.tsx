@@ -1,12 +1,15 @@
+// pages/seller/createProduct.tsx
 import { useForm, SubmitHandler } from "react-hook-form";
 import { trpc } from "../../../../utils/trpc";
-import CustomButton from "@/components/ui/CustomButton";
+import CustomButton from "../../../components/ui/CustomButton";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
-import ToastContent from "@/components/ui/ToastContent";
+import ToastContent from "../../../components/ui/ToastContent";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import React from "react";
 
 type ProductInput = {
   name: string;
@@ -14,18 +17,22 @@ type ProductInput = {
   price: number;
   inventory: number;
   sendingType: ("SELLER_SENDS" | "BUYER_PICKS_UP")[];
+  categoryId: number;
+  guarantyId: number;
 };
 
 export default function CreateProductForm() {
   const router = useRouter();
-  const { data: session } = useSession(); // Get the authenticated user's session
-  const handleBack = () => {
-    router.back();
-  };
+  const { data: session } = useSession();
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>(
+    []
+  );
+  const [guaranty, setGuaranty] = useState<{ id: number; text: string }[]>([]);
+
   const { register, handleSubmit, reset, watch, setValue } =
     useForm<ProductInput>({
       defaultValues: {
-        sendingType: [], // Initialize sendingType as an empty array
+        sendingType: [],
       },
     });
 
@@ -42,6 +49,21 @@ export default function CreateProductForm() {
     },
   });
 
+  const { data: categoryData } = trpc.main.getCategories.useQuery();
+
+  useEffect(() => {
+    if (categoryData) {
+      setCategories(categoryData);
+    }
+  }, [categoryData]);
+  const { data: guarantyData } = trpc.main.getGuaranty.useQuery();
+
+  useEffect(() => {
+    if (guarantyData) {
+      setGuaranty(guarantyData);
+    }
+  }, [guarantyData]);
+
   const onSubmit: SubmitHandler<ProductInput> = (data) => {
     if (!session?.user?.id) {
       toast.custom(
@@ -53,14 +75,12 @@ export default function CreateProductForm() {
       return;
     }
 
-    // Include sellerId in the mutation input
     createProduct.mutate({
       ...data,
-      sellerId: session.user.id, // Pass the authenticated user's ID as sellerId
+      sellerId: session.user.id,
     });
   };
 
-  // Handle sendingType selection
   const handleSendingTypeChange = (type: "SELLER_SENDS" | "BUYER_PICKS_UP") => {
     const currentTypes = watch("sendingType");
     if (currentTypes.includes(type)) {
@@ -75,7 +95,7 @@ export default function CreateProductForm() {
 
   return (
     <div>
-      <div onClick={handleBack}>
+      <div onClick={() => router.back()}>
         <FaArrowLeftLong />
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="mx-auto text-center">
@@ -112,6 +132,31 @@ export default function CreateProductForm() {
           placeholder={t("rent.inventory")}
           {...register("inventory", { required: true, valueAsNumber: true })}
         />
+
+        {/* Category Selection */}
+        <select
+          className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
+          {...register("categoryId", { required: true, valueAsNumber: true })}
+        >
+          <option value="">Select a category</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+        {/* guaranty Selection */}
+        <select
+          className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
+          {...register("guarantyId", { required: true, valueAsNumber: true })}
+        >
+          <option value="">Select a guaranty</option>
+          {guaranty.map((guaranty) => (
+            <option key={guaranty.id} value={guaranty.id}>
+              {guaranty.text}
+            </option>
+          ))}
+        </select>
 
         {/* Sending Type */}
         <div className="w-4/5 mx-auto my-2 text-end">

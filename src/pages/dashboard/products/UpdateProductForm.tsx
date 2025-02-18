@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MdDeleteForever } from "react-icons/md";
 import { useRouter } from "next/router";
-import Loading from "@/components/ui/Loading";
-import CustomButton from "@/components/ui/CustomButton";
-import { useAuthRedirect } from "@/components/hooks/useAuthRedirect";
-import CustomModal from "@/components/ui/CustomModal";
-import ToastContent from "@/components/ui/ToastContent";
+import Loading from "../../../components/ui/Loading";
+import CustomButton from "../../../components/ui/CustomButton";
+import { useAuthRedirect } from "../../../components/hooks/useAuthRedirect";
+import CustomModal from "../../../components/ui/CustomModal";
+import ToastContent from "../../../components/ui/ToastContent";
 import { toast } from "react-hot-toast";
 import { FaArrowLeftLong } from "react-icons/fa6";
 

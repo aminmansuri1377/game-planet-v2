@@ -1,4 +1,4 @@
-import SignInForm from "@/components/form/SignInForm";
+import SignInForm from "../../components/form/SignInForm";
 import React from "react";
 
 function signIn() {

@@ -3,7 +3,7 @@ import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import "react-multi-date-picker/styles/layouts/mobile.css";
-import CustomButton from "@/components/ui/CustomButton";
+import CustomButton from "./CustomButton";
 
 interface IProps {
   textBtn: string;
@@ -19,13 +19,13 @@ const CustomDatePicker: FC<IProps> = ({ textBtn, value, ...props }) => {
       className="rmdp-mobile calendar-dark"
       calendar={persian}
       locale={persian_fa}
-      // mapDays={({ date, today }: any) => {
-      //   if (date.day > today.day) {
-      //     return {
-      //       disabled: true
-      //     };
-      //   }
-      // }}
+      mapDays={({ date, today }: any) => {
+        if (date.day < today.day) {
+          return {
+            disabled: true,
+          };
+        }
+      }}
       render={(value, openCalendar) => {
         return (
           <CustomButton

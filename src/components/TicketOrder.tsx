@@ -13,6 +13,8 @@ import OrderTicketDetail from "./ui/OrderTicketDetail";
 import OrderTicketStatus from "./ui/OrderTicketStatus";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { IoMdArrowDropup } from "react-icons/io";
+import CustomButton from "./ui/CustomButton";
+import { trpc } from "../../utils/trpc";
 
 function TicketOrder({ data, handleStatusChange }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +25,23 @@ function TicketOrder({ data, handleStatusChange }) {
     calendar: persian,
     locale: persian_fa,
   });
+
+  const increaseInventoryMutation =
+    trpc.main.increaseProductInventory.useMutation({
+      onSuccess: () => {
+        alert("Inventory increased successfully!");
+      },
+      onError: (error) => {
+        alert(`Error: ${error.message}`);
+      },
+    });
+
+  const handleIncreaseInventory = (productId) => {
+    increaseInventoryMutation.mutate({ productId });
+  };
+  const towActionHandler = (id, status) => {
+    handleStatusChange(id, status), handleIncreaseInventory(id);
+  };
   return (
     <div>
       <Box lessPaddingY>
@@ -49,40 +68,78 @@ function TicketOrder({ data, handleStatusChange }) {
             <h1 className="mx-1 font-PeydaBold text-sm my-3">
               {t("rent.status")}
             </h1>
-            <OrderTicketStatus
-              Icon={MdErrorOutline}
-              text={t("rent.awaitingConfirmation")}
-              isActive={data?.status === "waiting for confirmation"}
-              handleClick={() =>
-                handleStatusChange(data.id, "waiting for confirmation")
-              }
-            />
-            <OrderTicketStatus
-              Icon={MdDeliveryDining}
-              text={t("rent.sent")}
-              isActive={data?.status === "confirmed and sent"}
-              handleClick={() =>
-                handleStatusChange(data.id, "confirmed and sent")
-              }
-            />
-            <OrderTicketStatus
-              Icon={FaCircleCheck}
-              text={t("rent.delivered")}
-              isActive={data?.status === "delivered"}
-              handleClick={() => handleStatusChange(data.id, "delivered")}
-            />
-            <OrderTicketStatus
-              Icon={MdSettingsBackupRestore}
-              text={t("rent.takenBack")}
-              isActive={data?.status === "taken back"}
-              handleClick={() => handleStatusChange(data.id, "taken back")}
-            />
-            <OrderTicketStatus
-              Icon={MdCancel}
-              text={t("rent.canceled")}
-              isActive={data?.status === "denied"}
-              handleClick={() => handleStatusChange(data.id, "denied")}
-            />
+            {data?.status === "waiting for confirmation" && (
+              <div>
+                <OrderTicketStatus
+                  Icon={MdErrorOutline}
+                  text={t("rent.awaitingConfirmation")}
+                  isActive="waiting for confirmation"
+                />
+                <div>
+                  <h1>do you accept?</h1>
+                  <CustomButton
+                    type="primary-btn"
+                    title="yes"
+                    onClick={() =>
+                      handleStatusChange(data.id, "confirmed and sent")
+                    }
+                  />
+                  <CustomButton
+                    type="alert-btn"
+                    title="no"
+                    onClick={() => towActionHandler(data.id, "denied")}
+                  />
+                </div>
+              </div>
+            )}
+            {data?.status === "confirmed and sent" && (
+              <div>
+                <OrderTicketStatus
+                  Icon={MdDeliveryDining}
+                  text={t("rent.sent")}
+                  isActive="confirmed and sent"
+                />
+              </div>
+            )}
+            {data?.status === "delivered" && (
+              <div>
+                <OrderTicketStatus
+                  Icon={FaCircleCheck}
+                  text={t("rent.delivered")}
+                  isActive="delivered"
+                />
+                <div>
+                  <h1>do you take it back correct?</h1>
+                  <CustomButton
+                    type="primary-btn"
+                    title="yes"
+                    onClick={() => handleStatusChange(data.id, "taken back")}
+                  />
+                </div>
+              </div>
+            )}
+            {data?.status === "taken back" && (
+              <div>
+                <OrderTicketStatus
+                  Icon={MdSettingsBackupRestore}
+                  text={t("rent.takenBack")}
+                  isActive="taken back"
+                />
+                <div>do you want to add it to Warehouse?</div>
+                <CustomButton
+                  type="primary-btn"
+                  title="yes"
+                  onClick={() => towActionHandler(data.id, "taken back")}
+                />
+              </div>
+            )}
+            {data?.status === "denied" && (
+              <OrderTicketStatus
+                Icon={MdCancel}
+                text={t("rent.canceled")}
+                isActive="denied"
+              />
+            )}
           </div>
           <div className=" ml-5">
             <OrderTicketDetail
@@ -93,26 +150,8 @@ function TicketOrder({ data, handleStatusChange }) {
               value={data.productName}
               text={t("rent.product")}
             />
-            <OrderTicketDetail
-              value={data.cotrollers}
-              text={t("rent.controllerQuantity")}
-            />
-            <OrderTicketDetail
-              value={data.nights}
-              text={t("rent.nightQuantity")}
-            />
-            <OrderTicketDetail value={data.finalPrice} text={t("rent.price")} />
-            <OrderTicketDetail
-              value={data.packageId}
-              text={t("rent.package")}
-            />
           </div>
         </div>
-        {data.installation && (
-          <div className="w-full bg-slate-400 bg-opacity-50 rounded-lg p-2 items-center">
-            <h1 className=" font-PeydaBold">{t("rent.address")}</h1>
-          </div>
-        )}
       </div>
     </div>
   );

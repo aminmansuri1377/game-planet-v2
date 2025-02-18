@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { trpc } from "../../../utils/trpc";
-import Loading from "@/components/ui/Loading";
-import DeviceCard from "@/components/ui/DeviceCard";
+import Loading from "../../components/ui/Loading";
+import DeviceCard from "../../components/ui/DeviceCard";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import React from "react";
 
 const ProductPage = () => {
   const router = useRouter();
