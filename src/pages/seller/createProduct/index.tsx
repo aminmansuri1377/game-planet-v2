@@ -1,15 +1,15 @@
 // pages/seller/createProduct.tsx
 import { useForm, SubmitHandler } from "react-hook-form";
 import { trpc } from "../../../../utils/trpc";
-import CustomButton from "../../../components/ui/CustomButton";
+import CustomButton from "@/components/ui/CustomButton";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
-import ToastContent from "../../../components/ui/ToastContent";
+import ToastContent from "@/components/ui/ToastContent";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import React from "react";
+import { uploadImage } from "../../../../utils/uploadImage";
 
 type ProductInput = {
   name: string;
@@ -19,6 +19,7 @@ type ProductInput = {
   sendingType: ("SELLER_SENDS" | "BUYER_PICKS_UP")[];
   categoryId: number;
   guarantyId: number;
+  images?: FileList; // Make images optional
 };
 
 export default function CreateProductForm() {
@@ -27,6 +28,7 @@ export default function CreateProductForm() {
   const [categories, setCategories] = useState<{ id: number; name: string }[]>(
     []
   );
+  const [isUploading, setIsUploading] = useState(false);
   const [guaranty, setGuaranty] = useState<{ id: number; text: string }[]>([]);
 
   const { register, handleSubmit, reset, watch, setValue } =
@@ -50,21 +52,18 @@ export default function CreateProductForm() {
   });
 
   const { data: categoryData } = trpc.main.getCategories.useQuery();
+  const { data: guarantyData } = trpc.main.getGuaranty.useQuery();
 
   useEffect(() => {
     if (categoryData) {
       setCategories(categoryData);
     }
-  }, [categoryData]);
-  const { data: guarantyData } = trpc.main.getGuaranty.useQuery();
-
-  useEffect(() => {
     if (guarantyData) {
       setGuaranty(guarantyData);
     }
-  }, [guarantyData]);
+  }, [categoryData, guarantyData]);
 
-  const onSubmit: SubmitHandler<ProductInput> = (data) => {
+  const onSubmit: SubmitHandler<ProductInput> = async (data) => {
     if (!session?.user?.id) {
       toast.custom(
         <ToastContent
@@ -75,10 +74,33 @@ export default function CreateProductForm() {
       return;
     }
 
-    createProduct.mutate({
-      ...data,
-      sellerId: session.user.id,
-    });
+    setIsUploading(true);
+
+    try {
+      let imageUrls: string[] = [];
+
+      // Upload images if they exist
+      if (data.images && data.images.length > 0) {
+        imageUrls = await Promise.all(
+          Array.from(data.images).map(async (file) => {
+            return await uploadImage(file);
+          })
+        );
+      }
+
+      // Create the product with or without image URLs
+      createProduct.mutate({
+        ...data,
+        sellerId: session.user.id,
+        images: imageUrls, // Pass image URLs (empty array if no images)
+      });
+    } catch (error) {
+      toast.custom(
+        <ToastContent type="error" message="Failed to upload images." />
+      );
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleSendingTypeChange = (type: "SELLER_SENDS" | "BUYER_PICKS_UP") => {
@@ -145,7 +167,8 @@ export default function CreateProductForm() {
             </option>
           ))}
         </select>
-        {/* guaranty Selection */}
+
+        {/* Guaranty Selection */}
         <select
           className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
           {...register("guarantyId", { required: true, valueAsNumber: true })}
@@ -157,6 +180,19 @@ export default function CreateProductForm() {
             </option>
           ))}
         </select>
+
+        {/* Image Upload (Optional) */}
+        <div className="w-4/5 mx-auto my-2 text-end">
+          <label className="block font-PeydaBold text-sm mb-2">
+            {t("rent.productImages")} (Optional)
+          </label>
+          <input
+            type="file"
+            multiple
+            {...register("images")} // Make images optional
+            className="border border-gray-600 rounded-lg py-2 px-4 w-full"
+          />
+        </div>
 
         {/* Sending Type */}
         <div className="w-4/5 mx-auto my-2 text-end">
@@ -189,7 +225,7 @@ export default function CreateProductForm() {
         <CustomButton
           title={t("rent.create")}
           type="primary-btn"
-          loading={createProduct.isLoading}
+          loading={createProduct.isLoading || isUploading}
         />
       </form>
     </div>

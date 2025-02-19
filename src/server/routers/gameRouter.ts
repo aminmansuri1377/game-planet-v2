@@ -30,7 +30,7 @@ export const gameRouter = router({
       });
     }),
 
-  // Create a product (for SELLER or APP_MANAGER)
+  // server/routers/productRouter.ts
   createProduct: procedure
     .input(
       z.object({
@@ -42,6 +42,7 @@ export const gameRouter = router({
         sendingType: z.array(z.enum(["SELLER_SENDS", "BUYER_PICKS_UP"])),
         categoryId: z.number(),
         guarantyId: z.number(),
+        images: z.array(z.string()).optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -55,10 +56,10 @@ export const gameRouter = router({
           sendingType: input.sendingType,
           categoryId: input.categoryId,
           guarantyId: input.guarantyId,
+          images: input.images || [],
         },
       });
     }),
-
   getProductsByCategory: procedure
     .input(z.object({ categoryId: z.number() }))
     .query(async ({ input }) => {

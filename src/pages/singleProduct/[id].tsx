@@ -14,7 +14,7 @@ import CustomModal from "../../components/ui/CustomModal";
 import DeviceCard from "../../components/ui/DeviceCard";
 import CustomDatePicker from "../../components/ui/CustomDatePicker";
 import jalaali from "jalaali-js";
-
+import Image from "next/image";
 function SingleProductPage() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -188,6 +188,20 @@ function SingleProductPage() {
       <DeviceCard product={productData.name} info={productData.description} />
       {productData && (
         <div>
+          {productData?.images && (
+            <div className="flex space-x-4 my-6">
+              {productData.images.map((image, index) => (
+                <div key={index} className="relative w-32 h-32">
+                  <Image
+                    src={image}
+                    alt={`Product Image ${index + 1}`}
+                    fill
+                    className="object-cover rounded-lg"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
           <h1 className="font-PeydaBold text-2xl">{productData.name}</h1>
           <div className="flex justify-between relative py-3 px-6 md:px-12 rounded-full shadow-2xl text-center my-6 bg-white bg-opacity-10 border-2 border-transparent border-purple-900">
             <h1 className="font-PeydaBold text-lg">{t("rent.price")}</h1>
