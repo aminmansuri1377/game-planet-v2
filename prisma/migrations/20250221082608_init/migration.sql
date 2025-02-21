@@ -48,6 +48,7 @@ CREATE TABLE "Product" (
     "categoryId" INTEGER,
     "guarantyId" INTEGER,
     "sellerId" INTEGER NOT NULL,
+    "images" TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

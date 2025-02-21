@@ -19,7 +19,7 @@ type ProductInput = {
   sendingType: ("SELLER_SENDS" | "BUYER_PICKS_UP")[];
   categoryId: number;
   guarantyId: number;
-  images?: FileList; // Make images optional
+  images?: FileList;
 };
 
 export default function CreateProductForm() {
@@ -189,7 +189,7 @@ export default function CreateProductForm() {
           <input
             type="file"
             multiple
-            {...register("images")} // Make images optional
+            {...register("images")}
             className="border border-gray-600 rounded-lg py-2 px-4 w-full"
           />
         </div>

@@ -71,19 +71,12 @@ const WelcomePage = () => {
     setNearestLocations(nearest);
   };
   //////////////////////////////////////////////////////
-  const handlePositionChange = (newPosition) => {
-    setPosition(newPosition);
-    console.log("New Position:", newPosition); // Optional: Log the new position
-  };
-  const handleLocationSelect = (location) => {
-    console.log("Selected Location:", location);
-    // You can send this location data to your backend via tRPC here
-  };
-  // const {
-  //   data: categories,
-  //   isLoading: isCategoriesLoading,
-  //   error: categoriesError,
-  // } = trpc.main.getCategories.useQuery();
+
+  const {
+    data: categories,
+    isLoading: isCategoriesLoading,
+    error: categoriesError,
+  } = trpc.main.getCategories.useQuery();
 
   const handleCategoryClick = (categoryId: number) => {
     router.push(`/categories/${categoryId}`);
@@ -98,8 +91,8 @@ const WelcomePage = () => {
   const isSellerHandler = () => {
     router.push("/seller/signIn");
   };
-  // if (isCategoriesLoading) return <Loading />;
-  // if (categoriesError) return <p>Error: {categoriesError.message}</p>;
+  if (isCategoriesLoading) return <Loading />;
+  if (categoriesError) return <p>Error: {categoriesError.message}</p>;
 
   return (
     <div className="text-center">
@@ -139,7 +132,7 @@ const WelcomePage = () => {
 
       {/* Categories */}
       <div>
-        {/* {categories
+        {categories
           ? categories.map((category) => (
               <div
                 key={category.id}
@@ -148,7 +141,7 @@ const WelcomePage = () => {
                 <CustomButton title={category.name} type="secondary-btn" />
               </div>
             ))
-          : ""} */}
+          : ""}
       </div>
     </div>
   );
