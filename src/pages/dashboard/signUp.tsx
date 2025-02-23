@@ -1,10 +1,10 @@
-import SignUpForm from "../../components/form/SignUpForm";
+import ManagerSignUpForm from "@/components/form/ManagerSignUpForm";
 import React from "react";
 
 function signUp() {
   return (
     <div>
-      <SignUpForm />
+      <ManagerSignUpForm />
     </div>
   );
 }

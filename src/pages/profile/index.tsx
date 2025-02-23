@@ -56,10 +56,10 @@ function profile() {
           <div></div>
         </div>
         <h1 className=" font-PeydaBlack mt-5">
-          {session && session?.user?.username}
+          {session && session?.user?.phone}
         </h1>
         <h2 className=" my-1"> {session && session?.user?.id}</h2>
-        <h2 className=" mb-3"> {session && session?.user?.email}</h2>
+        {/* <h2 className=" mb-3"> {session && session?.user?.email}</h2> */}
         <div className="flex justify-evenly">
           <div onClick={() => router.push("./profile/basket")}>
             <Box lessPaddingY>

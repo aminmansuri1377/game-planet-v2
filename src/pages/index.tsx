@@ -17,7 +17,6 @@ const WelcomePage = () => {
       }),
     []
   );
-  console.log("Rendering Map Component");
   const exampleLocations = [
     { name: "Location 1", coordinates: [35.6892, 51.389] },
     { name: "Location 2", coordinates: [35.7, 51.4] },
@@ -26,7 +25,6 @@ const WelcomePage = () => {
   ];
   const { t } = useTranslation();
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
   const [position, setPosition] = useState([35.6892, 51.389]);
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
   const [nearestLocations, setNearestLocations] = useState<
@@ -82,12 +80,6 @@ const WelcomePage = () => {
     router.push(`/categories/${categoryId}`);
   };
 
-  const handleSearch = () => {
-    router.push(`/search?query=${searchQuery}`);
-  };
-  // const handleSearch = () => {
-  //   router.push(`/search/${searchQuery}`);
-  // };
   const isSellerHandler = () => {
     router.push("/seller/signIn");
   };

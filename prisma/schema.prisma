@@ -7,18 +7,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+
+model Buyer {
+  id           Int    @id @default(autoincrement())
+  phone        String    @unique
+  firstName    String?
+  lastName     String?
+  IDnumber     String?
+  orders       Order[]   @relation("BuyerOrders")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+model Seller {
   id           Int       @id @default(autoincrement())
-  email        String    @unique
-  name         String?
-  password     String    // Add this line
-  role         UserRole  @default(BUYER)
+  phone        String    @unique
+  firstName    String?
+  lastName     String?
+  IDnumber     String?
   sellerOrders Order[]   @relation("SellerOrders")
-  orders       Order[]   @relation("UserOrders")
   products     Product[] @relation("SellerProducts")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }
+model Manager {
+  id           Int       @id @default(autoincrement())
+  phone        String    @unique
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
 model Category {
   id          Int         @id @default(autoincrement())
   name        String      @unique
@@ -46,11 +63,12 @@ model Product {
   guarantyId  Int?
   guaranty    Guaranty?    @relation(fields: [guarantyId], references: [id])
   sellerId    Int
-  seller      User        @relation("SellerProducts", fields: [sellerId], references: [id])
+  seller      Seller        @relation("SellerProducts", fields: [sellerId], references: [id])
   orders      Order[]     @relation("ProductOrders")
-  images      String[]    
+  // images      String[]    
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+
 }
 
 model Order {
@@ -59,22 +77,18 @@ model Order {
   userId      Int
   sellerId    Int
   status      String
-  sendingType SendingType // Add this line
-  startDate     DateTime?   // Nullable column
+  sendingType SendingType 
+  startDate     DateTime?  
   endDate       DateTime?
   totalPrice  Float
   product     Product     @relation("ProductOrders", fields: [productId], references: [id])
-  seller      User        @relation("SellerOrders", fields: [sellerId], references: [id])
-  user        User        @relation("UserOrders", fields: [userId], references: [id])
+  seller      Seller        @relation("SellerOrders", fields: [sellerId], references: [id])
+  user        Buyer        @relation("BuyerOrders", fields: [userId], references: [id])
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+
 }
 
-enum UserRole {
-  BUYER
-  SELLER
-  APP_MANAGER
-}
 enum SendingType {
   SELLER_SENDS
   BUYER_PICKS_UP

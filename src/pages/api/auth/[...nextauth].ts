@@ -1,15 +1,13 @@
-// pages/api/auth/[...nextauth].ts
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { db } from "../../../lib/db";
-import { compare } from "bcrypt";
 
 export const authOptions = {
   adapter: PrismaAdapter(db),
   secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: "jwt", // Use JWT for session management
+    strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
   },
   pages: {
@@ -19,31 +17,31 @@ export const authOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "email", type: "email", placeholder: "jsmith" },
-        password: { label: "Password", type: "password" },
+        phone: { label: "Phone", type: "text", placeholder: "0912000" },
       },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+      async authorize(credentials, req) {
+        if (!credentials?.phone) {
           return null;
         }
-        const existingUser = await db.user.findUnique({
-          where: { email: credentials.email },
+        const path = req.headers?.referer?.split("?")[0]; // Get the URL path
+        let model;
+
+        // Map the path to the corresponding Prisma model
+        if (path?.includes("/seller")) {
+          model = "seller";
+        } else if (path?.includes("/dashboard")) {
+          model = "manager";
+        } else {
+          model = "buyer"; // Default model
+        }
+        const existingUser = await db[model].findUnique({
+          where: { phone: credentials.phone },
         });
         if (!existingUser) {
           return null;
         }
-        const passwordMatch = await compare(
-          credentials.password,
-          existingUser.password
-        );
-        if (!passwordMatch) {
-          return null;
-        }
         return {
-          id: existingUser.id,
-          name: existingUser.name,
-          email: existingUser.email,
-          role: existingUser.role, // Include the role field
+          phone: existingUser.phone,
         };
       },
     }),
@@ -54,9 +52,7 @@ export const authOptions = {
         return {
           ...token,
           id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role, // Include the role field
+          phone: user.phone,
         };
       }
       return token;
@@ -67,9 +63,7 @@ export const authOptions = {
         user: {
           ...session.user,
           id: token.id,
-          name: token.name,
-          email: token.email,
-          role: token.role, // Include the role field
+          phone: token.phone,
         },
       };
     },
@@ -77,3 +71,77 @@ export const authOptions = {
 };
 
 export default NextAuth(authOptions);
+
+// export const authOptions = {
+//   adapter: PrismaAdapter(db),
+//   secret: process.env.NEXTAUTH_SECRET,
+//   session: {
+//     strategy: "jwt",
+//     maxAge: 30 * 24 * 60 * 60,
+//   },
+//   pages: {
+//     signIn: "/signIn",
+//   },
+//   providers: [
+//     CredentialsProvider({
+//       name: "Credentials",
+//       credentials: {
+//         phone: { label: "Phone", type: "text", placeholder: "0912000" },
+//         role: { label: "Role", type: "text" },
+//       },
+//       async authorize(credentials) {
+//         if (!credentials?.phone || !credentials?.role) {
+//           return null;
+//         }
+
+//         const { phone, role } = credentials;
+
+//         if (role === "buyer") {
+//           const buyer = await db.buyer.findUnique({ where: { phone } });
+//           if (!buyer) return null;
+//           return { id: buyer.id, phone: buyer.phone, role: "buyer" };
+//         }
+
+//         if (role === "seller") {
+//           const seller = await db.seller.findUnique({ where: { phone } });
+//           if (!seller) return null;
+//           return { id: seller.id, phone: seller.phone, role: "seller" };
+//         }
+
+//         if (role === "manager") {
+//           const manager = await db.manager.findUnique({ where: { phone } });
+//           if (!manager) return null; // No manager found
+//           return { id: manager.id, phone: manager.phone, role: "manager" };
+//         }
+
+//         return null;
+//       },
+//     }),
+//   ],
+//   callbacks: {
+//     async jwt({ token, user }) {
+//       if (user) {
+//         return {
+//           ...token,
+//           id: user.id,
+//           phone: user.phone,
+//           role: user.role,
+//         };
+//       }
+//       return token;
+//     },
+//     async session({ session, token }) {
+//       return {
+//         ...session,
+//         user: {
+//           ...session.user,
+//           id: token.id,
+//           phone: token.phone,
+//           role: token.role,
+//         },
+//       };
+//     },
+//   },
+// };
+
+// export default NextAuth(authOptions);

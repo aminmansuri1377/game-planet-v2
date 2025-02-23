@@ -1,20 +1,40 @@
 -- CreateEnum
-CREATE TYPE "UserRole" AS ENUM ('BUYER', 'SELLER', 'APP_MANAGER');
-
--- CreateEnum
 CREATE TYPE "SendingType" AS ENUM ('SELLER_SENDS', 'BUYER_PICKS_UP');
 
 -- CreateTable
-CREATE TABLE "User" (
+CREATE TABLE "Buyer" (
     "id" SERIAL NOT NULL,
-    "email" TEXT NOT NULL,
-    "name" TEXT,
-    "password" TEXT NOT NULL,
-    "role" "UserRole" NOT NULL DEFAULT 'BUYER',
+    "phone" TEXT NOT NULL,
+    "firstName" TEXT,
+    "lastName" TEXT,
+    "IDnumber" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Buyer_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Seller" (
+    "id" SERIAL NOT NULL,
+    "phone" TEXT NOT NULL,
+    "firstName" TEXT,
+    "lastName" TEXT,
+    "IDnumber" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Seller_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Manager" (
+    "id" SERIAL NOT NULL,
+    "phone" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Manager_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -48,7 +68,6 @@ CREATE TABLE "Product" (
     "categoryId" INTEGER,
     "guarantyId" INTEGER,
     "sellerId" INTEGER NOT NULL,
-    "images" TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -73,7 +92,13 @@ CREATE TABLE "Order" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+CREATE UNIQUE INDEX "Buyer_phone_key" ON "Buyer"("phone");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Seller_phone_key" ON "Seller"("phone");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Manager_phone_key" ON "Manager"("phone");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
@@ -88,13 +113,13 @@ ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("cat
 ALTER TABLE "Product" ADD CONSTRAINT "Product_guarantyId_fkey" FOREIGN KEY ("guarantyId") REFERENCES "Guaranty"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Product" ADD CONSTRAINT "Product_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "Seller"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Order" ADD CONSTRAINT "Order_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Order" ADD CONSTRAINT "Order_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "Seller"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Buyer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,10 +1,10 @@
-import SignInForm from "../../components/form/SignInForm";
+import ManagerSignInForm from "@/components/form/ManagerSignInForm";
 import React from "react";
 
 function signIn() {
   return (
     <div>
-      <SignInForm />
+      <ManagerSignInForm />
     </div>
   );
 }

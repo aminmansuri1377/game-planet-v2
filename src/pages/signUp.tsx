@@ -1,11 +1,10 @@
-import SignUpForm from "../components/form/SignUpForm";
+import BuyerSignUpForm from "@/components/form/BuyerSignUpForm";
 import React from "react";
-import { useTranslation } from "react-i18next";
 
 function signUp() {
   return (
     <div>
-      <SignUpForm />
+      <BuyerSignUpForm />
     </div>
   );
 }

@@ -17,12 +17,6 @@ const Products = () => {
   };
   const { data: session, status } = useSession(); // Get the authenticated user's session
 
-  // Debug session data
-  useEffect(() => {
-    console.log("Session Status:", status);
-    console.log("Session Data:", session);
-  }, [session, status]);
-
   const {
     data: products,
     isLoading,

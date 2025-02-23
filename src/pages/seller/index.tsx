@@ -9,12 +9,6 @@ const SellerHomePage = () => {
   const router = useRouter();
   const { t } = useTranslation();
 
-  // Debug session data
-  useEffect(() => {
-    console.log("Session Status:", status);
-    console.log("Session Data:", session);
-  }, [session, status]);
-
   // Redirect if the user is not authenticated or not a seller
   // useEffect(() => {
   //   if (status === "unauthenticated" || session?.user?.role !== "SELLER") {
@@ -26,7 +20,10 @@ const SellerHomePage = () => {
   if (status === "loading") {
     return <div>Loading...</div>; // Show a loading state while checking the session
   }
-
+  const handleSignOut = async () => {
+    await signOut({ redirect: false });
+    router.push("/");
+  };
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-4xl mx-auto p-8 rounded-lg shadow-md">
@@ -73,7 +70,7 @@ const SellerHomePage = () => {
           <CustomButton
             type="alert-btn"
             title={t("rent.logout")}
-            onClick={() => signOut({ callbackUrl: "/signIn" })}
+            onClick={handleSignOut}
           />
         </div>
       </div>
