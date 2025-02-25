@@ -77,7 +77,40 @@ export const gameRouter = router({
         },
       });
     }),
+  ////////////complete profile
+  completeBuyerProfile: procedure
+    .input(
+      z.object({
+        userId: z.number(),
+        firstName: z.string(),
+        lastName: z.string(),
+        IDnumber: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { userId, firstName, lastName, IDnumber } = input;
+      return await prisma.buyer.update({
+        where: { id: userId },
+        data: { firstName, lastName, IDnumber },
+      });
+    }),
 
+  completeSellerProfile: procedure
+    .input(
+      z.object({
+        userId: z.number(),
+        firstName: z.string(),
+        lastName: z.string(),
+        IDnumber: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { userId, firstName, lastName, IDnumber } = input;
+      return await prisma.seller.update({
+        where: { id: userId },
+        data: { firstName, lastName, IDnumber },
+      });
+    }),
   // server/routers/productRouter.ts
   createProduct: procedure
     .input(

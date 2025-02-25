@@ -42,6 +42,7 @@ export const authOptions = {
         }
         return {
           phone: existingUser.phone,
+          id: existingUser.id,
         };
       },
     }),

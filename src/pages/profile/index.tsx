@@ -86,6 +86,14 @@ function profile() {
             </div>
           </Box>
         </div>
+        <div onClick={() => router.push("./profile/CompleteProfile")}>
+          <Box lessPaddingY>
+            <div className=" flex items-center justify-end">
+              <h1 className=" font-PeydaBold mr-2">CompleteProfile</h1>
+              <IoSettingsOutline size={30} />
+            </div>
+          </Box>
+        </div>
         <Box lessPaddingY>
           <div className=" flex items-center justify-end">
             <h1 className=" font-PeydaBold mr-2">{t("rent.support")}</h1>

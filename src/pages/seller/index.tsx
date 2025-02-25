@@ -64,6 +64,11 @@ const SellerHomePage = () => {
           type="primary-btn"
           onClick={() => router.push("/seller/orders")}
         />
+        <CustomButton
+          title="completeProfile"
+          type="primary-btn"
+          onClick={() => router.push("/seller/completeProfile")}
+        />
 
         {/* Sign Out Button */}
         <div className="mt-8">
