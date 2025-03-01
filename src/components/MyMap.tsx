@@ -1,7 +1,6 @@
-"use client"; // Ensure client-side rendering
+"use client";
 
 import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";

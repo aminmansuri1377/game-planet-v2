@@ -3,13 +3,29 @@ import { useRouter } from "next/router";
 import { trpc } from "../../../utils/trpc";
 import Loading from "../../components/ui/Loading";
 import DeviceCard from "../../components/ui/DeviceCard";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import { useSession } from "next-auth/react";
+import dynamic from "next/dynamic";
+import { useRecoilState } from "recoil";
+import { buyerLocationAtom } from "../../../store/atoms/buyerLocationAtom";
 
+const Map = dynamic(() => import("@/components/MyMap"), {
+  ssr: false,
+});
 const CategoryProductsPage = () => {
   const router = useRouter();
   const { id } = router.query;
+  const { data: session } = useSession();
+  const buyerId = session?.user?.id ? parseInt(session.user.id, 10) : null;
+  const [buyerLocation, setBuyerLocation] = useRecoilState(buyerLocationAtom);
+  const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
+  const [position, setPosition] = useState([35.6892, 51.389]);
 
+  const handleSetCoordinates = (coords: [number, number]) => {
+    setCoordinates(coords);
+    setPosition(coords);
+  };
   const {
     data: products,
     isLoading,
@@ -17,7 +33,11 @@ const CategoryProductsPage = () => {
   } = trpc.main.getProductsByCategory.useQuery({
     categoryId: Number(id),
   });
-
+  useEffect(() => {
+    if (coordinates) {
+      setBuyerLocation({ latitude: coordinates[0], longitude: coordinates[1] });
+    }
+  }, [coordinates, setBuyerLocation]);
   if (isLoading) return <Loading />;
   if (error) return <p>Error: {error.message}</p>;
 
@@ -26,6 +46,23 @@ const CategoryProductsPage = () => {
       <div onClick={() => router.back()}>
         <FaArrowLeftLong />
       </div>
+      <div className="mb-6">
+        <h2 className="font-PeydaBold text-lg mb-2">Set Your Location</h2>
+        <Map
+          position={position}
+          zoom={10}
+          setCoordinates={handleSetCoordinates}
+          locations={[]}
+        />
+        {coordinates && (
+          <div className="mt-4">
+            <p>Selected Coordinates:</p>
+            <p>Latitude: {coordinates[0]}</p>
+            <p>Longitude: {coordinates[1]}</p>
+          </div>
+        )}
+      </div>
+
       <h1 className="text-2xl font-bold mb-6">Products in Category</h1>
       <div className="space-y-4">
         {products?.map((product) => (
@@ -34,7 +71,8 @@ const CategoryProductsPage = () => {
             onClick={() => router.push(`/singleProduct/${product.id}`)}
           >
             <DeviceCard
-              product={product.name}
+              buyerId={buyerId}
+              product={product}
               info={`Price: $${product.price}`}
             />
           </div>

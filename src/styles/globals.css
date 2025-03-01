@@ -220,8 +220,8 @@ button:active .ripple {
 }
 
 .glow-effect {
-  background: linear-gradient(-290deg, #00154b, #8001c5, #cf0dcb);
-  background-size: 200% 200%;
+  background: linear-gradient(0deg, #0c1b2a, #1b4dac);
+  background-size: 100% 100%;
   animation: glow 10s ease infinite;
 }
 

@@ -17,6 +17,10 @@ model Buyer {
   orders       Order[]   @relation("BuyerOrders")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+
+  SavedProduct SavedProduct[]
+
+  Comment Comment[]
 }
 model Seller {
   id           Int       @id @default(autoincrement())
@@ -68,9 +72,32 @@ model Product {
   // images      String[]    
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-
+  SavedProduct SavedProduct[]
+  Comment Comment[]
+  latitude    Float?     
+  longitude   Float?
 }
+model SavedProduct {
+  id        Int      @id @default(autoincrement())
+  buyerId   Int
+  productId Int
+  buyer     Buyer    @relation(fields: [buyerId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  @@unique([buyerId, productId]) 
+}
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String
+  buyerId   Int
+  buyer     Buyer    @relation(fields: [buyerId], references: [id])
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 model Order {
   id          Int         @id @default(autoincrement())
   productId   Int
@@ -86,9 +113,10 @@ model Order {
   user        Buyer        @relation("BuyerOrders", fields: [userId], references: [id])
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  latitude    Float?      
+  longitude   Float?
 
 }
-
 enum SendingType {
   SELLER_SENDS
   BUYER_PICKS_UP

@@ -8,6 +8,7 @@ import { CgEnter } from "react-icons/cg";
 import CustomModal from "./ui/CustomModal";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { HiMiniLanguage } from "react-icons/hi2";
+import RoundButton from "./ui/RoundButton";
 
 function Header() {
   const router = useRouter();
@@ -31,34 +32,24 @@ function Header() {
       className={`top-0 pt-10 w-full flex justify-between py-5 items-center z-50 px-6 bg-transparent`}
     >
       {session ? (
-        <div
-          className="rounded-full bg-gradient-to-tr shadow-xl shadow-purple-800 from-[#9E16BD] to-[#5F1470] p-3 items-center text-center"
-          onClick={handleProfile}
-        >
-          <div onClick={handleProfile}>
-            <IoPersonSharp size={28} className="text-gray-300" />
-          </div>
-        </div>
+        <RoundButton
+          handleClick={handleProfile}
+          Children={<IoPersonSharp size={28} className="text-gray-300" />}
+        />
       ) : (
-        <div
-          onClick={handleSign}
-          className="rounded-full bg-gradient-to-tr shadow-xl shadow-purple-800 from-[#9E16BD] to-[#5F1470] p-3 items-center text-center"
-        >
-          <div>
-            <CgEnter size={28} className="text-gray-300" />
-          </div>
-        </div>
+        <RoundButton
+          handleClick={handleSign}
+          Children={<CgEnter size={28} className="text-gray-300" />}
+        />
       )}
       <div className="text-center items-center " onClick={handleHome}>
-        <h1 className="text-center font-black text-3xl ">GAME PLANET</h1>
+        <h1 className="text-center font-black text-text2 text-3xl ">RENTA </h1>
       </div>
       <div>
-        <div
-          className="rounded-full bg-gradient-to-tr shadow-xl shadow-purple-800 from-[#9E16BD] to-[#5F1470] p-3 items-center text-center"
-          onClick={() => setOpen(true)}
-        >
-          <HiMiniLanguage size={28} className="text-gray-300" />
-        </div>
+        <RoundButton
+          handleClick={() => setOpen(true)}
+          Children={<HiMiniLanguage size={28} className="text-gray-300" />}
+        />
       </div>
       <CustomModal type="general" show={open} onClose={closeModal}>
         <LanguageSwitcher onClose={closeModal} />

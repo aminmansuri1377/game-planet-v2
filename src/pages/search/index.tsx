@@ -3,13 +3,29 @@ import { useRouter } from "next/router";
 import { trpc } from "../../../utils/trpc";
 import Loading from "../../components/ui/Loading";
 import DeviceCard from "../../components/ui/DeviceCard";
-import React from "react";
+import React, { useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import { useSession } from "next-auth/react";
+import dynamic from "next/dynamic";
+import { useRecoilState } from "recoil";
+import { buyerLocationAtom } from "../../../store/atoms/buyerLocationAtom";
 
+const Map = dynamic(() => import("@/components/MyMap"), {
+  ssr: false,
+});
 const SearchResultsPage = () => {
   const router = useRouter();
   const { query } = router.query;
+  const { data: session } = useSession();
 
+  const buyerId = session?.user?.id ? parseInt(session.user.id, 10) : null;
+  const [buyerLocation, setBuyerLocation] = useRecoilState(buyerLocationAtom);
+  const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
+  const [position, setPosition] = useState([35.6892, 51.389]);
+  const handleSetCoordinates = (coords: [number, number]) => {
+    setCoordinates(coords);
+    setPosition(coords);
+  };
   const {
     data: products,
     isLoading,
@@ -26,6 +42,22 @@ const SearchResultsPage = () => {
       <div onClick={() => router.back()}>
         <FaArrowLeftLong />
       </div>
+      <div className="mb-6">
+        <h2 className="font-PeydaBold text-lg mb-2">Set Your Location</h2>
+        <Map
+          position={position}
+          zoom={10}
+          setCoordinates={handleSetCoordinates}
+          locations={[]}
+        />
+        {coordinates && (
+          <div className="mt-4">
+            <p>Selected Coordinates:</p>
+            <p>Latitude: {coordinates[0]}</p>
+            <p>Longitude: {coordinates[1]}</p>
+          </div>
+        )}
+      </div>
       <h1 className="text-2xl font-bold mb-6">{`Search Results for ${query}`}</h1>
       <div className="space-y-4">
         {products?.map((product) => (
@@ -34,7 +66,8 @@ const SearchResultsPage = () => {
             onClick={() => router.push(`/singleProduct/${product.id}`)}
           >
             <DeviceCard
-              product={product.name}
+              buyerId={buyerId}
+              product={product}
               info={`Price: $${product.price}`}
             />
           </div>

@@ -9,7 +9,15 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { uploadImage } from "../../../../utils/uploadImage";
+// import { uploadImage } from "../../../../utils/uploadImage";
+import { PrismaClient } from "@prisma/client";
+import { isProfileComplete } from "../../../../utils/checkProfileCompletion";
+import Loading from "@/components/ui/Loading";
+import dynamic from "next/dynamic";
+
+const Map = dynamic(() => import("@/components/MyMap"), {
+  ssr: false,
+});
 
 type ProductInput = {
   name: string;
@@ -20,17 +28,38 @@ type ProductInput = {
   categoryId: number;
   guarantyId: number;
   images?: FileList;
+  latitude?: number;
+  longitude?: number;
 };
 
 export default function CreateProductForm() {
+  const prisma = new PrismaClient();
+
   const router = useRouter();
   const { data: session } = useSession();
   const [categories, setCategories] = useState<{ id: number; name: string }[]>(
     []
   );
-  const [isUploading, setIsUploading] = useState(false);
-  const [guaranty, setGuaranty] = useState<{ id: number; text: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
+  const [position, setPosition] = useState([35.6892, 51.389]);
 
+  const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
+
+  const {
+    data: seller,
+    isLoading: isSellerLoading,
+    error: sellerError,
+  } = trpc.main.getSellerById.useQuery(
+    { userId: userId! },
+    { enabled: !!userId }
+  );
+  // const [isUploading, setIsUploading] = useState(false);
+  const [guaranty, setGuaranty] = useState<{ id: number; text: string }[]>([]);
+  const handleSetCoordinates = (coords: [number, number]) => {
+    setCoordinates(coords);
+    setPosition(coords);
+  };
   const { register, handleSubmit, reset, watch, setValue } =
     useForm<ProductInput>({
       defaultValues: {
@@ -74,32 +103,32 @@ export default function CreateProductForm() {
       return;
     }
 
-    setIsUploading(true);
+    // setIsUploading(true);
 
     try {
-      let imageUrls: string[] = [];
+      // let imageUrls: string[] = [];
 
-      // Upload images if they exist
-      if (data.images && data.images.length > 0) {
-        imageUrls = await Promise.all(
-          Array.from(data.images).map(async (file) => {
-            return await uploadImage(file);
-          })
-        );
-      }
+      // if (data.images && data.images.length > 0) {
+      //   imageUrls = await Promise.all(
+      //     Array.from(data.images).map(async (file) => {
+      //       return await uploadImage(file);
+      //     })
+      //   );
+      // }
 
-      // Create the product with or without image URLs
       createProduct.mutate({
         ...data,
         sellerId: session.user.id,
-        images: imageUrls, // Pass image URLs (empty array if no images)
+        latitude: coordinates?.[0],
+        longitude: coordinates?.[1],
+        // images: imageUrls,
       });
     } catch (error) {
       toast.custom(
         <ToastContent type="error" message="Failed to upload images." />
       );
     } finally {
-      setIsUploading(false);
+      // setIsUploading(false);
     }
   };
 
@@ -114,7 +143,28 @@ export default function CreateProductForm() {
       setValue("sendingType", [...currentTypes, type]);
     }
   };
+  if (userId === null || isNaN(userId)) {
+    return <div>Error: Invalid user ID. Please log in again.</div>;
+  }
 
+  if (!isProfileComplete(seller)) {
+    return (
+      <div>
+        <div onClick={() => router.back()}>
+          <FaArrowLeftLong />
+        </div>
+        <div className="mt-4 text-center">
+          <p>Please complete your profile before creating a product.</p>
+          <button
+            onClick={() => router.push("/seller/completeProfile")}
+            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            Complete Profile
+          </button>
+        </div>
+      </div>
+    );
+  }
   return (
     <div>
       <div onClick={() => router.back()}>
@@ -182,7 +232,7 @@ export default function CreateProductForm() {
         </select>
 
         {/* Image Upload (Optional) */}
-        <div className="w-4/5 mx-auto my-2 text-end">
+        {/* <div className="w-4/5 mx-auto my-2 text-end">
           <label className="block font-PeydaBold text-sm mb-2">
             {t("rent.productImages")} (Optional)
           </label>
@@ -192,7 +242,7 @@ export default function CreateProductForm() {
             {...register("images")}
             className="border border-gray-600 rounded-lg py-2 px-4 w-full"
           />
-        </div>
+        </div> */}
 
         {/* Sending Type */}
         <div className="w-4/5 mx-auto my-2 text-end">
@@ -220,12 +270,32 @@ export default function CreateProductForm() {
             </label>
           </div>
         </div>
-
+        <div className="w-4/5 mx-auto my-2 text-end">
+          <label className="block font-PeydaBold text-sm mb-2">
+            Product Location
+          </label>
+          <Map
+            position={position}
+            zoom={10}
+            setCoordinates={handleSetCoordinates}
+            locations={[]}
+          />
+          {coordinates && (
+            <div className="mt-4">
+              <p>Selected Coordinates:</p>
+              <p>Latitude: {coordinates[0]}</p>
+              <p>Longitude: {coordinates[1]}</p>
+            </div>
+          )}
+        </div>
         {/* Submit Button */}
         <CustomButton
           title={t("rent.create")}
           type="primary-btn"
-          loading={createProduct.isLoading || isUploading}
+          loading={
+            createProduct.isLoading
+            // || isUploading
+          }
         />
       </form>
     </div>

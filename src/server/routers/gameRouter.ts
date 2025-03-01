@@ -111,6 +111,21 @@ export const gameRouter = router({
         data: { firstName, lastName, IDnumber },
       });
     }),
+  getSellerById: procedure
+    .input(z.object({ userId: z.number() }))
+    .query(async ({ input }) => {
+      return await prisma.seller.findUnique({
+        where: { id: input.userId },
+      });
+    }),
+  getBuyerById: procedure
+    .input(z.object({ userId: z.number() }))
+    .query(async ({ input }) => {
+      return await prisma.buyer.findUnique({
+        where: { id: input.userId },
+      });
+    }),
+
   // server/routers/productRouter.ts
   createProduct: procedure
     .input(
@@ -123,7 +138,8 @@ export const gameRouter = router({
         sendingType: z.array(z.enum(["SELLER_SENDS", "BUYER_PICKS_UP"])),
         categoryId: z.number(),
         guarantyId: z.number(),
-        images: z.array(z.string()).optional(),
+        latitude: z.number().optional(),
+        longitude: z.number().optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -137,7 +153,8 @@ export const gameRouter = router({
           sendingType: input.sendingType,
           categoryId: input.categoryId,
           guarantyId: input.guarantyId,
-          images: input.images || [],
+          latitude: input.latitude,
+          longitude: input.longitude,
         },
       });
     }),
@@ -240,19 +257,19 @@ export const gameRouter = router({
     .input(
       z.object({
         productId: z.number(),
-        userId: z.number(), // Buyer ID
-        sellerId: z.number(), // Seller ID
+        userId: z.number(),
+        sellerId: z.number(),
         status: z.string().default("waiting for confirmation"),
         sendingType: z.enum(["SELLER_SENDS", "BUYER_PICKS_UP"]),
-        startDate: z.string().transform((val) => new Date(val)), // Parse string to Date
+        startDate: z.string().transform((val) => new Date(val)),
         endDate: z.string().transform((val) => new Date(val)),
         totalPrice: z.number(),
+        latitude: z.number().optional(),
+        longitude: z.number().optional(),
       })
     )
     .mutation(async ({ input }) => {
-      // Start a transaction to ensure atomicity
       const result = await prisma.$transaction(async (prisma) => {
-        // Check if the product has enough inventory
         const product = await prisma.product.findUnique({
           where: { id: input.productId },
         });
@@ -260,8 +277,6 @@ export const gameRouter = router({
         if (!product || product.inventory < 1) {
           throw new Error("Product is out of stock");
         }
-
-        // Create the order
         const order = await prisma.order.create({
           data: {
             productId: input.productId,
@@ -272,10 +287,10 @@ export const gameRouter = router({
             startDate: input.startDate,
             endDate: input.endDate,
             totalPrice: input.totalPrice,
+            latitude: input.latitude,
+            longitude: input.longitude,
           },
         });
-
-        // Decrement the product's inventory
         await prisma.product.update({
           where: { id: input.productId },
           data: {
@@ -290,7 +305,6 @@ export const gameRouter = router({
 
       return result;
     }),
-
   // Get orders for a seller (for SELLER or APP_MANAGER)
   getSellerOrders: procedure
     .input(z.object({ sellerId: z.number() }))
@@ -470,5 +484,100 @@ export const gameRouter = router({
           take: 5, // Limit the number of suggestions
         })
         .then((products) => products.map((p) => p.name));
+    }),
+  ///////////SAVED PRODUCTS
+  // Save a product for a buyer
+  saveProduct: procedure
+    .input(
+      z.object({
+        buyerId: z.number(),
+        productId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await prisma.savedProduct.create({
+        data: {
+          buyerId: input.buyerId,
+          productId: input.productId,
+        },
+      });
+    }),
+
+  // Unsave a product for a buyer
+  unsaveProduct: procedure
+    .input(
+      z.object({
+        buyerId: z.number(),
+        productId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await prisma.savedProduct.delete({
+        where: {
+          buyerId_productId: {
+            buyerId: input.buyerId,
+            productId: input.productId,
+          },
+        },
+      });
+    }),
+
+  // Get saved products for a buyer
+  getSavedProducts: procedure
+    .input(z.object({ buyerId: z.number() }))
+    .query(async ({ input }) => {
+      return await prisma.savedProduct.findMany({
+        where: { buyerId: input.buyerId },
+        include: { product: true }, // Include product details
+      });
+    }),
+  ///////////////////comments
+  addComment: procedure
+    .input(
+      z.object({
+        productId: z.number(),
+        buyerId: z.number(),
+        text: z.string().min(1, "Comment cannot be empty"),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await prisma.comment.create({
+        data: {
+          text: input.text,
+          buyerId: input.buyerId,
+          productId: input.productId,
+        },
+      });
+    }),
+  getCommentsByProduct: procedure
+    .input(z.object({ productId: z.number() }))
+    .query(async ({ input }) => {
+      return await prisma.comment.findMany({
+        where: { productId: input.productId },
+        include: { buyer: true }, // Include buyer details (e.g., name)
+        orderBy: { createdAt: "desc" }, // Sort by newest first
+      });
+    }),
+  deleteComment: procedure
+    .input(
+      z.object({
+        commentId: z.number(),
+        buyerId: z.number(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const comment = await prisma.comment.findUnique({
+        where: { id: input.commentId },
+      });
+
+      if (!comment) {
+        throw new Error("Comment not found");
+      }
+      if (comment.buyerId !== input.buyerId) {
+        throw new Error("You are not authorized to delete this comment");
+      }
+      return await prisma.comment.delete({
+        where: { id: input.commentId },
+      });
     }),
 });

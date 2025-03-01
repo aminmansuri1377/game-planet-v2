@@ -1,10 +1,59 @@
-import React, { useEffect, useRef, Suspense, lazy } from "react";
+import React, { useEffect, useRef, Suspense, lazy, useState } from "react";
 import Box from "../Box";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
+import { FaBookmark, FaRegBookmark } from "react-icons/fa";
+import { trpc } from "../../../utils/trpc";
+import ToastContent from "./ToastContent";
+import { toast } from "react-hot-toast";
 
-function DeviceCard({ product, info }) {
+function DeviceCard({ product, info, buyerId }) {
+  const [isSaved, setIsSaved] = useState(false);
+  // console.log("buyerId", buyerId && buyerId);
+  // console.log("productid", product && product);
+  const { data: savedProducts } = trpc.main.getSavedProducts.useQuery({
+    buyerId,
+  });
+  useEffect(() => {
+    if (savedProducts) {
+      setIsSaved(savedProducts.some((sp) => sp.productId === product.id));
+    }
+  }, [savedProducts, product.id]);
+
+  const saveProductMutation = trpc.main.saveProduct.useMutation({
+    onSuccess: () => {
+      toast.custom(
+        <ToastContent type="success" message="Product saved successfully!" />
+      );
+      // reset();
+    },
+    onError: (err) => {
+      toast.custom(<ToastContent type="error" message={err?.message} />);
+    },
+  });
+
+  const unsaveProductMutation = trpc.main.unsaveProduct.useMutation({
+    onSuccess: () => {
+      toast.custom(
+        <ToastContent type="success" message="Product unsaved successfully!" />
+      );
+      // reset();
+    },
+    onError: (err) => {
+      toast.custom(<ToastContent type="error" message={err?.message} />);
+    },
+  });
+  const handleSave = (e) => {
+    e.stopPropagation();
+
+    if (isSaved) {
+      unsaveProductMutation.mutate({ buyerId, productId: product.id });
+    } else {
+      saveProductMutation.mutate({ buyerId, productId: product.id });
+    }
+    setIsSaved(!isSaved);
+  };
   const ModelPs5 = () => {
     const fbxRef = useRef();
 
@@ -52,24 +101,32 @@ function DeviceCard({ product, info }) {
     }, []);
     return <group ref={fbxRef} />;
   };
+
   return (
     <div>
       <Box>
-        {product && product.toLowerCase().includes("ps5") ? (
-          <Canvas style={{ height: "50vh" }}>
-            <ambientLight intensity={1} />
+        <button onClick={handleSave}>
+          {isSaved ? <FaBookmark /> : <FaRegBookmark />}
+        </button>
+        {product && product.name.toLowerCase().includes("ps5") ? (
+          <div>
+            <Canvas style={{ height: "50vh" }}>
+              <ambientLight intensity={1} />
 
-            <directionalLight position={[0, 10, 5]} intensity={1} />
-            <ModelPs5 />
-            <OrbitControls enableZoom={false} />
-          </Canvas>
-        ) : product && product.toLowerCase().includes("xbox") ? (
-          <Canvas style={{ height: "50vh" }} className="">
-            <ambientLight intensity={1} />
-            <directionalLight position={[20, 10, 50]} intensity={5} />
-            <ModelXbox />
-            <OrbitControls enableZoom={false} />
-          </Canvas>
+              <directionalLight position={[0, 10, 5]} intensity={1} />
+              <ModelPs5 />
+              <OrbitControls enableZoom={false} />
+            </Canvas>
+          </div>
+        ) : product && product.name.toLowerCase().includes("xbox") ? (
+          <div>
+            <Canvas style={{ height: "50vh" }} className="">
+              <ambientLight intensity={1} />
+              <directionalLight position={[20, 10, 50]} intensity={5} />
+              <ModelXbox />
+              <OrbitControls enableZoom={false} />
+            </Canvas>
+          </div>
         ) : (
           ""
         )}

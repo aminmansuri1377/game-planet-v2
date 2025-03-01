@@ -15,11 +15,30 @@ import DeviceCard from "../../components/ui/DeviceCard";
 import CustomDatePicker from "../../components/ui/CustomDatePicker";
 import jalaali from "jalaali-js";
 import Image from "next/image";
+import { isProfileComplete } from "../../../utils/checkProfileCompletion";
+import CommentForm from "@/components/form/CommentForm";
+import CommentsSection from "@/components/ui/CommentsSection";
+import { useRecoilState } from "recoil";
+import { buyerLocationAtom } from "../../../store/atoms/buyerLocationAtom";
+
 function SingleProductPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const { id } = router.query;
   const { data: session, status } = useSession();
+  const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
+
+  const [buyerLocation, setBuyerLocation] = useRecoilState(buyerLocationAtom);
+  console.log("buyerLocation", buyerLocation);
+  const {
+    data: buyer,
+    isLoading: isSellerLoading,
+    error: sellerError,
+  } = trpc.main.getBuyerById.useQuery(
+    { userId: userId! },
+    { enabled: !!userId }
+  );
+  //
   const {
     data: productData,
     isLoading,
@@ -41,6 +60,7 @@ function SingleProductPage() {
       toast.custom(
         <ToastContent type="success" message="Order created successfully!" />
       );
+      setBuyerLocation(null);
       router.push("/");
     },
     onError: (err) => {
@@ -84,6 +104,12 @@ function SingleProductPage() {
       );
       return;
     }
+    if (!buyerLocation) {
+      toast.custom(
+        <ToastContent type="error" message="Please set your location first." />
+      );
+      return;
+    }
 
     if (productData) {
       if (productData.sendingType.length > 1 && !selectedSendingType) {
@@ -124,13 +150,15 @@ function SingleProductPage() {
 
         createOrderMutation.mutate({
           productId: productData.id,
-          userId: session.user.id,
+          userId: userId,
           sellerId: productData.sellerId,
           status: "waiting for confirmation",
           sendingType: sendingType!,
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
           totalPrice: totalPrice,
+          latitude: buyerLocation.latitude,
+          longitude: buyerLocation.longitude,
         });
       } catch (error) {
         toast.custom(
@@ -177,18 +205,41 @@ function SingleProductPage() {
       setTotalPrice(null);
     }
   };
+  console.log("buyer", buyer);
   if (isLoading) return <Loading />;
   if (error) return <p>Error: {error.message}</p>;
   if (!productData) return <p>Product not found</p>;
+  if (!isProfileComplete(buyer)) {
+    return (
+      <div>
+        <div onClick={() => router.back()}>
+          <FaArrowLeftLong />
+        </div>
+        <div className="mt-4 text-center">
+          <p>Please complete your profile before creating a product.</p>
+          <button
+            onClick={() => router.push("/buyer/completeProfile")}
+            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            Complete Profile
+          </button>
+        </div>
+      </div>
+    );
+  }
   return (
     <div>
       <div onClick={() => router.back()}>
         <FaArrowLeftLong />
       </div>
-      <DeviceCard product={productData.name} info={productData.description} />
+      <DeviceCard
+        product={productData}
+        info={productData.description}
+        buyerId={userId}
+      />
       {productData && (
         <div>
-          {productData?.images && (
+          {/* {productData?.images && (
             <div className="flex space-x-4 my-6">
               {productData.images.map((image, index) => (
                 <div key={index} className="relative w-32 h-32">
@@ -201,7 +252,7 @@ function SingleProductPage() {
                 </div>
               ))}
             </div>
-          )}
+          )} */}
           <h1 className="font-PeydaBold text-2xl">{productData.name}</h1>
           <div className="flex justify-between relative py-3 px-6 md:px-12 rounded-full shadow-2xl text-center my-6 bg-white bg-opacity-10 border-2 border-transparent border-purple-900">
             <h1 className="font-PeydaBold text-lg">{t("rent.price")}</h1>
@@ -217,7 +268,7 @@ function SingleProductPage() {
           )}
           {productData.guaranty && (
             <p className="font-PeydaBold text-sm">
-              Category: {productData.guaranty.text}
+              guaranty: {productData.guaranty.text}
             </p>
           )}
         </div>
@@ -276,6 +327,11 @@ function SingleProductPage() {
           loading={createOrderMutation.isLoading}
         />
       </CustomModal>
+      <div>
+        <div>
+          <CommentsSection productId={productData.id} buyerId={userId} />
+        </div>
+      </div>
     </div>
   );
 }

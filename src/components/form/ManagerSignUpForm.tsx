@@ -56,7 +56,7 @@ const ManagerSignUpForm = () => {
         toast.custom(
           <ToastContent type="success" message="User created successfully!" />
         );
-        router.push("/signIn");
+        router.push("/dashboard/signIn");
       } else {
         const errorData = await response.json();
         toast.custom(

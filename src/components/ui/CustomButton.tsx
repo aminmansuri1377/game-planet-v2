@@ -61,8 +61,8 @@ const CustomButton: FC<IButtonProps> = ({
 
   return (
     <button
-      className={`rounded-2xl m-2 py-2 px-10 font-PeydaBold ${
-        primaryBtn && "bg-gradient-to-r from-[#3147BB] to-[#8000FF] text-white "
+      className={`rounded-3xl m-2 py-2 px-10 font-PeydaBold ${
+        primaryBtn && "bg-gradient-to-r from-gra-100 to-gra-200 text-white "
       } ${simpleButton && "bg-light-A dark:bg-dark-C "}${
         secondaryBtn &&
         "bg-metal drop-shadow-btn dark:shadow-btn border border-light-C"

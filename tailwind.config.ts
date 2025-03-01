@@ -16,6 +16,14 @@ module.exports = {
           100: "#f3f4f6",
           900: "#111827",
         },
+        primary: "#1763F3",
+        secondary: "#0C1B2A",
+        text1: "#ffff",
+        text2: "#91B3F6",
+        gra: {
+          100: "#1767FF",
+          200: "#1B4DAC",
+        },
       },
       fontFamily: {
         sans: ["Helvetica Neue", "Arial", "sans-serif"],
