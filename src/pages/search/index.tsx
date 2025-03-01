@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { trpc } from "../../../utils/trpc";
 import Loading from "../../components/ui/Loading";
 import DeviceCard from "../../components/ui/DeviceCard";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
@@ -26,6 +26,11 @@ const SearchResultsPage = () => {
     setCoordinates(coords);
     setPosition(coords);
   };
+  useEffect(() => {
+    if (coordinates) {
+      setBuyerLocation({ latitude: coordinates[0], longitude: coordinates[1] });
+    }
+  }, [coordinates, setBuyerLocation]);
   const {
     data: products,
     isLoading,
