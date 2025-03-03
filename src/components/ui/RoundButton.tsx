@@ -5,7 +5,7 @@ function RoundButton({ handleClick, Children }) {
     <div>
       <div
         onClick={handleClick}
-        className="rounded-full bg-gradient-to-tr shadow-md shadow-gray-800 from-gra-100 to-gra-200 p-3 items-center text-center"
+        className="rounded-full bg-gradient-to-tr shadow-sm shadow-gray-800 from-gra-100 to-gra-200 p-2 items-center text-center"
       >
         {Children}
       </div>

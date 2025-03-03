@@ -65,7 +65,7 @@ const CustomButton: FC<IButtonProps> = ({
         primaryBtn && "bg-gradient-to-r from-gra-100 to-gra-200 text-white "
       } ${simpleButton && "bg-light-A dark:bg-dark-C "}${
         secondaryBtn &&
-        "bg-metal drop-shadow-btn dark:shadow-btn border border-light-C"
+        "bg-metal drop-shadow-btn text-primary dark:shadow-btn border-2 border-primary"
       } ${successBtn && "border-grad-success bg-success"}} ${
         borderBtn && "border-grad-btn bg-selected"
       } ${alertBtn && "border-grad-alert bg-alert !rounded-[30px]"} ${

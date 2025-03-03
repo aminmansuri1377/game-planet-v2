@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { trpc } from "../../utils/trpc";
+import CategoryCart from "./ui/CategoryCart";
 
 const SearchBar = () => {
   const router = useRouter();
@@ -37,7 +38,7 @@ const SearchBar = () => {
             handleSearch();
           }
         }}
-        className="border border-gray-300 rounded-lg py-2 px-4 w-full text-black"
+        className="rounded-full py-4 px-4 w-full text-white bg-gradient-to-r from-gra-100 to-gra-200"
       />
       {/* Show suggestions dropdown */}
       {searchQuery && suggestedProducts && suggestedProducts.length > 0 && (

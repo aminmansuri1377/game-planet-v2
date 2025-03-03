@@ -6,70 +6,21 @@ import Loading from "../components/ui/Loading";
 import CustomButton from "../components/ui/CustomButton";
 import { useMemo, useState } from "react";
 import SearchBar from "@/components/SearchBar";
-import dynamic from "next/dynamic";
+import HeaderImage from "../../public/images/header.png";
+import Image from "next/image";
+import Header from "@/components/Header";
+import { ImVideoCamera } from "react-icons/im";
+import CategoryCart from "@/components/ui/CategoryCart";
+import { GiConsoleController } from "react-icons/gi";
+import WhyCard from "@/components/ui/WhyCard";
+import { AiOutlineSafety } from "react-icons/ai";
+import { TbPigMoney } from "react-icons/tb";
+import { LuLeaf } from "react-icons/lu";
+import { LuAlarmClock } from "react-icons/lu";
 
 const WelcomePage = () => {
-  const Map = useMemo(
-    () =>
-      dynamic(() => import("@/components/MyMap"), {
-        loading: () => <p>Loading map...</p>,
-        ssr: false, // Disable SSR
-      }),
-    []
-  );
-  const exampleLocations = [
-    { name: "Location 1", coordinates: [35.6892, 51.389] },
-    { name: "Location 2", coordinates: [35.7, 51.4] },
-    { name: "Location 3", coordinates: [35.71, 51.41] },
-    // Add more locations as needed
-  ];
   const { t } = useTranslation();
   const router = useRouter();
-  const [position, setPosition] = useState([35.6892, 51.389]);
-  const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
-  const [nearestLocations, setNearestLocations] = useState<
-    { name: string; coordinates: [number, number] }[]
-  >([]);
-  const haversineDistance = (
-    coords1: [number, number],
-    coords2: [number, number]
-  ) => {
-    const toRad = (x: number) => (x * Math.PI) / 180;
-    const [lat1, lon1] = coords1;
-    const [lat2, lon2] = coords2;
-
-    const R = 6371; // Earth radius in km
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(lat1)) *
-        Math.cos(toRad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c;
-
-    return distance;
-  };
-  const handleSetCoordinates = (coords: [number, number]) => {
-    setCoordinates(coords); // Update coordinates
-    setPosition(coords); // Update position to move the marker
-
-    // Filter nearest locations
-    const nearest = exampleLocations
-      .map((location) => ({
-        ...location,
-        distance: haversineDistance(coords, location.coordinates),
-      }))
-      .sort((a, b) => a.distance - b.distance)
-      .slice(0, 3); // Get the top 3 nearest locations
-
-    setNearestLocations(nearest);
-  };
-  //////////////////////////////////////////////////////
-
   const {
     data: categories,
     isLoading: isCategoriesLoading,
@@ -80,60 +31,106 @@ const WelcomePage = () => {
     router.push(`/categories/${categoryId}`);
   };
 
-  const isSellerHandler = () => {
+  const sellerSignUp = () => {
+    router.push("/seller/signUp");
+  };
+  const sellerSignIn = () => {
     router.push("/seller/signIn");
+  };
+  const buyerSignUp = () => {
+    router.push("/signUp");
+  };
+  const buyerSignIn = () => {
+    router.push("/signIn");
   };
   if (isCategoriesLoading) return <Loading />;
   if (categoriesError) return <p>Error: {categoriesError.message}</p>;
 
   return (
     <div className="text-center">
-      <h1 className="font-PeydaBlack text-center [word-spacing:5px] my-5">
-        {t("rent.ps5AndXboxRental")}
-      </h1>
-      <Map
-        position={position}
-        zoom={10}
-        setCoordinates={handleSetCoordinates}
-        locations={exampleLocations}
-      />
-      {coordinates && (
-        <div className="mt-4">
-          <p>Selected Coordinates:</p>
-          <p>Latitude: {coordinates[0]}</p>
-          <p>Longitude: {coordinates[1]}</p>
-          <h3>Nearest Locations:</h3>
-          <ul>
-            {nearestLocations.map((location, index) => (
-              <li key={index}>
-                {location.name} - {location.distance.toFixed(2)} km
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      <CustomButton
-        type="primary-btn"
-        title="اجاره دهنده هستم"
-        onClick={() => isSellerHandler()}
-      />
-      {/* Search Input */}
-      <div className="mb-6">
-        <SearchBar />
-      </div>
+      <Header />
+      <div className="px-8 mt-10">
+        <Image src={HeaderImage} alt="header" />
+        <h1 className="font-PeydaBlack text-center mt-5 text-3xl">
+          !به رنتا خوش آمدید
+        </h1>
+        <h1 className="font-PeydaBold text-center mb-5 mt-3">
+          اجاره هر چیزی که نیاز دارید با یک کلیک
+        </h1>
 
-      {/* Categories */}
-      <div>
-        {categories
-          ? categories.map((category) => (
-              <div
-                key={category.id}
-                onClick={() => handleCategoryClick(category.id)}
-              >
-                <CustomButton title={category.name} type="secondary-btn" />
-              </div>
-            ))
-          : ""}
+        <CustomButton
+          type="secondary-btn"
+          title="ورودخ"
+          onClick={() => buyerSignIn()}
+        />
+        <CustomButton
+          type="primary-btn"
+          title="ثبت نامخ"
+          onClick={() => buyerSignUp()}
+        />
+
+        <CustomButton
+          type="secondary-btn"
+          title="ورودف"
+          onClick={() => sellerSignIn()}
+        />
+        <CustomButton
+          type="primary-btn"
+          title="ثبت نامف"
+          onClick={() => sellerSignUp()}
+        />
+        {/* Search Input */}
+        <h1 className="font-PeydaBlack text-center mt-10 text-3xl">
+          دنبال چه چیزی میگردی ؟
+        </h1>
+        <div className="my-4">
+          <SearchBar />
+        </div>
+
+        {/* Categories */}
+        <div className="grid grid-cols-3 gap-2 mb-8">
+          <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} />
+          <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} />
+          <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} />
+          {categories
+            ? categories.map((category) => (
+                <div
+                  key={category.id}
+                  onClick={() => handleCategoryClick(category.id)}
+                >
+                  <CategoryCart
+                    text={category.name}
+                    Icon={GiConsoleController}
+                  />
+                </div>
+              ))
+            : ""}
+        </div>
+        <h1 className="font-PeydaBlack text-center mt-10 text-2xl">
+          چرا از رنتا استفاده کنم ؟{" "}
+        </h1>
+        <div className=" grid grid-cols-2 gap-8 mx-2 my-10">
+          <WhyCard
+            title="امنیت"
+            text="لورم ایپسوم متن ساختگی با تولید سادگی "
+            Icon={AiOutlineSafety}
+          />
+          <WhyCard
+            title="به صرفه تر"
+            text="لورم ایپسوم متن ساختگی با تولید سادگی "
+            Icon={TbPigMoney}
+          />
+          <WhyCard
+            title="محافظت"
+            text="لورم ایپسوم متن ساختگی با تولید سادگی "
+            Icon={LuLeaf}
+          />
+          <WhyCard
+            title="سریع تر"
+            text="لورم ایپسوم متن ساختگی با تولید سادگی "
+            Icon={LuAlarmClock}
+          />
+        </div>
       </div>
     </div>
   );

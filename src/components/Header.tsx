@@ -9,6 +9,9 @@ import CustomModal from "./ui/CustomModal";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { HiMiniLanguage } from "react-icons/hi2";
 import RoundButton from "./ui/RoundButton";
+import { CiShoppingBasket } from "react-icons/ci";
+import { MdMailOutline } from "react-icons/md";
+import { IoMdMenu } from "react-icons/io";
 
 function Header() {
   const router = useRouter();
@@ -18,9 +21,13 @@ function Header() {
   const handleProfile = () => {
     router.push({ pathname: "/profile" });
   };
+  const handleBasket = () => {
+    router.push({ pathname: "/profile/basket" });
+  };
   const handleSign = () => {
     router.push({ pathname: "/signIn" });
   };
+  const handleChat = () => {};
   const handleHome = () => {
     router.push({ pathname: "/" });
   };
@@ -29,26 +36,43 @@ function Header() {
   };
   return (
     <div
-      className={`top-0 pt-10 w-full flex justify-between py-5 items-center z-50 px-6 bg-transparent`}
+      className={`top-0 pt-10 w-full flex justify-around py-5 items-center z-50 px-6 bg-transparent`}
     >
-      {session ? (
+      <div className="text-center items-center " onClick={handleHome}>
+        <h1 className="text-center font-black text-text2 text-4xl mx-4 ">
+          RENTA{" "}
+        </h1>
+      </div>
+      {/* {session ? (
         <RoundButton
           handleClick={handleProfile}
           Children={<IoPersonSharp size={28} className="text-gray-300" />}
         />
       ) : (
         <RoundButton
-          handleClick={handleSign}
+          handleClick={handleChat}
           Children={<CgEnter size={28} className="text-gray-300" />}
         />
-      )}
-      <div className="text-center items-center " onClick={handleHome}>
-        <h1 className="text-center font-black text-text2 text-3xl ">RENTA </h1>
+      )} */}
+
+      <RoundButton
+        handleClick={handleBasket}
+        Children={<CiShoppingBasket size={28} className="text-gray-300" />}
+      />
+      <div>
+        <RoundButton
+          handleClick={handleChat}
+          Children={<MdMailOutline size={28} className="text-gray-300" />}
+        />
+        {/* <RoundButton
+          handleClick={() => setOpen(true)}
+          Children={<HiMiniLanguage size={28} className="text-gray-300" />}
+        /> */}
       </div>
       <div>
         <RoundButton
-          handleClick={() => setOpen(true)}
-          Children={<HiMiniLanguage size={28} className="text-gray-300" />}
+          // handleClick={handleChat}
+          Children={<IoMdMenu size={28} className="text-gray-300" />}
         />
       </div>
       <CustomModal type="general" show={open} onClose={closeModal}>

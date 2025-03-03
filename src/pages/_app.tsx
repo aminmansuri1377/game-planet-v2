@@ -23,8 +23,8 @@ const MyApp: AppType = ({
 
       <SessionProvider session={session}>
         <div className="glow-effect text-white">
-          <Header />
-          <div className="px-8 flex flex-col items-center justify-center min-h-screen">
+          {/* <Header /> */}
+          <div className=" flex flex-col items-center justify-center">
             <Component {...pageProps} />
           </div>
           <Footer />

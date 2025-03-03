@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import { useRecoilState } from "recoil";
 import { buyerLocationAtom } from "../../../store/atoms/buyerLocationAtom";
+import Header from "@/components/Header";
 
 const Map = dynamic(() => import("@/components/MyMap"), {
   ssr: false,
@@ -106,62 +107,65 @@ const CategoryProductsPage = () => {
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <div className="p-6">
-      <div onClick={() => router.back()}>
-        <FaArrowLeftLong />
-      </div>
+    <div>
+      <Header />
+      <div className="p-6">
+        <div onClick={() => router.back()}>
+          <FaArrowLeftLong />
+        </div>
 
-      <div className="mb-6">
-        <h2 className="font-PeydaBold text-lg mb-2">Set Your Location</h2>
-        <Map
-          position={position}
-          locations={productLocations}
-          zoom={10}
-          setCoordinates={handleSetCoordinates}
-        />
-        {coordinates && (
-          <div className="mt-4">
-            <p>Selected Coordinates:</p>
-            <p>Latitude: {coordinates[0]}</p>
-            <p>Longitude: {coordinates[1]}</p>
-          </div>
-        )}
-      </div>
+        <div className="mb-6">
+          <h2 className="font-PeydaBold text-lg mb-2">Set Your Location</h2>
+          <Map
+            position={position}
+            locations={productLocations}
+            zoom={10}
+            setCoordinates={handleSetCoordinates}
+          />
+          {coordinates && (
+            <div className="mt-4">
+              <p>Selected Coordinates:</p>
+              <p>Latitude: {coordinates[0]}</p>
+              <p>Longitude: {coordinates[1]}</p>
+            </div>
+          )}
+        </div>
 
-      <h1 className="text-2xl font-bold mb-6">Products in Category</h1>
-      <div className="mb-6">
-        <label className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            checked={sortByPrice}
-            onChange={handleSortByPriceChange}
-            className="form-radio"
-          />
-          <span>Sort by Price (Low to High)</span>
-        </label>
-        <label className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            checked={sortByNearest}
-            onChange={handleSortByNearestChange}
-            className="form-radio"
-          />
-          <span>Sort by Nearest Location</span>
-        </label>
-      </div>
-      <div className="space-y-4">
-        {sortedProducts?.map((product) => (
-          <div
-            key={product.id}
-            onClick={() => router.push(`/singleProduct/${product.id}`)}
-          >
-            <DeviceCard
-              buyerId={buyerId}
-              product={product}
-              info={`Price: $${product.price}`}
+        <h1 className="text-2xl font-bold mb-6">Products in Category</h1>
+        <div className="mb-6">
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={sortByPrice}
+              onChange={handleSortByPriceChange}
+              className="form-radio"
             />
-          </div>
-        ))}
+            <span>Sort by Price (Low to High)</span>
+          </label>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={sortByNearest}
+              onChange={handleSortByNearestChange}
+              className="form-radio"
+            />
+            <span>Sort by Nearest Location</span>
+          </label>
+        </div>
+        <div className="space-y-4">
+          {sortedProducts?.map((product) => (
+            <div
+              key={product.id}
+              onClick={() => router.push(`/singleProduct/${product.id}`)}
+            >
+              <DeviceCard
+                buyerId={buyerId}
+                product={product}
+                info={`Price: $${product.price}`}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

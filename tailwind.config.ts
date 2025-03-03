@@ -24,6 +24,7 @@ module.exports = {
           100: "#1767FF",
           200: "#1B4DAC",
         },
+        cardbg: "#12263A",
       },
       fontFamily: {
         sans: ["Helvetica Neue", "Arial", "sans-serif"],
