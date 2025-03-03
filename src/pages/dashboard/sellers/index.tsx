@@ -10,6 +10,7 @@ import { LuArrowBigRightDash } from "react-icons/lu";
 import { LuArrowBigLeftDash } from "react-icons/lu";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 function index() {
   const router = useRouter();
@@ -19,11 +20,7 @@ function index() {
   const [page, setPage] = useState(1);
   const limit = 10;
 
-  const {
-    data: users,
-    isLoading,
-    error,
-  } = trpc.main.getUsers.useQuery({ page, limit });
+  const { data: sellers } = trpc.main.getSellers.useQuery();
   const handleNextPage = () => setPage((prev) => prev + 1);
   const handlePrevPage = () => setPage((prev) => Math.max(prev - 1, 1));
 
@@ -38,35 +35,39 @@ function index() {
   if (!isAuthenticated) {
     return null;
   }
-  if (isLoading) return <Loading />;
-  if (error) return <p>Error: {error.message}</p>;
+  // if (isLoading) return <Loading />;
+  // if (error) return <p>Error: {error.message}</p>;
   return (
     <div className=" w-full">
       <div onClick={handleBack}>
         <FaArrowLeftLong />
       </div>
-      {/* <h1 className=" mx-auto font-PeydaBlack text-center">
-        {t("rent.orders")}
-      </h1> */}
       <div>
-        {users &&
-          users?.orders.map((i) => (
-            <div key={i.id}>
-              <Box lessPaddingY>
-                <div>{i.username}</div>
-                <div>{i.email}</div>
-              </Box>
-            </div>
-          ))}
-      </div>
-      <div className="flex justify-center mt-4">
-        <button onClick={handlePrevPage} disabled={page === 1}>
-          <LuArrowBigLeftDash size={30} />{" "}
-        </button>
-        <span className="mx-8">{`${page} / ${users.totalPages}`}</span>
-        <button onClick={handleNextPage} disabled={page === users.totalPages}>
-          <LuArrowBigRightDash size={30} />{" "}
-        </button>
+        <h2>Sellers</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Phone</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>ID Number</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sellers?.map((seller) => (
+              <tr key={seller.id}>
+                <td>
+                  <Link href={`/dashboard/singleSeller/${seller.id}`}>
+                    {seller.phone}
+                  </Link>
+                </td>
+                <td>{seller.firstName}</td>
+                <td>{seller.lastName}</td>
+                <td>{seller.IDnumber}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

@@ -111,21 +111,30 @@ export const gameRouter = router({
         data: { firstName, lastName, IDnumber },
       });
     }),
-  getSellerById: procedure
-    .input(z.object({ userId: z.number() }))
-    .query(async ({ input }) => {
-      return await prisma.seller.findUnique({
-        where: { id: input.userId },
-      });
-    }),
   getBuyerById: procedure
     .input(z.object({ userId: z.number() }))
     .query(async ({ input }) => {
       return await prisma.buyer.findUnique({
         where: { id: input.userId },
+        include: { orders: true }, // Include orders for buyers
       });
     }),
 
+  getSellerById: procedure
+    .input(z.object({ userId: z.number() }))
+    .query(async ({ input }) => {
+      return await prisma.seller.findUnique({
+        where: { id: input.userId },
+        include: { products: true, sellerOrders: true }, // Include products and orders for sellers
+      });
+    }),
+
+  getBuyers: procedure.query(async () => {
+    return await prisma.buyer.findMany();
+  }),
+  getSellers: procedure.query(async () => {
+    return await prisma.seller.findMany();
+  }),
   // server/routers/productRouter.ts
   createProduct: procedure
     .input(

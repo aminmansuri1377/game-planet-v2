@@ -1,0 +1,77 @@
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { trpc } from "../../../../utils/trpc";
+import Box from "../../../components/Box";
+import Loading from "../../../components/ui/Loading";
+import { useAuthRedirect } from "../../../components/hooks/useAuthRedirect";
+import ToastContent from "../../../components/ui/ToastContent";
+import { toast } from "react-hot-toast";
+import { LuArrowBigRightDash } from "react-icons/lu";
+import { LuArrowBigLeftDash } from "react-icons/lu";
+import { FaArrowLeftLong } from "react-icons/fa6";
+import { useRouter } from "next/router";
+import Link from "next/link";
+
+function index() {
+  const router = useRouter();
+  const handleBack = () => {
+    router.back();
+  };
+  const [page, setPage] = useState(1);
+  const limit = 10;
+
+  const { data: buyers } = trpc.main.getBuyers.useQuery();
+  const handleNextPage = () => setPage((prev) => prev + 1);
+  const handlePrevPage = () => setPage((prev) => Math.max(prev - 1, 1));
+
+  const { t } = useTranslation();
+
+  const { isAuthenticated, isMounted } = useAuthRedirect();
+
+  if (!isMounted) {
+    return null;
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+  // if (isLoading) return <Loading />;
+  // if (error) return <p>Error: {error.message}</p>;
+  return (
+    <div className=" w-full">
+      <div onClick={handleBack}>
+        <FaArrowLeftLong />
+      </div>
+
+      <div>
+        <h2>Buyers</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Phone</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>ID Number</th>
+            </tr>
+          </thead>
+          <tbody>
+            {buyers?.map((buyer) => (
+              <tr key={buyer.id}>
+                <td>
+                  <Link href={`/dashboard/singleBuyer/${buyer.id}`}>
+                    {buyer.phone}
+                  </Link>
+                </td>
+                <td>{buyer.firstName}</td>
+                <td>{buyer.lastName}</td>
+                <td>{buyer.IDnumber}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+export default index;

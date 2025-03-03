@@ -41,9 +41,14 @@ function Index() {
         onClick={() => router.push("/dashboard/orders")}
       />
       <CustomButton
-        title="users"
+        title="buyers"
         type="primary-btn"
-        onClick={() => router.push("/dashboard/users")}
+        onClick={() => router.push("/dashboard/buyers")}
+      />
+      <CustomButton
+        title="sellers"
+        type="primary-btn"
+        onClick={() => router.push("/dashboard/sellers")}
       />
       <div className=" mt-20">
         <button
