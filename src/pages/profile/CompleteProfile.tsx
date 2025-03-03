@@ -12,9 +12,7 @@ function Index() {
   const handleBack = () => {
     router.back();
   };
-  // Get userId from session and convert it to a number
   const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
-  // If userId is null or invalid, show an error or redirect
   if (userId === null || isNaN(userId)) {
     return <div>Error: Invalid user ID. Please log in again.</div>;
   }

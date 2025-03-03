@@ -14,16 +14,27 @@ import { sessionAtom } from "../../../store/atoms/sessionAtom";
 import { useRecoilValue } from "recoil";
 import Button from "../../components/Button";
 import Loading from "../../components/ui/Loading";
+import { trpc } from "../../../utils/trpc";
+import { isProfileComplete } from "../../../utils/checkProfileCompletion";
 function profile() {
   const { t } = useTranslation();
   const { data: session, status } = useSession();
   const setSession = useSetRecoilState(sessionAtom);
   const resetSession = useResetRecoilState(sessionAtom);
+  const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
 
   const router = useRouter();
   const handleBack = () => {
     router.back();
   };
+  const {
+    data: buyer,
+    isLoading: isSellerLoading,
+    error: sellerError,
+  } = trpc.main.getBuyerById.useQuery(
+    { userId: userId! },
+    { enabled: !!userId }
+  );
   useEffect(() => {
     if (session) {
       setSession(session);
@@ -86,14 +97,16 @@ function profile() {
             </div>
           </Box>
         </div>
-        <div onClick={() => router.push("./profile/CompleteProfile")}>
-          <Box lessPaddingY>
-            <div className=" flex items-center justify-end">
-              <h1 className=" font-PeydaBold mr-2">CompleteProfile</h1>
-              <IoSettingsOutline size={30} />
-            </div>
-          </Box>
-        </div>
+        {!isProfileComplete(buyer) && (
+          <div onClick={() => router.push("./profile/CompleteProfile")}>
+            <Box lessPaddingY>
+              <div className=" flex items-center justify-end">
+                <h1 className=" font-PeydaBold mr-2">CompleteProfile</h1>
+                <IoSettingsOutline size={30} />
+              </div>
+            </Box>
+          </div>
+        )}
         <div onClick={() => router.push("./profile/SavedProductsPage")}>
           <Box lessPaddingY>
             <div className=" flex items-center justify-end">

@@ -3,12 +3,23 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import CustomButton from "../../components/ui/CustomButton";
 import { useTranslation } from "react-i18next";
+import { trpc } from "../../../utils/trpc";
+import { isProfileComplete } from "../../../utils/checkProfileCompletion";
 
 const SellerHomePage = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { t } = useTranslation();
+  const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
 
+  const {
+    data: seller,
+    isLoading: isSellerLoading,
+    error: sellerError,
+  } = trpc.main.getSellerById.useQuery(
+    { userId: userId! },
+    { enabled: !!userId }
+  );
   // Redirect if the user is not authenticated or not a seller
   // useEffect(() => {
   //   if (status === "unauthenticated" || session?.user?.role !== "SELLER") {
@@ -64,11 +75,13 @@ const SellerHomePage = () => {
           type="primary-btn"
           onClick={() => router.push("/seller/orders")}
         />
-        <CustomButton
-          title="completeProfile"
-          type="primary-btn"
-          onClick={() => router.push("/seller/completeProfile")}
-        />
+        {!isProfileComplete(seller) && (
+          <CustomButton
+            title="completeProfile"
+            type="primary-btn"
+            onClick={() => router.push("/seller/completeProfile")}
+          />
+        )}
 
         {/* Sign Out Button */}
         <div className="mt-8">
