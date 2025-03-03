@@ -159,15 +159,18 @@ export const gameRouter = router({
       });
     }),
   getProductsByCategory: procedure
-    .input(z.object({ categoryId: z.number() }))
+    .input(
+      z.object({ categoryId: z.number(), sortByPrice: z.boolean().optional() })
+    )
     .query(async ({ input }) => {
       return await prisma.product.findMany({
         where: { categoryId: input.categoryId },
+        orderBy: input.sortByPrice ? { price: "asc" } : undefined,
       });
     }),
 
   searchProducts: procedure
-    .input(z.object({ query: z.string() }))
+    .input(z.object({ query: z.string(), sortByPrice: z.boolean().optional() }))
     .query(async ({ input }) => {
       return await prisma.product.findMany({
         where: {
@@ -176,6 +179,7 @@ export const gameRouter = router({
             mode: "insensitive",
           },
         },
+        orderBy: input.sortByPrice ? { price: "asc" } : undefined,
       });
     }),
 

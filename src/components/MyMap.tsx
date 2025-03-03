@@ -2,9 +2,42 @@
 
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import L from "leaflet"; // Import Leaflet for custom icons
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
+
+// Fix for default icon issue in React
+const DefaultIcon = L.icon({
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
+L.Marker.prototype.options.icon = DefaultIcon;
+
+// Define custom icons
+const userLocationIcon = new L.Icon({
+  iconUrl: "/images/marker-icon-red.png", // Ensure this matches the public folder structure
+  iconRetinaUrl: "/images/marker-icon-red.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
+
+const productLocationIcon = new L.Icon({
+  iconUrl: "/images/marker-icon-blue.png", // Ensure this matches the public folder structure
+  iconRetinaUrl: "/images/marker-icon-blue.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
 
 // Custom component to listen for map clicks
 const MapClickListener = ({
@@ -36,19 +69,24 @@ export default function MyMap({
   zoom,
   setCoordinates,
   locations,
+  userLocation,
 }: {
   position: [number, number];
   zoom: number;
   setCoordinates: (coords: [number, number]) => void;
   locations: { name: string; coordinates: [number, number] }[];
+  userLocation: [number, number] | null;
 }) {
   const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
     setMounted(true);
   }, []);
+
   if (!mounted) {
     return null; // Prevent SSR issues
   }
+
   return (
     <MapContainer
       center={position}
@@ -62,14 +100,25 @@ export default function MyMap({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={position}>
-        <Popup>Selected location</Popup>
-      </Marker>
-      {locations.map((location, index) => (
-        <Marker key={index} position={location.coordinates}>
+      {userLocation && (
+        <Marker position={userLocation} icon={userLocationIcon}>
+          <Popup>Your selected location</Popup>
+        </Marker>
+      )}
+      {locations?.map((location, index) => (
+        <Marker
+          key={index}
+          position={location.coordinates}
+          icon={productLocationIcon}
+        >
           <Popup>{location.name}</Popup>
         </Marker>
       ))}
+      {position && (
+        <Marker position={position} icon={userLocationIcon}>
+          <Popup>Your Selected Location</Popup>
+        </Marker>
+      )}
     </MapContainer>
   );
 }
