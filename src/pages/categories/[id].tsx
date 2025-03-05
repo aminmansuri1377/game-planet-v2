@@ -9,7 +9,9 @@ import dynamic from "next/dynamic";
 import { useRecoilState } from "recoil";
 import { buyerLocationAtom } from "../../../store/atoms/buyerLocationAtom";
 import Header from "@/components/Header";
-
+import ProductCard from "@/components/ui/ProductCard";
+import ProductImg from "../../../public/images/p2.webp";
+import toast from "react-hot-toast";
 const Map = dynamic(() => import("@/components/MyMap"), {
   ssr: false,
 });
@@ -59,7 +61,44 @@ const CategoryProductsPage = () => {
     categoryId: Number(id),
     sortByPrice,
   });
+  const { data: savedProducts } = trpc.main.getSavedProducts.useQuery(
+    {
+      buyerId,
+    },
+    {
+      enabled: !!buyerId, // Only fetch if buyerId is available
+    }
+  );
+  const saveProductMutation = trpc.main.saveProduct.useMutation({
+    onSuccess: () => {
+      toast.success("Product saved successfully!");
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
 
+  const unsaveProductMutation = trpc.main.unsaveProduct.useMutation({
+    onSuccess: () => {
+      toast.success("Product unsaved successfully!");
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+  const handleSave = (productId: number, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event from bubbling up to the parent div
+
+    if (!buyerId) return;
+
+    const isSaved = savedProducts?.some((sp) => sp.productId === productId);
+
+    if (isSaved) {
+      unsaveProductMutation.mutate({ buyerId, productId });
+    } else {
+      saveProductMutation.mutate({ buyerId, productId });
+    }
+  };
   const handleSortByPriceChange = () => {
     setSortByPrice((prev) => !prev); // Toggle sorting by price
     setSortByNearest(false); // Disable sorting by nearest
@@ -109,7 +148,7 @@ const CategoryProductsPage = () => {
   return (
     <div>
       <Header />
-      <div className="p-6">
+      <div className="py-6 px-2">
         <div onClick={() => router.back()}>
           <FaArrowLeftLong />
         </div>
@@ -153,18 +192,27 @@ const CategoryProductsPage = () => {
           </label>
         </div>
         <div className="space-y-4">
-          {sortedProducts?.map((product) => (
-            <div
-              key={product.id}
-              onClick={() => router.push(`/singleProduct/${product.id}`)}
-            >
-              <DeviceCard
-                buyerId={buyerId}
-                product={product}
-                info={`Price: $${product.price}`}
-              />
-            </div>
-          ))}
+          {sortedProducts?.map((product) => {
+            const isSaved = savedProducts?.some(
+              (sp) => sp.productId === product.id
+            );
+            return (
+              <div
+                key={product.id}
+                onClick={() => router.push(`/singleProduct/${product.id}`)}
+              >
+                <ProductCard
+                  imgUrl={ProductImg}
+                  imgAlt={product.name}
+                  name={product.name}
+                  info={`Price: $${product.price}`}
+                  handleSave={(e) => handleSave(product.id, e)} // Pass the event
+                  isSaved={isSaved}
+                  rate={8}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

@@ -12,11 +12,18 @@ import RoundButton from "./ui/RoundButton";
 import { CiShoppingBasket } from "react-icons/ci";
 import { MdMailOutline } from "react-icons/md";
 import { IoMdMenu } from "react-icons/io";
+import { CgProfile } from "react-icons/cg";
+import { GrHistory } from "react-icons/gr";
+import { FiSettings } from "react-icons/fi";
+import { FiBookmark } from "react-icons/fi";
+import { LuHeadphones } from "react-icons/lu";
+import Divider from "./ui/Divider";
 
 function Header() {
   const router = useRouter();
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleProfile = () => {
     router.push({ pathname: "/profile" });
@@ -36,7 +43,7 @@ function Header() {
   };
   return (
     <div
-      className={`top-0 pt-10 w-full flex justify-around py-5 items-center z-50 px-6 bg-transparent`}
+      className={`top-0 pt-10 w-full flex justify-around py-5 items-center z-50 px-0 bg-transparent`}
     >
       <div className="text-center items-center " onClick={handleHome}>
         <h1 className="text-center font-black text-text2 text-4xl mx-4 ">
@@ -59,7 +66,7 @@ function Header() {
         handleClick={handleBasket}
         Children={<CiShoppingBasket size={28} className="text-gray-300" />}
       />
-      <div>
+      <div className="">
         <RoundButton
           handleClick={handleChat}
           Children={<MdMailOutline size={28} className="text-gray-300" />}
@@ -71,13 +78,69 @@ function Header() {
       </div>
       <div>
         <RoundButton
-          // handleClick={handleChat}
+          handleClick={() => setIsMenuOpen(true)}
           Children={<IoMdMenu size={28} className="text-gray-300" />}
         />
       </div>
       <CustomModal type="general" show={open} onClose={closeModal}>
         <LanguageSwitcher onClose={closeModal} />
       </CustomModal>
+      {isMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-50"
+          onClick={() => setIsMenuOpen(false)}
+        ></div>
+      )}
+
+      {/* Sliding Menu */}
+      <div
+        className={`fixed top-0 right-0 h-full w-2/3 bg-cardbg shadow-lg z-50 transform transition-transform ${
+          isMenuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="p-5 flex flex-col gap-4">
+          <h1 className="text-center font-black text-text2 text-4xl mx-4 mb-5">
+            RENTA{" "}
+          </h1>
+          <div
+            onClick={() => router.push({ pathname: "/profile" })}
+            className=" flex justify-end my-1"
+          >
+            <h2 className=" text-text2 mx-5 font-PeydaBold">پروفایل</h2>
+            <CgProfile size={28} className="text-text2" />
+          </div>
+          <Divider />
+          <div
+            onClick={() => router.push({ pathname: "/profile/basket" })}
+            className=" flex justify-end my-1"
+          >
+            <h2 className=" text-text2 mx-5 font-PeydaBold">تاریخچه</h2>
+            <GrHistory size={28} className="text-text2" />
+          </div>
+          <Divider />
+          <div
+            onClick={() => router.push({ pathname: "/profile/setting" })}
+            className=" flex justify-end my-1"
+          >
+            <h2 className=" text-text2 mx-5 font-PeydaBold">تنظیمات</h2>
+            <FiSettings size={28} className="text-text2" />
+          </div>
+          <Divider />
+          <div
+            onClick={() => router.push({ pathname: "/profile/SavedProducts" })}
+            className=" flex justify-end my-1"
+          >
+            <h2 className=" text-text2 mx-5 font-PeydaBold">ذخیره ها </h2>
+            <FiBookmark size={28} className="text-text2" />
+          </div>
+          <Divider />
+          <div className=" flex justify-end my-1">
+            <h2 className=" text-text2 mx-5 font-PeydaBold"> پشتیبانی </h2>
+            <LuHeadphones size={28} className="text-text2" />
+          </div>
+          <Divider />
+        </div>
+      </div>
     </div>
   );
 }
