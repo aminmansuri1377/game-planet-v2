@@ -11,15 +11,18 @@ import { toast } from "react-hot-toast";
 import ToastContent from "../../components/ui/ToastContent";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import CustomModal from "../../components/ui/CustomModal";
-import DeviceCard from "../../components/ui/DeviceCard";
 import CustomDatePicker from "../../components/ui/CustomDatePicker";
 import jalaali from "jalaali-js";
 import Image from "next/image";
 import { isProfileComplete } from "../../../utils/checkProfileCompletion";
-import CommentForm from "@/components/form/CommentForm";
 import CommentsSection from "@/components/ui/CommentsSection";
 import { useRecoilState } from "recoil";
 import { buyerLocationAtom } from "../../../store/atoms/buyerLocationAtom";
+import Header from "@/components/Header";
+import ImageSwapper from "@/components/ui/ImageSwapper";
+import { CiCircleCheck } from "react-icons/ci";
+import img2 from "../../../public/images/p2.webp";
+import Counter from "@/components/ui/Counter";
 
 function SingleProductPage() {
   const { t } = useTranslation();
@@ -27,9 +30,9 @@ function SingleProductPage() {
   const { id } = router.query;
   const { data: session, status } = useSession();
   const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
+  const [finalAmount, setFinalAmount] = useState(1);
 
   const [buyerLocation, setBuyerLocation] = useRecoilState(buyerLocationAtom);
-  console.log("buyerLocation", buyerLocation);
   const {
     data: buyer,
     isLoading: isSellerLoading,
@@ -46,7 +49,15 @@ function SingleProductPage() {
   } = trpc.main.getProductById.useQuery({ id: Number(id) }, { enabled: !!id });
   const [open, setOpen] = useState(false);
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
+  const [rangeDate, setRangeDate] = useState<any>([]);
+  const [startDate, setStartDate] = useState<string | null>(null);
+  const [endDate, setEndDate] = useState<string | null>(null);
+  console.log("s & e", startDate, endDate);
 
+  const handleUpdatePrice = () => {
+    // setTotalPrice((prevPrice) => prevPrice * finalAmount);
+  };
+  // console.log("finalAmount", finalAmount);
   const [selectedSendingType, setSelectedSendingType] = useState<
     "SELLER_SENDS" | "BUYER_PICKS_UP" | null
   >(null);
@@ -70,23 +81,49 @@ function SingleProductPage() {
   });
 
   const persianToEnglishNumbers = (str: string) => {
-    return str.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d).toString());
+    return (
+      str && str?.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d).toString())
+    );
   };
-  const convertToDate = (persianDate: string) => {
-    const englishDate = persianToEnglishNumbers(persianDate);
-    const parts = englishDate.split("-");
-    if (parts.length !== 3) {
-      throw new Error("Invalid Persian date format");
+  const convertToDate = (persianDate: string): Date => {
+    // Check if persianDate is defined and is a string
+    if (!persianDate || typeof persianDate !== "string") {
+      throw new Error(
+        "Invalid Persian date: Date is undefined or not a string"
+      );
     }
+
+    // Convert Persian numbers to English numbers
+    const englishDate = persianToEnglishNumbers(persianDate);
+
+    // Split the date string into parts
+    const parts = englishDate.split("-");
+
+    // Validate the parts array
+    if (!parts || parts.length !== 3) {
+      throw new Error(
+        "Invalid Persian date format: Expected format is YYYY-MM-DD"
+      );
+    }
+
+    // Convert parts to numbers
     const [jy, jm, jd] = parts.map(Number);
+
+    // Validate the numbers
     if (isNaN(jy) || isNaN(jm) || isNaN(jd)) {
       throw new Error("Invalid numbers in date conversion");
     }
+
+    // Convert Jalaali (Persian) date to Gregorian date
     const { gy, gm, gd } = jalaali.toGregorian(jy, jm, jd);
+
+    // Validate the Gregorian date
     if (isNaN(gy) || isNaN(gm) || isNaN(gd)) {
       throw new Error("Invalid Gregorian date conversion");
     }
-    return new Date(gy, gm - 1, gd);
+
+    // Return the Gregorian date as a Date object
+    return new Date(gy, gm - 1, gd); // Note: JavaScript months are 0-indexed
   };
   const calculateTotalPrice = (
     startDate: Date,
@@ -124,27 +161,24 @@ function SingleProductPage() {
           ? productData.sendingType[0]
           : selectedSendingType;
 
-      if (rangeDate.length !== 2) {
-        toast.custom(
-          <ToastContent
-            type="error"
-            message="Please select a valid date range."
-          />
-        );
-        return;
-      }
+      console.log("s & e & t", startDate, endDate, totalPrice);
 
       try {
-        const startDate = convertToDate(rangeDate[0]);
-        const endDate = convertToDate(rangeDate[1]);
+        // Validate startDate and endDate
+        if (!startDate || !endDate) {
+          throw new Error("Start date or end date is missing.");
+        }
 
-        if (!(startDate instanceof Date) || !(endDate instanceof Date)) {
+        const startDateObj = convertToDate(startDate);
+        const endDateObj = convertToDate(endDate);
+
+        if (!(startDateObj instanceof Date) || !(endDateObj instanceof Date)) {
           throw new Error("Invalid date conversion");
         }
 
         const totalPrice = calculateTotalPrice(
-          startDate,
-          endDate,
+          startDateObj,
+          endDateObj,
           productData.price
         );
 
@@ -154,13 +188,14 @@ function SingleProductPage() {
           sellerId: productData.sellerId,
           status: "waiting for confirmation",
           sendingType: sendingType!,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
+          startDate: startDateObj.toISOString(),
+          endDate: endDateObj.toISOString(),
           totalPrice: totalPrice,
           latitude: buyerLocation.latitude,
           longitude: buyerLocation.longitude,
         });
       } catch (error) {
+        console.log("in error", error);
         toast.custom(
           <ToastContent type="error" message="Invalid date format." />
         );
@@ -168,44 +203,74 @@ function SingleProductPage() {
     }
     setOpen(false);
   };
-
-  const [rangeDate, setRangeDate] = useState<any>([]);
-
   const handleDateChange = (dates: any) => {
-    if (Array.isArray(dates) && dates.length === 2) {
-      const formattedDates = dates.map((date) => date?.format?.("YYYY-MM-DD"));
-      setRangeDate(formattedDates);
+    console.log("Dates received from picker:", dates); // Debugging
 
-      if (!productData || typeof productData.price !== "number") {
-        console.error(
-          "Product price is missing or invalid:",
-          productData?.price
-        );
-        setTotalPrice(null);
-        return;
+    if (Array.isArray(dates)) {
+      const formattedDates = dates
+        .map((date) => date?.format?.("YYYY-MM-DD"))
+        .filter((date) => date); // Filter out undefined or invalid dates
+
+      console.log("Formatted dates after filtering:", formattedDates); // Debugging
+
+      if (formattedDates.length === 2) {
+        const [firstDate, secondDate] = formattedDates;
+
+        // Ensure start date is before end date
+        if (firstDate > secondDate) {
+          setStartDate(secondDate);
+          setEndDate(firstDate);
+          setRangeDate([secondDate, firstDate]); // Update rangeDate
+        } else {
+          setStartDate(firstDate);
+          setEndDate(secondDate);
+          setRangeDate([firstDate, secondDate]); // Update rangeDate
+        }
+
+        // Calculate total price if product data is available
+        if (productData && typeof productData.price === "number") {
+          try {
+            const startDateObj = convertToDate(firstDate);
+            const endDateObj = convertToDate(secondDate);
+
+            if (
+              !(startDateObj instanceof Date) ||
+              !(endDateObj instanceof Date)
+            ) {
+              console.error("Invalid date conversion:", {
+                startDateObj,
+                endDateObj,
+              });
+              setTotalPrice(null);
+              return;
+            }
+
+            const totalPrice = calculateTotalPrice(
+              startDateObj,
+              endDateObj,
+              productData.price
+            );
+            setTotalPrice(totalPrice);
+          } catch (error) {
+            console.error("Error converting dates:", error);
+            toast.custom(
+              <ToastContent
+                type="error"
+                message="Invalid date format selected."
+              />
+            );
+            setTotalPrice(null);
+          }
+        }
+      } else {
+        // setStartDate(null);
+        // setEndDate(null);
+        // setRangeDate([]); // Clear rangeDate
+        // setTotalPrice(null);
       }
-
-      const startDate = convertToDate(formattedDates[0]);
-      const endDate = convertToDate(formattedDates[1]);
-
-      if (!(startDate instanceof Date) || !(endDate instanceof Date)) {
-        console.error("Invalid date conversion:", { startDate, endDate });
-        setTotalPrice(null);
-        return;
-      }
-
-      const totalPrice = calculateTotalPrice(
-        startDate,
-        endDate,
-        productData.price
-      );
-      setTotalPrice(totalPrice);
-    } else {
-      setRangeDate([]);
-      setTotalPrice(null);
     }
   };
-  console.log("buyer", buyer);
+  // console.log("buyer", buyer);
   if (isLoading) return <Loading />;
   if (error) return <p>Error: {error.message}</p>;
   if (!productData) return <p>Product not found</p>;
@@ -228,104 +293,134 @@ function SingleProductPage() {
     );
   }
   return (
-    <div>
-      <div onClick={() => router.back()}>
+    <div className=" px-5">
+      <Header />
+      <div onClick={() => router.back()} className=" mt-2 mb-6">
         <FaArrowLeftLong />
       </div>
-      <DeviceCard
-        product={productData}
-        info={productData.description}
-        buyerId={userId}
-      />
+      <ImageSwapper />
       {productData && (
         <div>
-          {/* {productData?.images && (
-            <div className="flex space-x-4 my-6">
-              {productData.images.map((image, index) => (
-                <div key={index} className="relative w-32 h-32">
-                  <Image
-                    src={image}
-                    alt={`Product Image ${index + 1}`}
-                    fill
-                    className="object-cover rounded-lg"
-                  />
-                </div>
-              ))}
-            </div>
-          )} */}
-          <h1 className="font-PeydaBold text-2xl">{productData.name}</h1>
-          <div className="flex justify-between relative py-3 px-6 md:px-12 rounded-full shadow-2xl text-center my-6 bg-white bg-opacity-10 border-2 border-transparent border-purple-900">
-            <h1 className="font-PeydaBold text-lg">{t("rent.price")}</h1>
-            <h1 className="font-PeydaBold text-2xl">{productData.price}</h1>
-            <h1 className="font-PeydaBold">تومان</h1>
+          <div className=" my-2 flex justify-between items-center">
+            <CustomButton
+              title={`روزی ${productData.price}`}
+              type="primary-btn"
+            />
+            <h1 className="font-PeydaBold text-2xl text-center mr-5">
+              {productData.name}
+            </h1>
           </div>
-          <p className="font-PeydaBold text-lg">{t("rent.description")}</p>
-          <p className="font-PeydaBold text-sm">{productData.description}</p>
-          {productData.category && (
-            <p className="font-PeydaBold text-sm">
-              Category: {productData.category.name}
-            </p>
-          )}
-          {productData.guaranty && (
-            <p className="font-PeydaBold text-sm">
-              guaranty: {productData.guaranty.text}
-            </p>
-          )}
+          <p className="font-PeydaBold text-sm text-end mt-5 mx-8">
+            {productData.description}
+          </p>
+          <div className=" bg-cardbg rounded-xl px-3 py-5 my-6">
+            <div>
+              <h1 className=" font-PeydaBold text-text1 text-center">{`اجاره دهنده : ${productData.sellerId}`}</h1>
+            </div>
+            <div className="">
+              <div className=" flex justify-end m-5">
+                <h1 className=" font-PeydaRegular mx-5">تایید شده توسط رنتا</h1>
+                <CiCircleCheck size={20} className=" text-green-500" />
+              </div>
+            </div>
+          </div>
+          <div className=" text-center">
+            {productData.category && (
+              <p className="font-PeydaBold text-sm">
+                Category: {productData.category.name}
+              </p>
+            )}
+            {productData.guaranty && (
+              <p className="font-PeydaBold text-sm">
+                guaranty: {productData.guaranty.text}
+              </p>
+            )}
+          </div>
         </div>
       )}
-      <div className="flex justify-center">
-        <CustomDatePicker
-          range
-          textBtn="بازه زمانی را مشخص کنید"
-          value={rangeDate}
-          onChange={handleDateChange}
-          dateSeparator=" تا "
-        />
-      </div>
-      {totalPrice !== null && (
-        <div className="text-center mt-4">
-          <h2 className="font-PeydaBold text-lg">
-            Total Price: {totalPrice} تومان
-          </h2>
-        </div>
-      )}
+
       <CustomButton
         onClick={() => setOpen(true)}
         title={t("rent.order")}
         type="primary-btn"
       />
       <CustomModal type="general" show={open} onClose={closeModal}>
-        <h1>Select Sending Type</h1>
-        {productData.sendingType.length > 1 ? (
-          <div>
-            <label className="flex items-center space-x-2">
-              <input
-                type="radio"
-                checked={selectedSendingType === "SELLER_SENDS"}
-                onChange={() => setSelectedSendingType("SELLER_SENDS")}
-                className="form-radio"
+        <div>
+          {totalPrice}
+          <div className="rounded-xl bg-cardbg my-4 flex justify-between">
+            <Image
+              src={img2}
+              alt="p"
+              width={150}
+              height={150}
+              className="rounded-l-xl"
+            />
+            <div className="text-center m-4">
+              <h1 className="font-PeydaBold text-text1 text-xl">
+                {productData.name}
+              </h1>
+              <Counter
+                text=": تعداد"
+                quantity={finalAmount}
+                amount={finalAmount}
+                onUpdatePrice={handleUpdatePrice}
+                onUpdateQuantity={setFinalAmount}
               />
-              <span>{t("rent.sellerSends")}</span>
-            </label>
-            <label className="flex items-center space-x-2">
-              <input
-                type="radio"
-                checked={selectedSendingType === "BUYER_PICKS_UP"}
-                onChange={() => setSelectedSendingType("BUYER_PICKS_UP")}
-                className="form-radio"
-              />
-              <span>{t("rent.buyerPicksUp")}</span>
-            </label>
+            </div>
           </div>
-        ) : (
-          <p>{t(`rent.${productData.sendingType[0]}`)}</p>
-        )}
-        <CustomButton
-          onClick={handleOrder}
-          title={t("rent.order")}
-          type="primary-btn"
-          loading={createOrderMutation.isLoading}
-        />
+          <div className="flex justify-center">
+            <CustomDatePicker
+              range
+              textBtn="بازه زمانی را مشخص کنید"
+              value={[startDate, endDate].filter((date) => date)} // Pass both dates as an array
+              onChange={handleDateChange}
+              dateSeparator=" تا "
+            />
+          </div>
+          {startDate && (
+            <div className="text-center mt-4">
+              <h2 className="font-PeydaBold text-lg">
+                Start Date: {startDate}
+              </h2>
+            </div>
+          )}
+          {endDate && (
+            <div className="text-center mt-4">
+              <h2 className="font-PeydaBold text-lg">End Date: {endDate}</h2>
+            </div>
+          )}
+          <h1>Select Sending Type</h1>
+          {productData.sendingType.length > 1 ? (
+            <div>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  checked={selectedSendingType === "SELLER_SENDS"}
+                  onChange={() => setSelectedSendingType("SELLER_SENDS")}
+                  className="form-radio"
+                />
+                <span>{t("rent.sellerSends")}</span>
+              </label>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  checked={selectedSendingType === "BUYER_PICKS_UP"}
+                  onChange={() => setSelectedSendingType("BUYER_PICKS_UP")}
+                  className="form-radio"
+                />
+                <span>{t("rent.buyerPicksUp")}</span>
+              </label>
+            </div>
+          ) : (
+            <p>{t(`rent.${productData.sendingType[0]}`)}</p>
+          )}
+          <CustomButton
+            onClick={handleOrder}
+            title={t("rent.order")}
+            type="primary-btn"
+            loading={createOrderMutation.isLoading}
+          />
+        </div>
       </CustomModal>
       <div>
         <div>

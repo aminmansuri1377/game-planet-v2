@@ -1,5 +1,5 @@
-import { FC, ReactNode, useEffect, useRef } from "react"                  
-                                   import { useTranslation } from "react-i18next";;
+import { FC, ReactNode, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 
 interface IProps {
@@ -38,7 +38,7 @@ const CustomModal: FC<IProps> = ({ type, show, children, onClose }) => {
   ];
 
   return (
-    <>
+    <div className=" p-6">
       {show && (
         <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40" />
       )}
@@ -48,7 +48,7 @@ const CustomModal: FC<IProps> = ({ type, show, children, onClose }) => {
           !show && "hidden"
         } ${success && " border-2 border-green-600 bg-green-200 "} ${
           alert && " border-2 border-red-500 bg-red-200"
-        } ${general && " border-2 border-purple-900 bg-purple-700"}`}
+        } ${general && " border-2 border-primary bg-secondary"}`}
       >
         <div
           className=" left-3 top-3 z-200 cursor-pointer md:left-14 md:top-5"
@@ -58,7 +58,7 @@ const CustomModal: FC<IProps> = ({ type, show, children, onClose }) => {
         </div>
         {children}
       </div>
-    </>
+    </div>
   );
 };
 

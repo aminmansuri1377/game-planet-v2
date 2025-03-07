@@ -20,6 +20,7 @@ module.exports = {
         secondary: "#0C1B2A",
         text1: "#ffff",
         text2: "#91B3F6",
+        text3: "#4F73B8",
         gra: {
           100: "#1767FF",
           200: "#1B4DAC",

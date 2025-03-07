@@ -14,6 +14,7 @@ import { PrismaClient } from "@prisma/client";
 import { isProfileComplete } from "../../../../utils/checkProfileCompletion";
 import Loading from "@/components/ui/Loading";
 import dynamic from "next/dynamic";
+import { Input } from "@/components/ui/input";
 
 const Map = dynamic(() => import("@/components/MyMap"), {
   ssr: false,
@@ -174,32 +175,32 @@ export default function CreateProductForm() {
         <h2 className="font-PeydaBold text-lg">{t("rent.productCreation")}</h2>
 
         {/* Product Name */}
-        <input
-          className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
+        <Input
+          className=" py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
           type="text"
           placeholder={t("rent.productName")}
           {...register("name", { required: true })}
         />
 
         {/* Product Description */}
-        <input
-          className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
+        <Input
+          className=" py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
           type="text"
           placeholder={t("rent.description")}
           {...register("description", { required: true })}
         />
 
         {/* Product Price */}
-        <input
-          className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
+        <Input
+          className=" py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
           type="number"
           placeholder={t("rent.price")}
           {...register("price", { required: true, valueAsNumber: true })}
         />
 
         {/* Product Inventory */}
-        <input
-          className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
+        <Input
+          className=" py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
           type="number"
           placeholder={t("rent.inventory")}
           {...register("inventory", { required: true, valueAsNumber: true })}
@@ -207,12 +208,18 @@ export default function CreateProductForm() {
 
         {/* Category Selection */}
         <select
-          className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
+          className=" bg-gradient-to-r from-gra-100 to-gra-200 border-2 border-primary text-black rounded-xl py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
           {...register("categoryId", { required: true, valueAsNumber: true })}
         >
-          <option value="">Select a category</option>
+          <option className=" bg-primary" value="">
+            Select a category
+          </option>
           {categories.map((category) => (
-            <option key={category.id} value={category.id}>
+            <option
+              className=" bg-primary"
+              key={category.id}
+              value={category.id}
+            >
               {category.name}
             </option>
           ))}
@@ -220,12 +227,18 @@ export default function CreateProductForm() {
 
         {/* Guaranty Selection */}
         <select
-          className="border border-gray-300 text-black rounded-lg py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
+          className=" bg-gradient-to-r from-gra-100 to-gra-200 border-2 border-primary text-black rounded-xl py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
           {...register("guarantyId", { required: true, valueAsNumber: true })}
         >
-          <option value="">Select a guaranty</option>
+          <option className=" bg-primary" value="">
+            Select a guaranty
+          </option>
           {guaranty.map((guaranty) => (
-            <option key={guaranty.id} value={guaranty.id}>
+            <option
+              className=" bg-primary"
+              key={guaranty.id}
+              value={guaranty.id}
+            >
               {guaranty.text}
             </option>
           ))}
@@ -236,7 +249,7 @@ export default function CreateProductForm() {
           <label className="block font-PeydaBold text-sm mb-2">
             {t("rent.productImages")} (Optional)
           </label>
-          <input
+          <Input
             type="file"
             multiple
             {...register("images")}
