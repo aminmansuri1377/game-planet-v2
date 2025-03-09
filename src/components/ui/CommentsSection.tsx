@@ -33,12 +33,16 @@ const CommentsSection = ({
 
   return (
     <div className="mt-6">
+      <div className="px-4">
+        <CommentForm
+          productId={productId}
+          buyerId={buyerId}
+          refetch={refetch}
+        />
+      </div>
       <h2 className="text-xl mt-3 font-PeydaBold text-end mb-4">
         : نظرات دیگران به این محصول
       </h2>
-
-      {/* {comments.map((comment) => (
-        <div key={comment.id}> */}
       {comments && (
         <CommentCard
           comments={comments}
@@ -49,23 +53,6 @@ const CommentsSection = ({
           }
         />
       )}
-      <CommentForm productId={productId} buyerId={buyerId} refetch={refetch} />
-      {/* <p className="text-gray-700">{comment.text}</p>
-          <p className="text-sm text-gray-500">
-            By {comment?.buyer?.firstName} {comment?.buyer?.lastName} on{" "}
-            {new Date(comment.createdAt).toLocaleDateString()}
-          </p> */}
-      {/* {buyerId === comment.buyerId && (
-            <button
-              onClick={() => handleDelete(comment.id)}
-              className="mt-2 px-2 py-1 bg-red-500 text-white rounded text-sm"
-              disabled={deleteCommentMutation.isLoading}
-            >
-              {deleteCommentMutation.isLoading ? "Deleting..." : "Delete"}
-            </button>
-          )} */}
-      {/* </div>
-      ))} */}
     </div>
   );
 };

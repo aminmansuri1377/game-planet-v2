@@ -55,7 +55,7 @@ const CommentForm = ({
       <CustomButton
         type="primary-btn"
         title={addCommentMutation.isLoading ? "Posting..." : "ثبت"}
-        className="mt-2 bg-blue-500 rounded "
+        className="mt-2 rounded-lg "
         disabled={addCommentMutation.isLoading}
       />
     </form>

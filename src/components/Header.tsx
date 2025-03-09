@@ -127,7 +127,9 @@ function Header() {
           </div>
           <Divider />
           <div
-            onClick={() => router.push({ pathname: "/profile/SavedProducts" })}
+            onClick={() =>
+              router.push({ pathname: "/profile/SavedProductsPage" })
+            }
             className=" flex justify-end my-1"
           >
             <h2 className=" text-text2 mx-5 font-PeydaBold">ذخیره ها </h2>
