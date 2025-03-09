@@ -40,17 +40,14 @@ const CommentsSection = ({
       {/* {comments.map((comment) => (
         <div key={comment.id}> */}
       {comments && (
-        <div className="w-4/5">
-          <CommentCard
-            comments={comments}
-            buyerId={buyerId}
-            handleDelete={handleDelete}
-            loading={
-              deleteCommentMutation?.isLoading &&
-              deleteCommentMutation?.isLoading
-            }
-          />
-        </div>
+        <CommentCard
+          comments={comments}
+          buyerId={buyerId}
+          handleDelete={handleDelete}
+          loading={
+            deleteCommentMutation?.isLoading && deleteCommentMutation?.isLoading
+          }
+        />
       )}
       <CommentForm productId={productId} buyerId={buyerId} refetch={refetch} />
       {/* <p className="text-gray-700">{comment.text}</p>

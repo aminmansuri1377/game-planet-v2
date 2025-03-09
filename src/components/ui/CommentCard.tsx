@@ -2,11 +2,11 @@ import React from "react";
 
 function CommentCard({ comments, buyerId, handleDelete, loading }) {
   return (
-    <div className=" flex overflow-y-auto ">
+    <div className=" flex overflow-y-auto">
       {comments.map((comment) => (
         <div
           key={comment?.id}
-          className="flex-shrink-0 mr-2 my-4 bg-cardbg  rounded-tr-2xl rounded-bl-2xl p-6 text-end"
+          className="flex-shrink-0 mr-2 my-4 bg-cardbg w-4/5 rounded-tr-2xl rounded-bl-2xl p-6 text-end"
         >
           <h1 className="font-PeydaBold text-xl text-text1">
             {comment?.buyerId}
