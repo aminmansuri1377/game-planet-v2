@@ -2,6 +2,8 @@ import { useState } from "react";
 import { trpc } from "../../../utils/trpc";
 import ToastContent from "../ui/ToastContent";
 import { toast } from "react-hot-toast";
+import { TextAreaInput } from "../ui/textAreaInput";
+import CustomButton from "../ui/CustomButton";
 
 const CommentForm = ({
   productId,
@@ -42,21 +44,20 @@ const CommentForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6">
-      <textarea
+    <form onSubmit={handleSubmit} className="mt-6 flex">
+      <TextAreaInput
         value={comment}
         onChange={(e) => setComment(e.target.value)}
-        placeholder="Write your comment..."
-        className="w-full p-2 border rounded text-black"
-        rows={3}
+        placeholder="نظر خود را بنویسید "
+        className="w-full p-2 border rounded "
+        rows={2}
       />
-      <button
-        type="submit"
-        className="mt-2 px-4 py-2 bg-blue-500 rounded text-black"
+      <CustomButton
+        type="primary-btn"
+        title={addCommentMutation.isLoading ? "Posting..." : "ثبت"}
+        className="mt-2 bg-blue-500 rounded "
         disabled={addCommentMutation.isLoading}
-      >
-        {addCommentMutation.isLoading ? "Posting..." : "Post Comment"}
-      </button>
+      />
     </form>
   );
 };

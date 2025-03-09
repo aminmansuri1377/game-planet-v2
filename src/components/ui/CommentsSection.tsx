@@ -1,5 +1,6 @@
 import { trpc } from "../../../utils/trpc";
 import CommentForm from "../form/CommentForm";
+import CommentCard from "./CommentCard";
 
 const CommentsSection = ({
   productId,
@@ -32,17 +33,32 @@ const CommentsSection = ({
 
   return (
     <div className="mt-6">
-      <CommentForm productId={productId} buyerId={buyerId} refetch={refetch} />
-      <h2 className="text-xl font-bold mb-4">Comments</h2>
+      <h2 className="text-xl mt-3 font-PeydaBold text-end mb-4">
+        : نظرات دیگران به این محصول
+      </h2>
 
-      {comments.map((comment) => (
-        <div key={comment.id} className="mb-4 p-4 border rounded">
-          <p className="text-gray-700">{comment.text}</p>
+      {/* {comments.map((comment) => (
+        <div key={comment.id}> */}
+      {comments && (
+        <div className="w-4/5">
+          <CommentCard
+            comments={comments}
+            buyerId={buyerId}
+            handleDelete={handleDelete}
+            loading={
+              deleteCommentMutation?.isLoading &&
+              deleteCommentMutation?.isLoading
+            }
+          />
+        </div>
+      )}
+      <CommentForm productId={productId} buyerId={buyerId} refetch={refetch} />
+      {/* <p className="text-gray-700">{comment.text}</p>
           <p className="text-sm text-gray-500">
             By {comment?.buyer?.firstName} {comment?.buyer?.lastName} on{" "}
             {new Date(comment.createdAt).toLocaleDateString()}
-          </p>
-          {buyerId === comment.buyerId && (
+          </p> */}
+      {/* {buyerId === comment.buyerId && (
             <button
               onClick={() => handleDelete(comment.id)}
               className="mt-2 px-2 py-1 bg-red-500 text-white rounded text-sm"
@@ -50,9 +66,9 @@ const CommentsSection = ({
             >
               {deleteCommentMutation.isLoading ? "Deleting..." : "Delete"}
             </button>
-          )}
-        </div>
-      ))}
+          )} */}
+      {/* </div>
+      ))} */}
     </div>
   );
 };

@@ -9,7 +9,12 @@ import { Input } from "@/components/ui/input";
 import CustomDatePicker from "@/components/ui/CustomDatePicker";
 import jalaali from "jalaali-js";
 import TicketOrder from "@/components/TicketOrder";
-
+import CommentCard from "@/components/ui/CommentCard";
+import { TextAreaInput } from "@/components/ui/textAreaInput";
+const comment = {
+  text: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است",
+  buyerId: "101",
+};
 function newDesign() {
   const handleSave = () => {};
   const [rangeDate, setRangeDate] = useState<any>([]);
@@ -31,9 +36,10 @@ function newDesign() {
   return (
     <div className=" min-h-screen px-5">
       <Header />
-      <div className=" my-4">
+      {/* <div className=" my-4">
         <TicketOrder />
-      </div>
+      </div> */}
+      <CommentCard comment={comment} />
       <ImageSwapper />
       /
       <CustomDatePicker
@@ -43,6 +49,7 @@ function newDesign() {
         onChange={handleDateChange}
         dateSeparator=" تا "
       />
+      <TextAreaInput />
       <Input placeholder="نام و نام خانوادگی " />
       newDesign
       <CustomButton title="booobs" type="primary-btn" />
