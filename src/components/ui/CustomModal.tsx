@@ -38,7 +38,7 @@ const CustomModal: FC<IProps> = ({ type, show, children, onClose }) => {
   ];
 
   return (
-    <div className=" p-6">
+    <div className="p-6">
       {show && (
         <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40" />
       )}
@@ -49,14 +49,17 @@ const CustomModal: FC<IProps> = ({ type, show, children, onClose }) => {
         } ${success && " border-2 border-green-600 bg-green-200 "} ${
           alert && " border-2 border-red-500 bg-red-200"
         } ${general && " border-2 border-primary bg-secondary"}`}
+        style={{ maxHeight: "90vh", overflowY: "auto" }} // Enable scrolling
       >
+        {/* Sticky Close Button */}
         <div
-          className=" left-3 top-3 z-200 cursor-pointer md:left-14 md:top-5"
+          className="sticky top-0 left-0 z-50 cursor-pointer flex justify-start p-2 bg-inherit"
           onClick={() => onClose()}
         >
           <IoIosCloseCircleOutline size={30} />
         </div>
-        {children}
+        {/* Modal Content */}
+        <div className="p-4">{children}</div>
       </div>
     </div>
   );

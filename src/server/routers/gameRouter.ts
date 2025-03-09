@@ -149,6 +149,7 @@ export const gameRouter = router({
         guarantyId: z.number(),
         latitude: z.number().optional(),
         longitude: z.number().optional(),
+        city: z.string().optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -164,22 +165,38 @@ export const gameRouter = router({
           guarantyId: input.guarantyId,
           latitude: input.latitude,
           longitude: input.longitude,
+          city: input.city,
         },
       });
     }),
   getProductsByCategory: procedure
     .input(
-      z.object({ categoryId: z.number(), sortByPrice: z.boolean().optional() })
+      z.object({
+        categoryId: z.number(),
+        sortByPrice: z.boolean().optional(),
+        city: z.string().optional(), // Add city filter
+      })
     )
     .query(async ({ input }) => {
       return await prisma.product.findMany({
-        where: { categoryId: input.categoryId },
+        where: {
+          categoryId: input.categoryId,
+          city: input.city
+            ? { contains: input.city, mode: "insensitive" }
+            : undefined, // Filter by city
+        },
         orderBy: input.sortByPrice ? { price: "asc" } : undefined,
       });
     }),
 
   searchProducts: procedure
-    .input(z.object({ query: z.string(), sortByPrice: z.boolean().optional() }))
+    .input(
+      z.object({
+        query: z.string(),
+        sortByPrice: z.boolean().optional(),
+        city: z.string().optional(), // Add city filter
+      })
+    )
     .query(async ({ input }) => {
       return await prisma.product.findMany({
         where: {
@@ -187,6 +204,9 @@ export const gameRouter = router({
             contains: input.query,
             mode: "insensitive",
           },
+          city: input.city
+            ? { contains: input.city, mode: "insensitive" } // Filter by city
+            : undefined,
         },
         orderBy: input.sortByPrice ? { price: "asc" } : undefined,
       });
@@ -276,6 +296,7 @@ export const gameRouter = router({
         sendingType: z.enum(["SELLER_SENDS", "BUYER_PICKS_UP"]),
         startDate: z.string().transform((val) => new Date(val)),
         endDate: z.string().transform((val) => new Date(val)),
+        quantity: z.number().min(1),
         totalPrice: z.number(),
         latitude: z.number().optional(),
         longitude: z.number().optional(),
@@ -300,6 +321,7 @@ export const gameRouter = router({
             startDate: input.startDate,
             endDate: input.endDate,
             totalPrice: input.totalPrice,
+            quantity: input.quantity,
             latitude: input.latitude,
             longitude: input.longitude,
           },
@@ -308,7 +330,7 @@ export const gameRouter = router({
           where: { id: input.productId },
           data: {
             inventory: {
-              decrement: 1,
+              decrement: input.quantity,
             },
           },
         });

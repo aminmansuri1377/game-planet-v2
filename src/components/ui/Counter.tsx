@@ -19,15 +19,13 @@ const Counter: React.FC<Counter> = ({
 }) => {
   const handleIncrement = () => {
     if (quantity < 6) {
-      onUpdateQuantity(quantity + 1);
-      onUpdatePrice(amount);
+      onUpdateQuantity((prevQuantity) => prevQuantity + 1); // Increment quantity
     }
   };
 
   const handleDecrement = () => {
     if (quantity > 1) {
-      onUpdateQuantity(quantity - 1);
-      onUpdatePrice(-amount);
+      onUpdateQuantity((prevQuantity) => prevQuantity - 1); // Decrement quantity
     }
   };
 

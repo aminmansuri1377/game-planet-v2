@@ -9,7 +9,6 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-// import { uploadImage } from "../../../../utils/uploadImage";
 import { PrismaClient } from "@prisma/client";
 import { isProfileComplete } from "../../../../utils/checkProfileCompletion";
 import Loading from "@/components/ui/Loading";
@@ -31,6 +30,7 @@ type ProductInput = {
   images?: FileList;
   latitude?: number;
   longitude?: number;
+  city?: string;
 };
 
 export default function CreateProductForm() {
@@ -44,8 +44,41 @@ export default function CreateProductForm() {
   const [loading, setLoading] = useState(true);
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
   const [position, setPosition] = useState([35.6892, 51.389]);
+  const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
+  const [filteredCities, setFilteredCities] = useState<
+    { id: number; name: string }[]
+  >([]);
+  const [cityQuery, setCityQuery] = useState("");
 
   const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
+  useEffect(() => {
+    // Load cities from JSON file
+    fetch("/data/iran-cities.json")
+      .then((response) => response.json())
+      .then((data) => {
+        setCities(data);
+        setFilteredCities(data);
+      });
+  }, []);
+  useEffect(() => {
+    if (cityQuery) {
+      const filtered = cities.filter((city) =>
+        city.name.toLowerCase().includes(cityQuery.toLowerCase())
+      );
+      setFilteredCities(filtered);
+    } else {
+      setFilteredCities([]);
+    }
+  }, [cityQuery, cities]);
+
+  const handleCitySearch = (query: string) => {
+    setCityQuery(query);
+  };
+  const handleCitySelect = (cityName: string) => {
+    setValue("city", cityName); // Set the selected city in the form
+    setCityQuery(cityName); // Update the input field with the selected city
+    setFilteredCities([]); // Clear the suggestions dropdown
+  };
 
   const {
     data: seller,
@@ -104,19 +137,7 @@ export default function CreateProductForm() {
       return;
     }
 
-    // setIsUploading(true);
-
     try {
-      // let imageUrls: string[] = [];
-
-      // if (data.images && data.images.length > 0) {
-      //   imageUrls = await Promise.all(
-      //     Array.from(data.images).map(async (file) => {
-      //       return await uploadImage(file);
-      //     })
-      //   );
-      // }
-
       createProduct.mutate({
         ...data,
         sellerId: session.user.id,
@@ -129,7 +150,6 @@ export default function CreateProductForm() {
         <ToastContent type="error" message="Failed to upload images." />
       );
     } finally {
-      // setIsUploading(false);
     }
   };
 
@@ -205,7 +225,30 @@ export default function CreateProductForm() {
           placeholder={t("rent.inventory")}
           {...register("inventory", { required: true, valueAsNumber: true })}
         />
-
+        <div className="w-4/5 mx-auto my-2 text-end relative mb-10">
+          <label className="block font-PeydaBold text-sm mb-2">City</label>
+          <input
+            type="text"
+            placeholder="Search for a city"
+            value={cityQuery}
+            onChange={(e) => handleCitySearch(e.target.value)}
+            className="py-3 px-4 w-full mx-auto my-2 text-end font-PeydaBold rounded-full bg-gradient-to-r from-gra-100 to-gra-200"
+          />
+          {/* Show suggestions dropdown */}
+          {filteredCities.length > 0 && (
+            <div className="absolute bg-cardbg border border-gray-300 rounded-lg mt-1 w-full z-10 text-text1">
+              {filteredCities.map((city) => (
+                <div
+                  key={city.id}
+                  onClick={() => handleCitySelect(city.name)}
+                  className="p-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  {city.name}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         {/* Category Selection */}
         <select
           className=" bg-gradient-to-r from-gra-100 to-gra-200 border-2 border-primary text-black rounded-xl py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
@@ -244,19 +287,6 @@ export default function CreateProductForm() {
           ))}
         </select>
 
-        {/* Image Upload (Optional) */}
-        {/* <div className="w-4/5 mx-auto my-2 text-end">
-          <label className="block font-PeydaBold text-sm mb-2">
-            {t("rent.productImages")} (Optional)
-          </label>
-          <Input
-            type="file"
-            multiple
-            {...register("images")}
-            className="border border-gray-600 rounded-lg py-2 px-4 w-full"
-          />
-        </div> */}
-
         {/* Sending Type */}
         <div className="w-4/5 mx-auto my-2 text-end">
           <label className="block font-PeydaBold text-sm mb-2">
@@ -283,6 +313,7 @@ export default function CreateProductForm() {
             </label>
           </div>
         </div>
+
         <div className="w-4/5 mx-auto my-2 text-end">
           <label className="block font-PeydaBold text-sm mb-2">
             Product Location

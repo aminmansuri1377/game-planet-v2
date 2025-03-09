@@ -43,11 +43,11 @@ function TicketOrder({ data, handleStatusChange }) {
     handleStatusChange(id, status), handleIncreaseInventory(id);
   };
   return (
-    <div>
+    <div className=" bg-cardbg rounded-xl">
       <Box lessPaddingY>
         <div className="flex justify-between">
-          <h2>{data.userEmail}</h2>
-          <h2>{data.username}</h2>
+          <h2>{data?.userEmail}</h2>
+          <h2>{data?.username}</h2>
           <h2>:کاربر</h2>
         </div>
       </Box>
@@ -81,13 +81,13 @@ function TicketOrder({ data, handleStatusChange }) {
                     type="primary-btn"
                     title="yes"
                     onClick={() =>
-                      handleStatusChange(data.id, "confirmed and sent")
+                      handleStatusChange(data?.id, "confirmed and sent")
                     }
                   />
                   <CustomButton
                     type="alert-btn"
                     title="no"
-                    onClick={() => towActionHandler(data.id, "denied")}
+                    onClick={() => towActionHandler(data?.id, "denied")}
                   />
                 </div>
               </div>
@@ -113,7 +113,7 @@ function TicketOrder({ data, handleStatusChange }) {
                   <CustomButton
                     type="primary-btn"
                     title="yes"
-                    onClick={() => handleStatusChange(data.id, "taken back")}
+                    onClick={() => handleStatusChange(data?.id, "taken back")}
                   />
                 </div>
               </div>
@@ -129,7 +129,7 @@ function TicketOrder({ data, handleStatusChange }) {
                 <CustomButton
                   type="primary-btn"
                   title="yes"
-                  onClick={() => towActionHandler(data.id, "taken back")}
+                  onClick={() => towActionHandler(data?.id, "taken back")}
                 />
               </div>
             )}
@@ -147,7 +147,7 @@ function TicketOrder({ data, handleStatusChange }) {
               text={""}
             />
             <OrderTicketDetail
-              value={data.productName}
+              value={data?.productName || ""}
               text={t("rent.product")}
             />
           </div>

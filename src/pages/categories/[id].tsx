@@ -53,13 +53,53 @@ const CategoryProductsPage = () => {
     setPosition(coords);
   };
 
+  const [cityQuery, setCityQuery] = useState(""); // State for city search query
+  const [selectedCity, setSelectedCity] = useState(""); // State for selected city
+  const [cities, setCities] = useState<{ id: number; name: string }[]>([]); // State for all cities
+  const [filteredCities, setFilteredCities] = useState<
+    { id: number; name: string }[]
+  >([]); // State for filtered cities
+
+  // Load cities from JSON file
+  useEffect(() => {
+    fetch("/data/iran-cities.json")
+      .then((response) => response.json())
+      .then((data) => {
+        setCities(data);
+      });
+  }, []);
+  useEffect(() => {
+    if (cityQuery) {
+      const filtered = cities.filter((city) =>
+        city.name.toLowerCase().includes(cityQuery.toLowerCase())
+      );
+      setFilteredCities(filtered);
+    } else {
+      setFilteredCities([]);
+    }
+  }, [cityQuery, cities]);
+
+  const handleCitySearch = (query: string) => {
+    setCityQuery(query);
+  };
+  const handleCitySelect = (cityName: string) => {
+    setSelectedCity(cityName); // Set the selected city
+    setCityQuery(cityName); // Update the input field with the selected city
+    setFilteredCities([]); // Clear the suggestions dropdown
+  };
+  const handleClearFilter = () => {
+    setSelectedCity(""); // Clear the selected city
+    setCityQuery(""); // Clear the city search query
+  };
   const {
     data: products,
     isLoading,
     error,
+    refetch,
   } = trpc.main.getProductsByCategory.useQuery({
     categoryId: Number(id),
     sortByPrice,
+    city: selectedCity, // Pass the selected city to the API
   });
   const { data: savedProducts } = trpc.main.getSavedProducts.useQuery(
     {
@@ -172,6 +212,36 @@ const CategoryProductsPage = () => {
 
         <h1 className="text-2xl font-bold mb-6">Products in Category</h1>
         <div className="mb-6">
+          <div className="relative mb-4">
+            <input
+              type="text"
+              placeholder="Filter by city"
+              value={cityQuery}
+              onChange={(e) => handleCitySearch(e.target.value)}
+              className="py-3 px-4 w-full mx-auto my-2 text-end font-PeydaBold rounded-full bg-gradient-to-r from-gra-100 to-gra-200"
+            />
+            {filteredCities.length > 0 && (
+              <div className="absolute bg-white border border-gray-300 rounded-lg mt-1 w-full z-10 text-amber-950">
+                {filteredCities.map((city) => (
+                  <div
+                    key={city.id}
+                    onClick={() => handleCitySelect(city.name)}
+                    className="p-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    {city.name}
+                  </div>
+                ))}
+              </div>
+            )}
+            {selectedCity && (
+              <button
+                onClick={handleClearFilter}
+                className="mt-2 px-4 py-2 bg-red-500 text-white rounded"
+              >
+                Clear Filter
+              </button>
+            )}
+          </div>
           <label className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -205,7 +275,7 @@ const CategoryProductsPage = () => {
                   imgUrl={ProductImg}
                   imgAlt={product.name}
                   name={product.name}
-                  info={`Price: $${product.price}`}
+                  info={`Price: $${product.price} , ${product.description}`}
                   handleSave={(e) => handleSave(product.id, e)} // Pass the event
                   isSaved={isSaved}
                   rate={8}

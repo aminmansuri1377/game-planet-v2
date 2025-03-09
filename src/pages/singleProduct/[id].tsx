@@ -30,8 +30,7 @@ function SingleProductPage() {
   const { id } = router.query;
   const { data: session, status } = useSession();
   const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
-  const [finalAmount, setFinalAmount] = useState(1);
-
+  const [finalAmount, setFinalAmount] = useState<number>(1);
   const [buyerLocation, setBuyerLocation] = useRecoilState(buyerLocationAtom);
   const {
     data: buyer,
@@ -48,11 +47,12 @@ function SingleProductPage() {
     error,
   } = trpc.main.getProductById.useQuery({ id: Number(id) }, { enabled: !!id });
   const [open, setOpen] = useState(false);
-  const [totalPrice, setTotalPrice] = useState<number | null>(null);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
   const [rangeDate, setRangeDate] = useState<any>([]);
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
   console.log("s & e", startDate, endDate);
+  console.log("rangeDate", rangeDate);
 
   const handleUpdatePrice = () => {
     // setTotalPrice((prevPrice) => prevPrice * finalAmount);
@@ -63,6 +63,11 @@ function SingleProductPage() {
   >(null);
 
   const closeModal = () => {
+    setStartDate(null);
+    setEndDate(null);
+    setTotalPrice(0);
+    setFinalAmount(1);
+    setRangeDate([]);
     setOpen(false);
   };
 
@@ -128,12 +133,41 @@ function SingleProductPage() {
   const calculateTotalPrice = (
     startDate: Date,
     endDate: Date,
-    price: number
+    price: number,
+    quantity: number
   ): number => {
     const timeDiff = endDate.getTime() - startDate.getTime();
     const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
-    return nights * price;
+    return nights * price * quantity; // Multiply by quantity
   };
+  useEffect(() => {
+    if (productData && startDate && endDate) {
+      try {
+        const startDateObj = convertToDate(startDate);
+        const endDateObj = convertToDate(endDate);
+
+        if (!(startDateObj instanceof Date) || !(endDateObj instanceof Date)) {
+          console.error("Invalid date conversion:", {
+            startDateObj,
+            endDateObj,
+          });
+          setTotalPrice(null);
+          return;
+        }
+
+        const totalPrice = calculateTotalPrice(
+          startDateObj,
+          endDateObj,
+          productData.price,
+          finalAmount
+        );
+        setTotalPrice(totalPrice);
+      } catch (error) {
+        console.error("Error calculating total price:", error);
+        setTotalPrice(null);
+      }
+    }
+  }, [startDate, endDate, finalAmount, productData]);
   const handleOrder = () => {
     if (!session || !session.user) {
       toast.custom(
@@ -161,12 +195,9 @@ function SingleProductPage() {
           ? productData.sendingType[0]
           : selectedSendingType;
 
-      console.log("s & e & t", startDate, endDate, totalPrice);
-
       try {
-        // Validate startDate and endDate
-        if (!startDate || !endDate) {
-          throw new Error("Start date or end date is missing.");
+        if (!startDate || !endDate || !totalPrice) {
+          throw new Error("Start date, end date, or total price is missing.");
         }
 
         const startDateObj = convertToDate(startDate);
@@ -176,12 +207,6 @@ function SingleProductPage() {
           throw new Error("Invalid date conversion");
         }
 
-        const totalPrice = calculateTotalPrice(
-          startDateObj,
-          endDateObj,
-          productData.price
-        );
-
         createOrderMutation.mutate({
           productId: productData.id,
           userId: userId,
@@ -190,14 +215,18 @@ function SingleProductPage() {
           sendingType: sendingType!,
           startDate: startDateObj.toISOString(),
           endDate: endDateObj.toISOString(),
-          totalPrice: totalPrice,
+          totalPrice: totalPrice, // Use the calculated totalPrice
           latitude: buyerLocation.latitude,
           longitude: buyerLocation.longitude,
+          quantity: finalAmount,
         });
       } catch (error) {
         console.log("in error", error);
         toast.custom(
-          <ToastContent type="error" message="Invalid date format." />
+          <ToastContent
+            type="error"
+            message="Invalid date format or calculation."
+          />
         );
       }
     }
@@ -346,28 +375,9 @@ function SingleProductPage() {
       />
       <CustomModal type="general" show={open} onClose={closeModal}>
         <div>
-          {totalPrice}
-          <div className="rounded-xl bg-cardbg my-4 flex justify-between">
-            <Image
-              src={img2}
-              alt="p"
-              width={150}
-              height={150}
-              className="rounded-l-xl"
-            />
-            <div className="text-center m-4">
-              <h1 className="font-PeydaBold text-text1 text-xl">
-                {productData.name}
-              </h1>
-              <Counter
-                text=": تعداد"
-                quantity={finalAmount}
-                amount={finalAmount}
-                onUpdatePrice={handleUpdatePrice}
-                onUpdateQuantity={setFinalAmount}
-              />
-            </div>
-          </div>
+          <div className=" my-2">{totalPrice}</div>
+          <div className=" my-2">{finalAmount}</div>
+
           <div className="flex justify-center">
             <CustomDatePicker
               range
@@ -387,6 +397,29 @@ function SingleProductPage() {
           {endDate && (
             <div className="text-center mt-4">
               <h2 className="font-PeydaBold text-lg">End Date: {endDate}</h2>
+            </div>
+          )}
+          {startDate && endDate && (
+            <div className="rounded-xl bg-cardbg my-4 flex justify-between">
+              <Image
+                src={img2}
+                alt="p"
+                width={150}
+                height={150}
+                className="rounded-l-xl"
+              />
+              <div className="text-center m-4">
+                <h1 className="font-PeydaBold text-text1 text-xl">
+                  {productData.name}
+                </h1>
+                <Counter
+                  text=": تعداد"
+                  quantity={finalAmount}
+                  amount={finalAmount}
+                  onUpdatePrice={handleUpdatePrice}
+                  onUpdateQuantity={setFinalAmount}
+                />
+              </div>
             </div>
           )}
           <h1>Select Sending Type</h1>
