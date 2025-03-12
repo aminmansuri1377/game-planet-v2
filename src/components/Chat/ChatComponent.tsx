@@ -21,12 +21,12 @@ export const ChatComponent = ({
 }: ChatComponentProps) => {
   const [message, setMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const utils = trpc.main.useContext();
+  // const utils = trpc.main.useContext();
 
   const { data: messages } = trpc.main.getMessages.useQuery({ chatRoomId });
   const sendMessage = trpc.main.sendMessage.useMutation({
     onSuccess: () => {
-      utils.chat.getMessages.invalidate({ chatRoomId });
+      // utils.chat.getMessages.invalidate({ chatRoomId });
     },
   });
 
@@ -42,7 +42,7 @@ export const ChatComponent = ({
           filter: `chatRoomId=eq.${chatRoomId}`,
         },
         () => {
-          void utils.chat.getMessages.invalidate({ chatRoomId });
+          // void utils.chat.getMessages.invalidate({ chatRoomId });
         }
       )
       .subscribe();
@@ -83,8 +83,8 @@ export const ChatComponent = ({
             <div
               className={`rounded-lg px-4 py-2 ${
                 msg.senderId === currentUserId
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200"
+                  ? "bg-blue-500 text-black"
+                  : "bg-gray-700"
               }`}
             >
               {msg.content}
@@ -95,13 +95,13 @@ export const ChatComponent = ({
       </div>
 
       <div className="border-t p-4">
-        <div className="flex gap-2">
+        <div className="">
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-            className="flex-1 rounded-lg border px-4 py-2"
+            className="rounded-lg border px-4 py-2 text-black"
             placeholder="Type a message..."
           />
           <button

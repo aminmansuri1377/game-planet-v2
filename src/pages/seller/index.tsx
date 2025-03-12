@@ -75,6 +75,11 @@ const SellerHomePage = () => {
           type="primary-btn"
           onClick={() => router.push("/seller/orders")}
         />
+        <CustomButton
+          title="chat"
+          type="primary-btn"
+          onClick={() => router.push("/seller/chat")}
+        />
         {!isProfileComplete(seller) && (
           <CustomButton
             title="completeProfile"

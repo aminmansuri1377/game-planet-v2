@@ -1,28 +1,27 @@
 import { useState } from "react";
 // import { api } from "~/utils/api";
-import { trpc } from "../../../utils/trpc";
+import { trpc } from "../../../../utils/trpc";
 import { ChatComponent } from "@/components/Chat/ChatComponent";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FaArrowLeftLong } from "react-icons/fa6";
 export default function ChatHistory() {
-  const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
   const router = useRouter();
+
+  const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
   const { data: session, status } = useSession();
   console.log("firstsession", session);
   // Replace these with your actual user info from your auth system
-  const currentUserType = "BUYER"; // or "SELLER" or "MANAGER"
-  const currentUserId = session?.user?.id
-    ? parseInt(session.user.id, 10)
-    : null;
-
+  const currentUserType = "SELLER"; // or "SELLER" or "MANAGER"
+  const currentUserId = session?.user?.id && parseInt(session.user.id, 10);
+  console.log("currentUserId", currentUserId);
   const { data: chatRooms } = trpc.main.getChatRooms.useQuery({
     userType: currentUserType,
     userId: currentUserId && currentUserId,
   });
 
   const getOtherParticipant = (room: any) => {
-    if (currentUserType === "BUYER") {
+    if (currentUserType === "SELLER") {
       return room.seller || room.manager;
     } else if (currentUserType === "SELLER") {
       return room.buyer || room.manager;
@@ -33,10 +32,10 @@ export default function ChatHistory() {
 
   return (
     <div className="flex h-screen">
+      {/* Chat rooms sidebar */}
       <div onClick={() => router.back()}>
         <FaArrowLeftLong />
       </div>
-      {/* Chat rooms sidebar */}
       <div className="w-1/4 border-r bg-gray-50">
         <div className="p-4">
           <h2 className="mb-4 text-xl font-bold">Chats</h2>

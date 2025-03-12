@@ -84,7 +84,32 @@ function SingleProductPage() {
       toast.custom(<ToastContent type="error" message={err?.message} />);
     },
   });
+  const createChatMutation = trpc.main.createChatRoom.useMutation({
+    onSuccess: (data) => {
+      router.push(`/chat?roomId=${data.id}`);
+    },
+    onError: (error) => {
+      toast.custom(
+        <ToastContent type="error" message="Failed to create chat room" />
+      );
+    },
+  });
 
+  const handleStartChat = () => {
+    if (!session || !session.user) {
+      toast.custom(
+        <ToastContent type="error" message={t("rent.PleaseLogin")} />
+      );
+      return;
+    }
+
+    createChatMutation.mutate({
+      userType1: "BUYER",
+      userId1: userId!,
+      userType2: "SELLER",
+      userId2: productData && productData.sellerId,
+    });
+  };
   const persianToEnglishNumbers = (str: string) => {
     return (
       str && str?.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d).toString())
@@ -328,6 +353,12 @@ function SingleProductPage() {
         <div onClick={() => router.back()} className=" mt-2 mb-6">
           <FaArrowLeftLong />
         </div>
+        <CustomButton
+          onClick={handleStartChat}
+          title="چت با فروشنده"
+          type="secondary-btn"
+          loading={createChatMutation.isLoading}
+        />
         <ImageSwapper />
         {productData && (
           <div>
