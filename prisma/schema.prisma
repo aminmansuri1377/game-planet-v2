@@ -21,6 +21,7 @@ model Buyer {
   SavedProduct SavedProduct[]
 
   Comment Comment[]
+  chatRooms ChatRoom[]
 }
 model Seller {
   id           Int       @id @default(autoincrement())
@@ -32,12 +33,14 @@ model Seller {
   products     Product[] @relation("SellerProducts")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  chatRooms ChatRoom[]
 }
 model Manager {
   id           Int       @id @default(autoincrement())
   phone        String    @unique
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  chatRooms ChatRoom[]
 }
 
 model Category {
@@ -123,3 +126,42 @@ enum SendingType {
   SELLER_SENDS
   BUYER_PICKS_UP
 }
+
+
+model ChatRoom {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Participant information
+  buyerId   Int?
+  sellerId  Int?
+  managerId Int?
+  buyer     Buyer?   @relation(fields: [buyerId], references: [id])
+  seller    Seller?  @relation(fields: [sellerId], references: [id])
+  manager   Manager? @relation(fields: [managerId], references: [id])
+
+  messages Message[]
+
+  @@unique([buyerId, sellerId])
+  @@unique([buyerId, managerId])
+  @@unique([sellerId, managerId])
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
+  chatRoomId Int
+
+  // Sender information
+  senderType String    // "BUYER" | "SELLER" | "MANAGER"
+  senderId   Int
+}
+
+// Update existing models to include chat relationships
+
+
+

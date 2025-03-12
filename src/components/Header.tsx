@@ -34,7 +34,9 @@ function Header() {
   const handleSign = () => {
     router.push({ pathname: "/signIn" });
   };
-  const handleChat = () => {};
+  const handleChat = () => {
+    router.push({ pathname: "/chat" });
+  };
   const handleHome = () => {
     router.push({ pathname: "/" });
   };

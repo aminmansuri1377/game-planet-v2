@@ -2,6 +2,7 @@ import { z } from "zod";
 import { procedure, router } from "../trpc";
 import { PrismaClient, UserRole } from "@prisma/client";
 import { hash } from "bcrypt";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 const prisma = new PrismaClient();
 
@@ -613,6 +614,81 @@ export const gameRouter = router({
       }
       return await prisma.comment.delete({
         where: { id: input.commentId },
+      });
+    }),
+  //////////////////// chat
+  getChatRooms: protectedProcedure
+    .input(
+      z.object({
+        userType: z.enum(["BUYER", "SELLER", "MANAGER"]),
+        userId: z.number(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { userType, userId } = input;
+
+      return await ctx.prisma.chatRoom.findMany({
+        where: {
+          OR: [
+            { buyerId: userType === "BUYER" ? userId : undefined },
+            { sellerId: userType === "SELLER" ? userId : undefined },
+            { managerId: userType === "MANAGER" ? userId : undefined },
+          ],
+        },
+        include: {
+          buyer: true,
+          seller: true,
+          manager: true,
+          messages: {
+            take: 1,
+            orderBy: { createdAt: "desc" },
+          },
+        },
+        orderBy: {
+          updatedAt: "desc",
+        },
+      });
+    }),
+
+  getMessages: protectedProcedure
+    .input(z.object({ chatRoomId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.message.findMany({
+        where: { chatRoomId: input.chatRoomId },
+        orderBy: { createdAt: "asc" },
+      });
+    }),
+
+  sendMessage: protectedProcedure
+    .input(
+      z.object({
+        chatRoomId: z.number(),
+        content: z.string(),
+        senderType: z.enum(["BUYER", "SELLER", "MANAGER"]),
+        senderId: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.message.create({
+        data: input,
+      });
+    }),
+
+  createChatRoom: protectedProcedure
+    .input(
+      z.object({
+        userType1: z.enum(["BUYER", "SELLER", "MANAGER"]),
+        userId1: z.number(),
+        userType2: z.enum(["BUYER", "SELLER", "MANAGER"]),
+        userId2: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.chatRoom.create({
+        data: {
+          [input.userType1.toLowerCase() + "Id"]: input.userId1,
+          [input.userType2.toLowerCase() + "Id"]: input.userId2,
+        },
       });
     }),
 });
