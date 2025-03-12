@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-// import { api } from "~/utils/api";
 import { trpc } from "../../../utils/trpc";
 import { createClient } from "@supabase/supabase-js";
 
@@ -21,12 +20,13 @@ export const ChatComponent = ({
 }: ChatComponentProps) => {
   const [message, setMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  // const utils = trpc.main.useContext();
 
-  const { data: messages } = trpc.main.getMessages.useQuery({ chatRoomId });
+  const { data: messages, refetch } = trpc.main.getMessages.useQuery({
+    chatRoomId,
+  });
   const sendMessage = trpc.main.sendMessage.useMutation({
     onSuccess: () => {
-      // utils.chat.getMessages.invalidate({ chatRoomId });
+      refetch(); // Refetch messages after sending a new one
     },
   });
 
@@ -42,7 +42,7 @@ export const ChatComponent = ({
           filter: `chatRoomId=eq.${chatRoomId}`,
         },
         () => {
-          // void utils.chat.getMessages.invalidate({ chatRoomId });
+          refetch(); // Refetch messages when a new message is inserted
         }
       )
       .subscribe();
@@ -50,7 +50,7 @@ export const ChatComponent = ({
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [chatRoomId]);
+  }, [chatRoomId, refetch]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -83,8 +83,8 @@ export const ChatComponent = ({
             <div
               className={`rounded-lg px-4 py-2 ${
                 msg.senderId === currentUserId
-                  ? "bg-blue-500 text-black"
-                  : "bg-gray-700"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-700 text-white"
               }`}
             >
               {msg.content}
@@ -101,12 +101,12 @@ export const ChatComponent = ({
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-            className="rounded-lg border px-4 py-2 text-black"
+            className="flex-1 rounded-lg border px-4 py-2 text-black"
             placeholder="Type a message..."
           />
           <button
             onClick={handleSendMessage}
-            className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            className="ml-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
           >
             Send
           </button>

@@ -13,8 +13,9 @@ export default function ChatHistory() {
   console.log("firstsession", session);
   // Replace these with your actual user info from your auth system
   const currentUserType = "SELLER"; // or "SELLER" or "MANAGER"
-  const currentUserId = session?.user?.id && parseInt(session.user.id, 10);
-  console.log("currentUserId", currentUserId);
+  const currentUserId = session?.user?.id
+    ? parseInt(session.user.id, 10)
+    : null;
   const { data: chatRooms } = trpc.main.getChatRooms.useQuery({
     userType: currentUserType,
     userId: currentUserId && currentUserId,
