@@ -2,7 +2,7 @@ import { z } from "zod";
 import { procedure, router } from "../trpc";
 import { PrismaClient, UserRole } from "@prisma/client";
 import { hash } from "bcrypt";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+// import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 const prisma = new PrismaClient();
 
@@ -617,7 +617,7 @@ export const gameRouter = router({
       });
     }),
   //////////////////// chat
-  getChatRooms: protectedProcedure
+  getChatRooms: procedure
     .input(
       z.object({
         userType: z.enum(["BUYER", "SELLER", "MANAGER"]),
@@ -627,7 +627,7 @@ export const gameRouter = router({
     .query(async ({ ctx, input }) => {
       const { userType, userId } = input;
 
-      return await ctx.prisma.chatRoom.findMany({
+      return await prisma.chatRoom.findMany({
         where: {
           OR: [
             { buyerId: userType === "BUYER" ? userId : undefined },
@@ -650,16 +650,16 @@ export const gameRouter = router({
       });
     }),
 
-  getMessages: protectedProcedure
+  getMessages: procedure
     .input(z.object({ chatRoomId: z.number() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.message.findMany({
+      return await prisma.message.findMany({
         where: { chatRoomId: input.chatRoomId },
         orderBy: { createdAt: "asc" },
       });
     }),
 
-  sendMessage: protectedProcedure
+  sendMessage: procedure
     .input(
       z.object({
         chatRoomId: z.number(),
@@ -669,12 +669,12 @@ export const gameRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.prisma.message.create({
+      return await prisma.message.create({
         data: input,
       });
     }),
 
-  createChatRoom: protectedProcedure
+  createChatRoom: procedure
     .input(
       z.object({
         userType1: z.enum(["BUYER", "SELLER", "MANAGER"]),
@@ -684,7 +684,7 @@ export const gameRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      return await ctx.prisma.chatRoom.create({
+      return await prisma.chatRoom.create({
         data: {
           [input.userType1.toLowerCase() + "Id"]: input.userId1,
           [input.userType2.toLowerCase() + "Id"]: input.userId2,
