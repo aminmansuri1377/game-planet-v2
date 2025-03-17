@@ -138,7 +138,10 @@ function Header() {
             <FiBookmark size={28} className="text-text2" />
           </div>
           <Divider />
-          <div className=" flex justify-end my-1">
+          <div
+            className=" flex justify-end my-1"
+            onClick={() => router.push({ pathname: "/support" })}
+          >
             <h2 className=" text-text2 mx-5 font-PeydaBold"> پشتیبانی </h2>
             <LuHeadphones size={28} className="text-text2" />
           </div>

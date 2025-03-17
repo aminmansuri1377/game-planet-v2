@@ -5,13 +5,37 @@ import { useTranslation } from "react-i18next";
 import { useAuthRedirect } from "../../components/hooks/useAuthRedirect";
 import Cookies from "js-cookie";
 import { HiOutlineSquaresPlus } from "react-icons/hi2";
+import { trpc } from "../../../utils/trpc";
+import { useSession } from "next-auth/react";
 
 function Index() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { data: session } = useSession();
+
+  const currentUserId = session?.user?.id
+    ? parseInt(session.user.id, 10)
+    : null;
   const handleLogout = () => {
     Cookies.remove("dashboardAuth");
     router.push("/");
+  };
+  const { data: unassignedTickets, refetch } =
+    trpc.main.getUnassignedTickets.useQuery();
+  const assignTicket = trpc.main.assignTicketToManager.useMutation({
+    onSuccess: () => {
+      refetch(); // Refresh the list of unassigned tickets
+    },
+  });
+
+  const handleAcceptTicket = async (ticketId: number) => {
+    if (session?.user?.id) {
+      await assignTicket.mutateAsync({
+        ticketId,
+        managerId: currentUserId,
+      });
+      router.push(`/dashboard/support/${ticketId}`); // Redirect to the chat room
+    }
   };
   const { isAuthenticated, isMounted } = useAuthRedirect();
 
@@ -49,6 +73,33 @@ function Index() {
         title="sellers"
         type="primary-btn"
         onClick={() => router.push("/dashboard/sellers")}
+      />
+      <div>
+        <h1>Support Tickets</h1>
+        {unassignedTickets?.map((ticket) => (
+          <div key={ticket.id} className="p-4 border rounded-lg shadow-sm">
+            <p className="font-semibold">
+              Ticket ID: {ticket.id} - Status: {ticket.status}
+            </p>
+            <p>
+              User:{" "}
+              {ticket.buyer
+                ? `Buyer - ${ticket.buyer.firstName} ${ticket.buyer.lastName}`
+                : `Seller - ${ticket.seller?.firstName} ${ticket.seller?.lastName}`}
+            </p>
+            <button
+              onClick={() => handleAcceptTicket(ticket.id)}
+              className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Accept Ticket
+            </button>
+          </div>
+        ))}
+      </div>
+      <CustomButton
+        title="Support History"
+        type="primary-btn"
+        onClick={() => router.push("/dashboard/support/history")}
       />
       <div className=" mt-20">
         <button

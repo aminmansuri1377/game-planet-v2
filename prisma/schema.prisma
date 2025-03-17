@@ -17,12 +17,12 @@ model Buyer {
   orders       Order[]   @relation("BuyerOrders")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
-
   SavedProduct SavedProduct[]
-
   Comment Comment[]
   chatRooms ChatRoom[]
   
+
+  SupportTicket SupportTicket[]
 }
 model Seller {
   id           Int       @id @default(autoincrement())
@@ -35,6 +35,8 @@ model Seller {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   chatRooms ChatRoom[]
+
+  SupportTicket SupportTicket[]
 }
 model Manager {
   id           Int       @id @default(autoincrement())
@@ -42,6 +44,8 @@ model Manager {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   chatRooms ChatRoom[]
+
+  SupportTicket SupportTicket[]
 }
 
 model Category {
@@ -133,8 +137,6 @@ model ChatRoom {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // Participant information
   buyerId   Int?
   sellerId  Int?
   managerId Int?
@@ -156,10 +158,35 @@ model Message {
   
   chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
   chatRoomId Int
-
-  // Sender information
   senderType String    // "BUYER" | "SELLER" | "MANAGER"
   senderId   Int
+}
+model SupportTicket {
+  id           Int       @id @default(autoincrement())
+  buyerId      Int?      @unique
+  sellerId     Int?      @unique
+  managerId    Int?
+  status       String    @default("OPEN") // "OPEN" or "CLOSED"
+  chatRoomSupportId   Int       @unique
+  messages     SupportMessage[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  buyer        Buyer?    @relation(fields: [buyerId], references: [id])
+  seller       Seller?   @relation(fields: [sellerId], references: [id])
+  manager      Manager?  @relation(fields: [managerId], references: [id])
+  @@unique([buyerId, sellerId])
+}
+
+model SupportMessage {
+  id           Int       @id @default(autoincrement())
+  content      String
+  senderType   String    // "BUYER", "SELLER", "MANAGER"
+  senderId     Int
+  chatRoomSupportId   Int
+  createdAt    DateTime  @default(now())
+
+  @@index([chatRoomSupportId])
+  SupportTicket SupportTicket[]
 }
 
 // Update existing models to include chat relationships

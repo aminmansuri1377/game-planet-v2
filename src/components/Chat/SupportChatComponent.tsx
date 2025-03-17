@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { trpc } from "../../../utils/trpc";
 import { createClient } from "@supabase/supabase-js";
-import { useRouter } from "next/router";
 
 interface ChatComponentProps {
   chatRoomId: number;
@@ -19,27 +18,14 @@ export const ChatComponent = ({
   currentUserType,
   currentUserId,
 }: ChatComponentProps) => {
-  const router = useRouter();
-  const path = router.asPath;
-  let userType;
-
-  if (path.includes("seller")) {
-    userType = "SELLER";
-  } else if (path.includes("dashboard")) {
-    userType = "MANAGER";
-  } else {
-    userType = "BUYER";
-  }
   const [message, setMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { data: messages, refetch } = trpc.main.getSupportMessages.useQuery(
     { chatRoomId },
-    {
-      refetchInterval: 1000 * 10 * 2, // Refetch every 2 minutes (120,000 milliseconds)
-      refetchOnWindowFocus: false, // Optional: Disable refetch on window focus
-    }
+    { refetchInterval: 1000 * 10 * 2 } // Refetch every 2 minutes
   );
+
   const sendMessage = trpc.main.sendSupportMessage.useMutation({
     onSuccess: () => {
       refetch();
@@ -58,7 +44,7 @@ export const ChatComponent = ({
           filter: `chatRoomId=eq.${chatRoomId}`,
         },
         () => {
-          refetch(); // Refetch messages when a new message is inserted
+          refetch();
         }
       )
       .subscribe();
@@ -85,8 +71,7 @@ export const ChatComponent = ({
     });
     setMessage("");
   };
-  console.log("messages", messages);
-  console.log("userType", userType);
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex-1 overflow-y-auto p-4">
@@ -94,14 +79,16 @@ export const ChatComponent = ({
           <div
             key={msg.id}
             className={`mb-4 flex ${
-              msg.senderType === userType && msg.senderId === currentUserId
+              msg.senderType === currentUserType &&
+              msg.senderId === currentUserId
                 ? "justify-end"
                 : "justify-start"
             }`}
           >
             <div
               className={`rounded-lg px-4 py-2 ${
-                msg.senderType === userType && msg.senderId === currentUserId
+                msg.senderType === currentUserType &&
+                msg.senderId === currentUserId
                   ? "bg-blue-500 text-white"
                   : "bg-gray-700 text-white"
               }`}
@@ -114,7 +101,7 @@ export const ChatComponent = ({
       </div>
 
       <div className="border-t p-4">
-        <div className="">
+        <div className="flex">
           <input
             type="text"
             value={message}
