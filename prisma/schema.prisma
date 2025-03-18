@@ -163,8 +163,8 @@ model Message {
 }
 model SupportTicket {
   id           Int       @id @default(autoincrement())
-  buyerId      Int?      @unique
-  sellerId     Int?      @unique
+  buyerId      Int?      
+  sellerId     Int?      
   managerId    Int?
   status       String    @default("OPEN") // "OPEN" or "CLOSED"
   chatRoomSupportId   Int       @unique

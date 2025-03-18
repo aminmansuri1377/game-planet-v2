@@ -11,7 +11,7 @@ const ManagerSupportChatRoom = () => {
     router.back();
   };
   const { data: session } = useSession();
-  // console.log("chatRoomId", chatRoomId);
+  console.log("chatRoomId", chatRoomId);
   const { data: ticket, isLoading } = trpc.main.getTicketByChatRoomId.useQuery(
     { chatRoomId: parseInt(chatRoomId as string, 10) },
     { enabled: !!chatRoomId }

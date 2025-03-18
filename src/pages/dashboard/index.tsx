@@ -28,13 +28,16 @@ function Index() {
     },
   });
 
-  const handleAcceptTicket = async (ticketId: number) => {
+  const handleAcceptTicket = async (
+    ticketId: number,
+    chatRoomSupportId: any
+  ) => {
     if (session?.user?.id) {
       await assignTicket.mutateAsync({
         ticketId,
         managerId: currentUserId,
       });
-      router.push(`/dashboard/support/${ticketId}`); // Redirect to the chat room
+      router.push(`/dashboard/support/${chatRoomSupportId}`); // Redirect to the chat room
     }
   };
   const { isAuthenticated, isMounted } = useAuthRedirect();
@@ -49,11 +52,11 @@ function Index() {
 
   return (
     <div className=" text-center mx-auto">
-      <CustomButton
+      {/* <CustomButton
         title={t("rent.productCreation")}
         type="primary-btn"
         onClick={() => router.push("/dashboard/createProduct")}
-      />
+      /> */}
       <CustomButton
         title={t("rent.products")}
         type="primary-btn"
@@ -88,7 +91,9 @@ function Index() {
                 : `Seller - ${ticket.seller?.firstName} ${ticket.seller?.lastName}`}
             </p>
             <button
-              onClick={() => handleAcceptTicket(ticket.id)}
+              onClick={() =>
+                handleAcceptTicket(ticket.id, ticket.chatRoomSupportId)
+              }
               className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
               Accept Ticket
