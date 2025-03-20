@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import CustomButton from "../ui/CustomButton";
 import { trpc } from "../../../utils/trpc";
+import Uploader from "../uploader/Uploader";
 
 // Zod schema for form validation
 const ProfileFormSchema = z.object({
@@ -35,6 +36,7 @@ interface CompleteProfileProps {
 const CompleteProfile = ({ userId, userType }: CompleteProfileProps) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
 
   // tRPC mutations
   const completeBuyerProfile = trpc.main.completeBuyerProfile.useMutation();
@@ -56,11 +58,13 @@ const CompleteProfile = ({ userId, userType }: CompleteProfileProps) => {
       if (userType === "buyer") {
         response = await completeBuyerProfile.mutateAsync({
           userId,
+          idCardImage: imageUrls,
           ...values,
         });
       } else {
         response = await completeSellerProfile.mutateAsync({
           userId,
+          idCardImage: imageUrls,
           ...values,
         });
       }
@@ -84,6 +88,11 @@ const CompleteProfile = ({ userId, userType }: CompleteProfileProps) => {
   return (
     <div className="max-w-md mx-auto p-6 bg-gray-700 rounded-lg shadow-md">
       <h1 className="text-2xl font-bold mb-6">Complete Your Profile</h1>
+      <Uploader
+        onUpload={(urls) => setImageUrls(urls)}
+        bucket="idcard"
+        singleUpload={true}
+      />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -131,7 +140,6 @@ const CompleteProfile = ({ userId, userType }: CompleteProfileProps) => {
             className="w-full"
             title="Update Profile"
           />
-          ;
         </form>
       </Form>
     </div>

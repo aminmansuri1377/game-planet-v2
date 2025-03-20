@@ -86,13 +86,14 @@ export const gameRouter = router({
         firstName: z.string(),
         lastName: z.string(),
         IDnumber: z.string(),
+        idCardImage: z.array(z.string()).optional(),
       })
     )
     .mutation(async ({ input }) => {
-      const { userId, firstName, lastName, IDnumber } = input;
+      const { userId, firstName, lastName, IDnumber, idCardImage } = input;
       return await prisma.buyer.update({
         where: { id: userId },
-        data: { firstName, lastName, IDnumber },
+        data: { firstName, lastName, IDnumber, idCardImage },
       });
     }),
 
@@ -103,13 +104,14 @@ export const gameRouter = router({
         firstName: z.string(),
         lastName: z.string(),
         IDnumber: z.string(),
+        idCardImage: z.array(z.string()).optional(),
       })
     )
     .mutation(async ({ input }) => {
-      const { userId, firstName, lastName, IDnumber } = input;
+      const { userId, firstName, lastName, IDnumber, idCardImage } = input;
       return await prisma.seller.update({
         where: { id: userId },
-        data: { firstName, lastName, IDnumber },
+        data: { firstName, lastName, IDnumber, idCardImage },
       });
     }),
   getBuyerById: procedure

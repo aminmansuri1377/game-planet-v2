@@ -5,10 +5,14 @@ import { convertBlobUrlToFile } from "@/lib/utils";
 import Image from "next/image";
 import { uploadImage } from "../../../supabase/storage/client";
 
-function Uploader(
+function Uploader({
+  onUpload,
+  singleUpload = false,
   bucket,
-  { onUpload }: { onUpload: (urls: string[]) => void }
-) {
+}: {
+  onUpload: (urls: string[]) => void;
+  singleUpload?: boolean;
+}) {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   console.log("bucket", bucket);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -32,7 +36,7 @@ function Uploader(
 
         const { imageUrl, error } = await uploadImage({
           file: imageFile,
-          bucket: bucket.bucket,
+          bucket: bucket,
         });
 
         if (error) {
@@ -45,16 +49,17 @@ function Uploader(
 
       console.log(urls);
       setImageUrls([]);
-      bucket.onUpload(urls);
+      onUpload(urls);
     });
   };
+  console.log("singleUpload", singleUpload);
 
   return (
     <div className="bg-slate-500 flex justify-center items-center flex-col gap-8">
       <input
         type="file"
         hidden
-        multiple
+        multiple={!singleUpload}
         ref={imageInputRef}
         onChange={handleImageChange}
         disabled={isPending}
