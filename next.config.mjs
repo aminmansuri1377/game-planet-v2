@@ -18,6 +18,15 @@ const nextConfig = {
     locales: ["en", "de", "es", "tr", "ar", "fa"], // Supported languages
     defaultLocale: "fa", // Default language
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "ybkqlbrfanevwwmeykpr.supabase.co",
+        port: "",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

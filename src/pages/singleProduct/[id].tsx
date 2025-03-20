@@ -346,6 +346,7 @@ function SingleProductPage() {
       </div>
     );
   }
+  // console.log("productData.images", productData.images);
   return (
     <div>
       <div className=" px-5">
@@ -359,9 +360,9 @@ function SingleProductPage() {
           type="secondary-btn"
           loading={createChatMutation.isLoading}
         />
-        <ImageSwapper />
         {productData && (
           <div>
+            <ImageSwapper images={productData.images} />
             <div className=" my-2 flex justify-between items-center">
               <CustomButton
                 title={`روزی ${productData.price}`}

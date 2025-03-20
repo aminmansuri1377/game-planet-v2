@@ -16,7 +16,6 @@ function Index() {
   if (userId === null || isNaN(userId)) {
     return <div>Error: Invalid user ID. Please log in again.</div>;
   }
-  console.log("ttttttt", session);
   return (
     <div>
       <div onClick={handleBack}>

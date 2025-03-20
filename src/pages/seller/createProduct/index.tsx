@@ -14,7 +14,7 @@ import { isProfileComplete } from "../../../../utils/checkProfileCompletion";
 import Loading from "@/components/ui/Loading";
 import dynamic from "next/dynamic";
 import { Input } from "@/components/ui/input";
-
+import Uploader from "@/components/uploader/Uploader";
 const Map = dynamic(() => import("@/components/MyMap"), {
   ssr: false,
 });
@@ -49,7 +49,7 @@ export default function CreateProductForm() {
     { id: number; name: string }[]
   >([]);
   const [cityQuery, setCityQuery] = useState("");
-
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
   useEffect(() => {
     // Load cities from JSON file
@@ -140,10 +140,10 @@ export default function CreateProductForm() {
     try {
       createProduct.mutate({
         ...data,
-        sellerId: session.user.id,
+        sellerId: userId,
         latitude: coordinates?.[0],
         longitude: coordinates?.[1],
-        // images: imageUrls,
+        images: imageUrls,
       });
     } catch (error) {
       toast.custom(
@@ -224,6 +224,10 @@ export default function CreateProductForm() {
           type="number"
           placeholder={t("rent.inventory")}
           {...register("inventory", { required: true, valueAsNumber: true })}
+        />
+        <Uploader
+          onUpload={(urls) => setImageUrls(urls)}
+          bucket="product-images"
         />
         <div className="w-4/5 mx-auto my-2 text-end relative mb-10">
           <label className="block font-PeydaBold text-sm mb-2">City</label>

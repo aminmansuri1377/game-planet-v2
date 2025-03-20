@@ -21,7 +21,7 @@ model Buyer {
   Comment Comment[]
   chatRooms ChatRoom[]
   
-
+  idCardImage  Json? 
   SupportTicket SupportTicket[]
 }
 model Seller {
@@ -35,7 +35,7 @@ model Seller {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   chatRooms ChatRoom[]
-
+  idCardImage  Json? 
   SupportTicket SupportTicket[]
 }
 model Manager {
@@ -77,7 +77,6 @@ model Product {
   sellerId    Int
   seller      Seller        @relation("SellerProducts", fields: [sellerId], references: [id])
   orders      Order[]     @relation("ProductOrders")
-  // images      String[]    
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   SavedProduct SavedProduct[]
@@ -85,6 +84,7 @@ model Product {
   latitude    Float?     
   longitude   Float?
   city        String?
+  images      Json?
 }
 model SavedProduct {
   id        Int      @id @default(autoincrement())

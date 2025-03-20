@@ -151,6 +151,7 @@ export const gameRouter = router({
         latitude: z.number().optional(),
         longitude: z.number().optional(),
         city: z.string().optional(),
+        images: z.array(z.string()).optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -167,6 +168,7 @@ export const gameRouter = router({
           latitude: input.latitude,
           longitude: input.longitude,
           city: input.city,
+          images: input.images,
         },
       });
     }),
