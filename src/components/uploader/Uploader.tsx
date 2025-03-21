@@ -12,6 +12,7 @@ function Uploader({
 }: {
   onUpload: (urls: string[]) => void;
   singleUpload?: boolean;
+  bucket?: string;
 }) {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   console.log("bucket", bucket);

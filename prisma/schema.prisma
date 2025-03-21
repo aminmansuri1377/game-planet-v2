@@ -22,6 +22,7 @@ model Buyer {
   chatRooms ChatRoom[]
   
   idCardImage  Json? 
+  profileImage  Json? 
   SupportTicket SupportTicket[]
 }
 model Seller {
@@ -36,6 +37,7 @@ model Seller {
   updatedAt    DateTime  @updatedAt
   chatRooms ChatRoom[]
   idCardImage  Json? 
+  profileImage  Json? 
   SupportTicket SupportTicket[]
 }
 model Manager {
@@ -44,7 +46,7 @@ model Manager {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   chatRooms ChatRoom[]
-
+  profileImage  Json? 
   SupportTicket SupportTicket[]
 }
 

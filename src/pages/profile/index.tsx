@@ -16,6 +16,7 @@ import Button from "../../components/Button";
 import Loading from "../../components/ui/Loading";
 import { trpc } from "../../../utils/trpc";
 import { isProfileComplete } from "../../../utils/checkProfileCompletion";
+import Image from "next/image";
 function profile() {
   const { t } = useTranslation();
   const { data: session, status } = useSession();
@@ -47,13 +48,16 @@ function profile() {
     await signOut({ redirect: false });
     router.push("/");
   };
+  const images = buyer && buyer.profileImage;
+
+  const imageArray = Array.isArray(images) ? images : images;
   if (status === "loading") {
     return <Loading />;
   }
   if (!session) {
     return <div>Please log in</div>;
   }
-
+  console.log("buyer", buyer);
   return (
     <div className="w-full">
       <Box>
@@ -64,6 +68,27 @@ function profile() {
           <div className="flex rounded-full bg-gradient-to-tr shadow-xl shadow-purple-800 from-[#9E16BD] to-[#5F1470] p-3 items-center text-center">
             <IoPersonSharp size={34} className="text-gray-300" />
           </div>
+          {!images && Array.isArray(images) && images.length === 0 ? (
+            <div className=" mx-auto flex items-center justify-center bg-gray-100 rounded-2xl shadow-lg">
+              <p className="text-gray-500">No images available</p>
+            </div>
+          ) : (
+            <div>
+              {imageArray &&
+                imageArray.map((image, index) => (
+                  <div key={index} className="min-w-full">
+                    <Image
+                      src={image}
+                      alt={`Slide ${index + 1}`}
+                      className="w-full h-auto object-cover rounded-full"
+                      width={200}
+                      height={100}
+                      loading="lazy"
+                    />
+                  </div>
+                ))}
+            </div>
+          )}
           <div></div>
         </div>
         <h1 className=" font-PeydaBlack mt-5">
@@ -107,6 +132,7 @@ function profile() {
             </Box>
           </div>
         )}
+
         <div onClick={() => router.push("./profile/SavedProductsPage")}>
           <Box lessPaddingY>
             <div className=" flex items-center justify-end">

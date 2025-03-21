@@ -87,13 +87,35 @@ export const gameRouter = router({
         lastName: z.string(),
         IDnumber: z.string(),
         idCardImage: z.array(z.string()).optional(),
+        profileImage: z.array(z.string()).optional(),
       })
     )
     .mutation(async ({ input }) => {
-      const { userId, firstName, lastName, IDnumber, idCardImage } = input;
+      const {
+        userId,
+        firstName,
+        lastName,
+        IDnumber,
+        idCardImage,
+        profileImage,
+      } = input;
       return await prisma.buyer.update({
         where: { id: userId },
-        data: { firstName, lastName, IDnumber, idCardImage },
+        data: { firstName, lastName, IDnumber, idCardImage, profileImage },
+      });
+    }),
+  photoBuyerProfile: procedure
+    .input(
+      z.object({
+        userId: z.number(),
+        profileImage: z.array(z.string()).optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { userId, profileImage } = input;
+      return await prisma.buyer.update({
+        where: { id: userId },
+        data: { profileImage },
       });
     }),
 
@@ -105,13 +127,21 @@ export const gameRouter = router({
         lastName: z.string(),
         IDnumber: z.string(),
         idCardImage: z.array(z.string()).optional(),
+        profileImage: z.array(z.string()).optional(),
       })
     )
     .mutation(async ({ input }) => {
-      const { userId, firstName, lastName, IDnumber, idCardImage } = input;
+      const {
+        userId,
+        firstName,
+        lastName,
+        IDnumber,
+        idCardImage,
+        profileImage,
+      } = input;
       return await prisma.seller.update({
         where: { id: userId },
-        data: { firstName, lastName, IDnumber, idCardImage },
+        data: { firstName, lastName, IDnumber, idCardImage, profileImage },
       });
     }),
   getBuyerById: procedure
