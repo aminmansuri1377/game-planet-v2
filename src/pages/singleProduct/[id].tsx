@@ -31,6 +31,7 @@ function SingleProductPage() {
   const { data: session, status } = useSession();
   const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
   const [finalAmount, setFinalAmount] = useState<number>(1);
+  const [address, setAddress] = useState("");
   const [buyerLocation, setBuyerLocation] = useRecoilState(buyerLocationAtom);
   const {
     data: buyer,
@@ -244,6 +245,7 @@ function SingleProductPage() {
           latitude: buyerLocation.latitude,
           longitude: buyerLocation.longitude,
           quantity: finalAmount,
+          address: address,
         });
       } catch (error) {
         console.log("in error", error);
@@ -482,6 +484,13 @@ function SingleProductPage() {
             ) : (
               <p>{t(`rent.${productData.sendingType[0]}`)}</p>
             )}
+            <input
+              type="text"
+              placeholder="Enter your address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className=" text-black"
+            />
             <CustomButton
               onClick={handleOrder}
               title={t("rent.order")}

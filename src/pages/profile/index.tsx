@@ -106,13 +106,15 @@ function profile() {
               </h2>
             </Box>
           </div>
-          <Box lessPaddingY>
-            <SlLocationPin size={50} className=" mx-auto mt-8" />
-            <h1 className=" font-PeydaBold my-2">{t("rent.myAddresses")}</h1>
-            <h2 className=" font-PeydaThin text-[12px] mb-8 mx-1">
-              {t("rent.savedAddresses")}
-            </h2>
-          </Box>
+          <div onClick={() => router.push("./profile/MyAddresses")}>
+            <Box lessPaddingY>
+              <SlLocationPin size={50} className=" mx-auto mt-8" />
+              <h1 className=" font-PeydaBold my-2">{t("rent.myAddresses")}</h1>
+              <h2 className=" font-PeydaThin text-[12px] mb-8 mx-1">
+                {t("rent.savedAddresses")}
+              </h2>
+            </Box>
+          </div>
         </div>
         <div onClick={() => router.push("./profile/setting")}>
           <Box lessPaddingY>

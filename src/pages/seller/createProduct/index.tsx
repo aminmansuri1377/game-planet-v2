@@ -31,6 +31,7 @@ type ProductInput = {
   latitude?: number;
   longitude?: number;
   city?: string;
+  address?: string;
 };
 
 export default function CreateProductForm() {
@@ -225,6 +226,12 @@ export default function CreateProductForm() {
           placeholder={t("rent.inventory")}
           {...register("inventory", { required: true, valueAsNumber: true })}
         />
+        <Input
+          className=" py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
+          type="text"
+          placeholder={"address"}
+          {...register("address", { required: true, valueAsNumber: true })}
+        />
         <Uploader
           onUpload={(urls) => setImageUrls(urls)}
           bucket="product-images"
@@ -340,10 +347,7 @@ export default function CreateProductForm() {
         <CustomButton
           title={t("rent.create")}
           type="primary-btn"
-          loading={
-            createProduct.isLoading
-            // || isUploading
-          }
+          loading={createProduct.isLoading}
         />
       </form>
     </div>

@@ -20,10 +20,10 @@ model Buyer {
   SavedProduct SavedProduct[]
   Comment Comment[]
   chatRooms ChatRoom[]
-  
   idCardImage  Json? 
   profileImage  Json? 
   SupportTicket SupportTicket[]
+  Location Location[]
 }
 model Seller {
   id           Int       @id @default(autoincrement())
@@ -39,6 +39,7 @@ model Seller {
   idCardImage  Json? 
   profileImage  Json? 
   SupportTicket SupportTicket[]
+  Location Location[]
 }
 model Manager {
   id           Int       @id @default(autoincrement())
@@ -87,6 +88,7 @@ model Product {
   longitude   Float?
   city        String?
   images      Json?
+  address     String?
 }
 model SavedProduct {
   id        Int      @id @default(autoincrement())
@@ -127,6 +129,7 @@ model Order {
   updatedAt   DateTime    @updatedAt
   latitude    Float?      
   longitude   Float?
+  address     String?
 
 }
 enum SendingType {
@@ -145,9 +148,7 @@ model ChatRoom {
   buyer     Buyer?   @relation(fields: [buyerId], references: [id])
   seller    Seller?  @relation(fields: [sellerId], references: [id])
   manager   Manager? @relation(fields: [managerId], references: [id])
-
   messages Message[]
-
   @@unique([buyerId, sellerId])
   @@unique([buyerId, managerId])
   @@unique([sellerId, managerId])
@@ -186,12 +187,22 @@ model SupportMessage {
   senderId     Int
   chatRoomSupportId   Int
   createdAt    DateTime  @default(now())
-
   @@index([chatRoomSupportId])
   SupportTicket SupportTicket[]
 }
 
-// Update existing models to include chat relationships
-
+model Location {
+  id          Int      @id @default(autoincrement())
+  title       String
+  latitude    Float
+  longitude   Float
+  address     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  buyerId     Int?     
+  sellerId    Int?     
+  buyer       Buyer?   @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  seller      Seller?  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+}
 
 

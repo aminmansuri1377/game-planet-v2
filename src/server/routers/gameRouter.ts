@@ -118,6 +118,20 @@ export const gameRouter = router({
         data: { profileImage },
       });
     }),
+  photoSellerProfile: procedure
+    .input(
+      z.object({
+        userId: z.number(),
+        profileImage: z.array(z.string()).optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const { userId, profileImage } = input;
+      return await prisma.seller.update({
+        where: { id: userId },
+        data: { profileImage },
+      });
+    }),
 
   completeSellerProfile: procedure
     .input(
@@ -183,6 +197,7 @@ export const gameRouter = router({
         latitude: z.number().optional(),
         longitude: z.number().optional(),
         city: z.string().optional(),
+        address: z.string().optional(),
         images: z.array(z.string()).optional(),
       })
     )
@@ -200,6 +215,7 @@ export const gameRouter = router({
           latitude: input.latitude,
           longitude: input.longitude,
           city: input.city,
+          address: input.city,
           images: input.images,
         },
       });
@@ -335,6 +351,7 @@ export const gameRouter = router({
         totalPrice: z.number(),
         latitude: z.number().optional(),
         longitude: z.number().optional(),
+        address: z.string().optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -359,6 +376,7 @@ export const gameRouter = router({
             quantity: input.quantity,
             latitude: input.latitude,
             longitude: input.longitude,
+            address: input.address,
           },
         });
         await prisma.product.update({
@@ -881,6 +899,65 @@ export const gameRouter = router({
       return await prisma.supportTicket.update({
         where: { chatRoomSupportId: input.chatRoomId },
         data: { status: "CLOSED" },
+      });
+    }),
+  /////////////////personal location
+  addLocation: procedure
+    .input(
+      z.object({
+        title: z.string(),
+        latitude: z.number(),
+        longitude: z.number(),
+        address: z.string(),
+        buyerId: z.number().optional(),
+        sellerId: z.number().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      if (!input.buyerId && !input.sellerId) {
+        throw new Error("Either buyerId or sellerId must be provided.");
+      }
+
+      if (input.buyerId && input.sellerId) {
+        throw new Error(
+          "A location cannot be linked to both a buyer and a seller."
+        );
+      }
+
+      return await prisma.location.create({
+        data: {
+          title: input.title,
+          latitude: input.latitude,
+          longitude: input.longitude,
+          address: input.address,
+          buyerId: input.buyerId,
+          sellerId: input.sellerId,
+        },
+      });
+    }),
+  getUserLocations: procedure
+    .input(
+      z.object({
+        buyerId: z.number().optional(),
+        sellerId: z.number().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      if (!input.buyerId && !input.sellerId) {
+        throw new Error("Either buyerId or sellerId must be provided.");
+      }
+
+      return await prisma.location.findMany({
+        where: {
+          OR: [{ buyerId: input.buyerId }, { sellerId: input.sellerId }],
+        },
+      });
+    }),
+  deleteLocation: procedure
+    .input(z.object({ locationId: z.number() }))
+    .mutation(async ({ input }) => {
+      return await prisma.location.delete({
+        where: { id: input.locationId },
       });
     }),
 });

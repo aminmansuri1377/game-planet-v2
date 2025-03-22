@@ -15,7 +15,6 @@ function Uploader({
   bucket?: string;
 }) {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  console.log("bucket", bucket);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -53,8 +52,12 @@ function Uploader({
       onUpload(urls);
     });
   };
-  console.log("singleUpload", singleUpload);
 
+  // Function to handle deleting an image
+  const handleDeleteImage = (urlToDelete: string) => {
+    setImageUrls(imageUrls.filter((url) => url !== urlToDelete));
+  };
+  console.log("imageUrls", imageUrls);
   return (
     <div className="bg-slate-500 flex justify-center items-center flex-col gap-8">
       <input
@@ -76,13 +79,16 @@ function Uploader({
 
       <div className="m-2">
         {imageUrls.map((url, index) => (
-          <Image
-            key={url}
-            src={url}
-            width={300}
-            height={300}
-            alt={`img-${index}`}
-          />
+          <div key={url} className="relative">
+            <Image src={url} width={300} height={300} alt={`img-${index}`} />
+            {/* Delete button */}
+            <button
+              onClick={() => handleDeleteImage(url)}
+              className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full"
+            >
+              X
+            </button>
+          </div>
         ))}
       </div>
 
