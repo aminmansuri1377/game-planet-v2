@@ -134,7 +134,7 @@ const AuthForm = ({ userType, formType }: AuthFormProps) => {
               <CustomButton
                 className="w-full mt-6"
                 type="primary-btn"
-                title={t(`rent.${formType}`)}
+                title={formType === "signUp" ? "ثبت نام" : "ورود"}
                 loading={isLoading}
               ></CustomButton>
             </form>
@@ -142,7 +142,9 @@ const AuthForm = ({ userType, formType }: AuthFormProps) => {
               یا
             </div>
             <p className="text-center text-sm text-white mt-2 font-PeydaRegular">
-              {`${formType === "signUp" ? "ثبت نام" : "ورود"}`}
+              {t(
+                `rent.${formType === "signUp" ? "loginPrompt" : "signUpPrompt"}`
+              )}
               <Link
                 className="text-blue-500 hover:underline font-PeydaBlack mx-1"
                 href={`${userType === "seller" ? "/seller" : ""}/${

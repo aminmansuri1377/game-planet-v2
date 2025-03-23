@@ -47,9 +47,9 @@ const WelcomePage = () => {
   if (categoriesError) return <p>Error: {categoriesError.message}</p>;
 
   return (
-    <div className="text-center">
+    <div className="text-center min-h-screen px-3">
       <Header />
-      <div className="px-8 mt-10">
+      <div className="px-5 mt-10">
         <Image src={HeaderImage} alt="header" />
         <h1 className="font-PeydaBlack text-center mt-5 text-3xl">
           !به رنتا خوش آمدید

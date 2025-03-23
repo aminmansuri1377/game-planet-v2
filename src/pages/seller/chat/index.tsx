@@ -1,21 +1,21 @@
 import { useState } from "react";
-// import { api } from "~/utils/api";
 import { trpc } from "../../../../utils/trpc";
-import { ChatComponent } from "@/components/Chat/ChatComponent";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FaArrowLeftLong } from "react-icons/fa6";
-export default function ChatHistory() {
-  const router = useRouter();
+import HeadOfPages from "@/components/ui/HeadOfPages";
+import RoundButton from "@/components/ui/RoundButton";
+import { GoMail } from "react-icons/go";
 
+export default function ChatHistory() {
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
+  const router = useRouter();
   const { data: session, status } = useSession();
-  console.log("firstsession", session);
-  // Replace these with your actual user info from your auth system
   const currentUserType = "SELLER"; // or "SELLER" or "MANAGER"
   const currentUserId = session?.user?.id
     ? parseInt(session.user.id, 10)
     : null;
+
   const { data: chatRooms } = trpc.main.getChatRooms.useQuery({
     userType: currentUserType,
     userId: currentUserId && currentUserId,
@@ -31,22 +31,42 @@ export default function ChatHistory() {
     }
   };
 
+  const handleRoomClick = (roomId: number, buyerId: number) => {
+    router.push(`/seller/chat/${roomId}?buyerId=${buyerId}`);
+  };
+
   return (
-    <div className="flex h-screen">
+    <div className="h-screen bg-secondary">
+      <HeadOfPages
+        title="پیام ها و اعلانات"
+        back={
+          <div onClick={() => router.back()} className=" m-5">
+            <FaArrowLeftLong />
+          </div>
+        }
+        icon={
+          <div className="w-14 text-center mx-auto">
+            <RoundButton
+              Children={
+                <div>
+                  <GoMail size={40} className="text-center" />
+                </div>
+              }
+            />
+          </div>
+        }
+      />
+
       {/* Chat rooms sidebar */}
-      <div onClick={() => router.back()}>
-        <FaArrowLeftLong />
-      </div>
-      <div className="w-1/4 border-r bg-gray-50">
-        <div className="p-4">
-          <h2 className="mb-4 text-xl font-bold">Chats</h2>
+      <div className="border-r">
+        <div className="p-4 text-end">
           <div className="space-y-2">
             {chatRooms?.map((room) => {
               const otherParticipant = getOtherParticipant(room);
               return (
                 <div
                   key={room.id}
-                  onClick={() => setSelectedRoom(room.id)}
+                  onClick={() => handleRoomClick(room.id, room.buyerId)}
                   className={`cursor-pointer rounded-lg p-3 transition-colors ${
                     selectedRoom === room.id
                       ? "bg-blue-500"
@@ -68,17 +88,9 @@ export default function ChatHistory() {
 
       {/* Chat area */}
       <div className="flex-1">
-        {selectedRoom ? (
-          <ChatComponent
-            chatRoomId={selectedRoom}
-            currentUserType={currentUserType}
-            currentUserId={currentUserId && currentUserId}
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-gray-500">
-            Select a chat to start messaging
-          </div>
-        )}
+        <div className="flex h-full items-center justify-center text-gray-500">
+          Select a chat to start messaging
+        </div>
       </div>
     </div>
   );

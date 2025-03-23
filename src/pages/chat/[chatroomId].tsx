@@ -1,45 +1,42 @@
-import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/router";
 import { trpc } from "../../../utils/trpc";
 import { createClient } from "@supabase/supabase-js";
-import { useRouter } from "next/router";
-
-interface ChatComponentProps {
-  chatRoomId: number;
-  currentUserType: "BUYER" | "SELLER" | "MANAGER";
-  currentUserId: number;
-}
+import { useEffect, useRef, useState } from "react";
+import { FaArrowLeftLong } from "react-icons/fa6";
+import { useSession } from "next-auth/react";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export const ChatComponent = ({
-  chatRoomId,
-  currentUserType,
-  currentUserId,
-}: ChatComponentProps) => {
+const ChatRoomPage = () => {
   const router = useRouter();
-  const path = router.asPath;
-  let userType;
+  const { chatroomId, sellerId } = router.query;
+  const { data: session, status } = useSession();
+  const numericSellerId = sellerId ? Number(sellerId) : null;
 
-  if (path.includes("seller")) {
-    userType = "SELLER";
-  } else if (path.includes("dashboard")) {
-    userType = "MANAGER";
-  } else {
-    userType = "BUYER";
-  }
   const [message, setMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
 
   const { data: messages, refetch } = trpc.main.getMessages.useQuery(
-    { chatRoomId },
+    { chatRoomId: Number(chatroomId) },
     {
-      refetchInterval: 1000 * 10 * 2, // Refetch every 2 minutes (120,000 milliseconds)
-      refetchOnWindowFocus: false, // Optional: Disable refetch on window focus
+      refetchInterval: 1000 * 10 * 2,
+      refetchOnWindowFocus: false,
     }
   );
+
+  const {
+    data: seller,
+    isLoading: isSellerLoading,
+    error: sellerError,
+  } = trpc.main.getSellerById.useQuery(
+    { userId: numericSellerId! },
+    { enabled: !!numericSellerId }
+  );
+  console.log("seller", seller);
   const sendMessage = trpc.main.sendMessage.useMutation({
     onSuccess: () => {
       refetch();
@@ -47,15 +44,17 @@ export const ChatComponent = ({
   });
 
   useEffect(() => {
+    if (!chatroomId) return;
+
     const channel = supabase
-      .channel(`room:${chatRoomId}`)
+      .channel(`room:${chatroomId}`)
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
           table: "Message",
-          filter: `chatRoomId=eq.${chatRoomId}`,
+          filter: `chatRoomId=eq.${chatroomId}`,
         },
         () => {
           refetch(); // Refetch messages when a new message is inserted
@@ -66,7 +65,7 @@ export const ChatComponent = ({
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [chatRoomId, refetch]);
+  }, [chatroomId, refetch]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -78,30 +77,40 @@ export const ChatComponent = ({
     if (!message.trim()) return;
 
     await sendMessage.mutateAsync({
-      chatRoomId,
+      chatRoomId: Number(chatroomId),
       content: message,
-      senderType: currentUserType,
-      senderId: currentUserId,
+      senderType: "BUYER", // Replace with actual user type
+      senderId: userId && userId, // Replace with actual user ID
     });
     setMessage("");
   };
-  console.log("messages", messages);
-  console.log("userType", userType);
+
   return (
     <div className="flex h-full flex-col">
+      <div onClick={() => router.back()} className=" m-5">
+        <FaArrowLeftLong />
+      </div>
+      <div className=" text-center">
+        {seller && (
+          <h1>
+            {seller.firstName}
+            {seller.lastName}
+          </h1>
+        )}
+      </div>
       <div className="flex-1 overflow-y-auto py-4">
         {messages?.map((msg) => (
           <div
             key={msg.id}
             className={`mb-4 flex ${
-              msg.senderType === userType && msg.senderId === currentUserId
+              msg.senderType === "BUYER" && msg.senderId === 1
                 ? "justify-end"
                 : "justify-start"
             }`}
           >
             <div
               className={`rounded-lg px-4 py-2 ${
-                msg.senderType === userType && msg.senderId === currentUserId
+                msg.senderType === "BUYER" && msg.senderId === 1
                   ? "bg-blue-500 text-white"
                   : "bg-gray-700 text-white"
               }`}
@@ -134,3 +143,5 @@ export const ChatComponent = ({
     </div>
   );
 };
+
+export default ChatRoomPage;

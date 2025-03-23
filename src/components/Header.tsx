@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { IoPersonSharp } from "react-icons/io5";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { CgEnter } from "react-icons/cg";
 import CustomModal from "./ui/CustomModal";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -18,6 +18,9 @@ import { FiSettings } from "react-icons/fi";
 import { FiBookmark } from "react-icons/fi";
 import { LuHeadphones } from "react-icons/lu";
 import Divider from "./ui/Divider";
+import { useResetRecoilState } from "recoil";
+import { sessionAtom } from "../../store/atoms/sessionAtom";
+import { CiLogout } from "react-icons/ci";
 
 function Header() {
   const router = useRouter();
@@ -43,13 +46,21 @@ function Header() {
   const closeModal = () => {
     setOpen(false);
   };
+  const resetSession = useResetRecoilState(sessionAtom);
+
+  const handleSignOut = async () => {
+    resetSession();
+    await signOut({ redirect: false });
+    router.push("/");
+    setIsMenuOpen(false);
+  };
   return (
     <div>
       <div
         className={`top-0 pt-10 w-full flex justify-between py-5 items-center z-50 px-0 bg-transparent`}
       >
         <div className="text-center items-center " onClick={handleHome}>
-          <h1 className="text-center font-black text-text2 text-4xl mx-4 ">
+          <h1 className="text-center font-black text-text2 text-4xl  ">
             RENTTA{" "}
           </h1>
         </div>
@@ -64,7 +75,7 @@ function Header() {
           Children={<CgEnter size={28} className="text-gray-300" />}
         />
       )} */}
-        <div className=" flex justify-around gap-3 mx-3">
+        <div className=" flex justify-around gap-3 ">
           <RoundButton
             handleClick={handleBasket}
             Children={<CiShoppingBasket size={28} className="text-gray-300" />}
@@ -145,6 +156,13 @@ function Header() {
             <LuHeadphones size={28} className="text-text2" />
           </div>
           <Divider />
+          <div className=" flex justify-end my-1" onClick={handleSignOut}>
+            <h2 className=" text-red-600 mx-5 font-PeydaBold">
+              {" "}
+              خروج از حساب{" "}
+            </h2>
+            <CiLogout size={28} className="text-red-600" />
+          </div>
         </div>
       </div>
     </div>
