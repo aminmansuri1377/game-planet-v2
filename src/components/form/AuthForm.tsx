@@ -20,51 +20,79 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
 import ToastContent from "../ui/ToastContent";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import { signIn } from "next-auth/react";
 
-const SellerSignUpForm = () => {
+interface AuthFormProps {
+  userType: "seller" | "buyer";
+  formType: "signUp" | "signIn";
+}
+
+const AuthForm = ({ userType, formType }: AuthFormProps) => {
   const router = useRouter();
-  const handleBack = () => {
-    router.back();
-  };
   const { t } = useTranslation();
+  const [isLoading, setIsLoading] = useState(false);
 
   const FormSchema = z.object({
     phone: z
       .string()
-      .length(11, t("rent.usernameRequired")) // Ensures exactly 11 characters
-      .regex(/^\d{11}$/, t("rent.usernameRequired")), // Ensures only digits
+      .length(11, t("rent.usernameRequired"))
+      .regex(/^\d{11}$/, t("rent.usernameRequired")),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      phone: "",
+    },
   });
 
-  const [isLoading, setIsLoading] = useState(false);
+  const handleBack = () => {
+    router.back();
+  };
 
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/seller", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phone: values.phone,
-        }),
-      });
+      if (formType === "signUp") {
+        const response = await fetch(`/api/${userType}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            phone: values.phone,
+          }),
+        });
 
-      if (response.ok) {
-        toast.custom(
-          <ToastContent type="success" message="User created successfully!" />
-        );
-        router.push("/seller/signIn");
+        if (response.ok) {
+          toast.custom(
+            <ToastContent type="success" message="User created successfully!" />
+          );
+          router.push(`${userType === "seller" ? "/seller" : ""}/signIn`);
+        } else {
+          const errorData = await response.json();
+          toast.custom(
+            <ToastContent
+              type="error"
+              message={errorData.message || "Failed to sign up"}
+            />
+          );
+        }
       } else {
-        const errorData = await response.json();
-        toast.custom(
-          <ToastContent
-            type="error"
-            message={errorData.message || "Failed to sign up"}
-          />
-        );
+        const signInData = await signIn("credentials", {
+          phone: values.phone,
+          redirect: false,
+        });
+
+        if (signInData?.error) {
+          toast.custom(
+            <ToastContent type="error" message={signInData?.error} />
+          );
+        } else {
+          const response = await fetch("/api/auth/session");
+          const session = await response.json();
+          if (session) {
+            router.push(userType === "seller" ? "/seller" : "/");
+          }
+        }
       }
     } catch (error) {
       toast.custom(<ToastContent type="error" message="Unexpected error" />);
@@ -82,7 +110,7 @@ const SellerSignUpForm = () => {
         <div className=" bg-cardbg px-8 pb-24 pt-10 rounded-xl  ">
           <Form {...form}>
             <h1 className=" font-PeydaBlack text-text2 text-center my-5">
-              ورود{" "}
+              {formType === "signUp" ? "ثبت نام" : "ورود"}
             </h1>
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
               <div className="space-y-2 font-PeydaBold text-end">
@@ -106,20 +134,22 @@ const SellerSignUpForm = () => {
               <CustomButton
                 className="w-full mt-6"
                 type="primary-btn"
-                title={t("rent.signUp")}
+                title={t(`rent.${formType}`)}
                 loading={isLoading}
               ></CustomButton>
             </form>
-            <div className="mx-auto my-4 flex w-full items-center font-PeydaMedium justify-evenly before:mr-4 before:block before:h-px before:flex-grow before:bg-stone-400 after:ml-4 after:block after:h-px after:flex-grow after:bg-stone-400">
+            <div className="mx-auto my-4 flex w-full items-center justify-evenly before:mr-4 before:block before:h-px before:flex-grow before:bg-stone-400 after:ml-4 after:block after:h-px after:flex-grow after:bg-stone-400">
               یا
             </div>
             <p className="text-center text-sm text-white mt-2 font-PeydaRegular">
-              {t("rent.loginPrompt")}{" "}
+              {`${formType === "signUp" ? "ثبت نام" : "ورود"}`}
               <Link
-                className="text-blue-500 hover:underline mx-1 font-PeydaBlack"
-                href="/seller/signIn"
+                className="text-blue-500 hover:underline font-PeydaBlack mx-1"
+                href={`${userType === "seller" ? "/seller" : ""}/${
+                  formType === "signUp" ? "signIn" : "signUp"
+                }`}
               >
-                {t("rent.login")}
+                {t(`rent.${formType === "signUp" ? "login" : "signUp"}`)}
               </Link>
             </p>
           </Form>
@@ -129,4 +159,4 @@ const SellerSignUpForm = () => {
   );
 };
 
-export default SellerSignUpForm;
+export default AuthForm;

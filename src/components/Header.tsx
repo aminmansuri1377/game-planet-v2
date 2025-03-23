@@ -44,15 +44,16 @@ function Header() {
     setOpen(false);
   };
   return (
-    <div
-      className={`top-0 pt-10 w-full flex justify-around py-5 items-center z-50 px-0 bg-transparent`}
-    >
-      <div className="text-center items-center " onClick={handleHome}>
-        <h1 className="text-center font-black text-text2 text-4xl mx-4 ">
-          RENTA{" "}
-        </h1>
-      </div>
-      {/* {session ? (
+    <div>
+      <div
+        className={`top-0 pt-10 w-full flex justify-between py-5 items-center z-50 px-0 bg-transparent`}
+      >
+        <div className="text-center items-center " onClick={handleHome}>
+          <h1 className="text-center font-black text-text2 text-4xl mx-4 ">
+            RENTTA{" "}
+          </h1>
+        </div>
+        {/* {session ? (
         <RoundButton
           handleClick={handleProfile}
           Children={<IoPersonSharp size={28} className="text-gray-300" />}
@@ -63,26 +64,24 @@ function Header() {
           Children={<CgEnter size={28} className="text-gray-300" />}
         />
       )} */}
-
-      <RoundButton
-        handleClick={handleBasket}
-        Children={<CiShoppingBasket size={28} className="text-gray-300" />}
-      />
-      <div className="">
-        <RoundButton
-          handleClick={handleChat}
-          Children={<MdMailOutline size={28} className="text-gray-300" />}
-        />
-        {/* <RoundButton
-          handleClick={() => setOpen(true)}
-          Children={<HiMiniLanguage size={28} className="text-gray-300" />}
+        <div className=" flex justify-around gap-3 mx-3">
+          <RoundButton
+            handleClick={handleBasket}
+            Children={<CiShoppingBasket size={28} className="text-gray-300" />}
+          />
+          <RoundButton
+            handleClick={handleChat}
+            Children={<MdMailOutline size={28} className="text-gray-300" />}
+          />
+          {/* <RoundButton
+        handleClick={() => setOpen(true)}
+        Children={<HiMiniLanguage size={28} className="text-gray-300" />}
         /> */}
-      </div>
-      <div>
-        <RoundButton
-          handleClick={() => setIsMenuOpen(true)}
-          Children={<IoMdMenu size={28} className="text-gray-300" />}
-        />
+          <RoundButton
+            handleClick={() => setIsMenuOpen(true)}
+            Children={<IoMdMenu size={28} className="text-gray-300" />}
+          />
+        </div>
       </div>
       <CustomModal type="general" show={open} onClose={closeModal}>
         <LanguageSwitcher onClose={closeModal} />

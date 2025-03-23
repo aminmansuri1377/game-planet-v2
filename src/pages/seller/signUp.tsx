@@ -1,10 +1,10 @@
-import SellerSignUpForm from "@/components/form/SellerSignUpForm";
+import AuthForm from "@/components/form/AuthForm";
 import React from "react";
 
 function signUp() {
   return (
     <div>
-      <SellerSignUpForm />
+      <AuthForm userType="seller" formType="signUp" />{" "}
     </div>
   );
 }
