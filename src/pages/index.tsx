@@ -50,35 +50,39 @@ const WelcomePage = () => {
     <div className="text-center min-h-screen px-3">
       <Header />
       <div className="px-5 mt-10">
-        <Image src={HeaderImage} alt="header" />
-        <h1 className="font-PeydaBlack text-center mt-5 text-3xl">
-          !به رنتا خوش آمدید
-        </h1>
-        <h1 className="font-PeydaBold text-center mb-5 mt-3">
-          اجاره هر چیزی که نیاز دارید با یک کلیک
-        </h1>
+        <div className=" md:flex">
+          <Image src={HeaderImage} alt="header" />
+          <div>
+            <h1 className="font-PeydaBlack text-center mt-5 text-3xl">
+              !به رنتا خوش آمدید
+            </h1>
+            <h1 className="font-PeydaBold text-center mb-5 mt-3">
+              اجاره هر چیزی که نیاز دارید با یک کلیک
+            </h1>
 
-        <CustomButton
-          type="secondary-btn"
-          title="ورودخ"
-          onClick={() => buyerSignIn()}
-        />
-        <CustomButton
-          type="primary-btn"
-          title="ثبت نامخ"
-          onClick={() => buyerSignUp()}
-        />
+            <CustomButton
+              type="secondary-btn"
+              title="ورودخ"
+              onClick={() => buyerSignIn()}
+            />
+            <CustomButton
+              type="primary-btn"
+              title="ثبت نامخ"
+              onClick={() => buyerSignUp()}
+            />
 
-        <CustomButton
-          type="secondary-btn"
-          title="ورودف"
-          onClick={() => sellerSignIn()}
-        />
-        <CustomButton
-          type="primary-btn"
-          title="ثبت نامف"
-          onClick={() => sellerSignUp()}
-        />
+            <CustomButton
+              type="secondary-btn"
+              title="ورودف"
+              onClick={() => sellerSignIn()}
+            />
+            <CustomButton
+              type="primary-btn"
+              title="ثبت نامف"
+              onClick={() => sellerSignUp()}
+            />
+          </div>
+        </div>
         {/* Search Input */}
         <h1 className="font-PeydaBlack text-center mt-10 text-3xl">
           دنبال چه چیزی میگردی ؟
@@ -88,7 +92,7 @@ const WelcomePage = () => {
         </div>
 
         {/* Categories */}
-        <div className="grid grid-cols-3 gap-2 mb-8">
+        <div className="grid grid-cols-3 md:grid-cols-5 gap-2 mb-8">
           <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} />
           <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} />
           <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} />
@@ -109,7 +113,7 @@ const WelcomePage = () => {
         <h1 className="font-PeydaBlack text-center mt-10 text-2xl">
           چرا از رنتا استفاده کنم ؟{" "}
         </h1>
-        <div className=" grid grid-cols-2 gap-8 mx-2 my-10">
+        <div className=" grid grid-cols-2 md:grid-cols-4 gap-8 mx-2 my-10">
           <WhyCard
             title="امنیت"
             text="لورم ایپسوم متن ساختگی با تولید سادگی "

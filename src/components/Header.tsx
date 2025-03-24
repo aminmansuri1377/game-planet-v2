@@ -106,7 +106,7 @@ function Header() {
 
       {/* Sliding Menu */}
       <div
-        className={`fixed top-0 right-0 h-full w-2/3 bg-cardbg shadow-lg z-50 transform transition-transform ${
+        className={`fixed top-0 right-0 h-full w-2/3 md:w-1/4 bg-cardbg shadow-lg z-50 transform transition-transform ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >

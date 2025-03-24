@@ -255,7 +255,7 @@ const SearchResultsPage = () => {
         </label>
       </div>
       <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
           {sortedProducts?.map((product) => {
             const isSaved = savedProducts?.some(
               (sp) => sp.productId === product.id
