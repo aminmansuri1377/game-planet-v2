@@ -4,6 +4,8 @@ import { createClient } from "@supabase/supabase-js";
 import { useEffect, useRef, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
+import Divider from "@/components/ui/Divider";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -90,14 +92,24 @@ const ChatRoomPage = () => {
       <div onClick={() => router.back()} className=" m-5">
         <FaArrowLeftLong />
       </div>
-      <div className=" text-center">
+      <div className=" text-center my-5">
         {seller && (
-          <h1>
-            {seller.firstName}
-            {seller.lastName}
-          </h1>
+          <div className=" flex gap-3">
+            <Image
+              src={seller?.profileImage[0]}
+              alt={seller?.firstName}
+              width={40}
+              height={40}
+              className=" rounded-full"
+            />
+            <h1 className=" mt-3">
+              {seller.firstName}
+              {seller.lastName}
+            </h1>
+          </div>
         )}
       </div>
+      {/* <Divider /> */}
       <div className="flex-1 overflow-y-auto py-4">
         {messages?.map((msg) => (
           <div

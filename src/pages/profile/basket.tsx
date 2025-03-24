@@ -11,6 +11,8 @@ import { FcBinoculars } from "react-icons/fc";
 import jalaali from "jalaali-js";
 import ToastContent from "../../components/ui/ToastContent";
 import toast from "react-hot-toast";
+import RoundButton from "@/components/ui/RoundButton";
+import HeadOfPages from "@/components/ui/HeadOfPages";
 
 function Basket() {
   const { t } = useTranslation();
@@ -61,20 +63,29 @@ function Basket() {
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <div className="w-full">
-      <div className="flex justify-between items-center mx-5">
-        <div onClick={handleBack}>
-          <FaArrowLeftLong />
-        </div>
-        <div className="flex rounded-full bg-gradient-to-tr shadow-xl shadow-purple-800 from-[#9E16BD] to-[#5F1470] p-3 items-center text-center mr-2">
-          <FaShoppingBasket size={34} className="text-gray-300" />
-        </div>
-        <div></div>
-      </div>
-      <h1 className="font-PeydaBlack my-5">{t("rent.myCart")}</h1>
+    <div className="w-full min-h-screen">
+      <HeadOfPages
+        title="سفارشات"
+        back={
+          <div onClick={handleBack} className=" m-5">
+            <FaArrowLeftLong />
+          </div>
+        }
+        icon={
+          <div className="w-14 text-center mx-auto">
+            <RoundButton
+              Children={
+                <div>
+                  <FaShoppingBasket size={40} className="text-center" />
+                </div>
+              }
+            />
+          </div>
+        }
+      />
       {orders ? (
         orders.length > 0 ? (
-          <div className="h-[55vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
+          <div className=" overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
             {orders
               .slice()
               .reverse()

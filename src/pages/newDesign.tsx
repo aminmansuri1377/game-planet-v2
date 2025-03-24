@@ -58,24 +58,26 @@ function newDesign() {
       newDesign
       <CustomButton title="booobs" type="primary-btn" />
       <CustomButton title="booobs" type="secondary-btn" />
-      <ProductCard
-        imgUrl={ProductImg}
-        imgAlt="a"
-        name="یه دوربین خیلی خفن"
-        info="لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از ..."
-        handleSave={handleSave}
-        isSaved={true}
-        rate={9.5}
-      />
-      <ProductCard
-        imgUrl={ProductImg2}
-        imgAlt="a"
-        name="یه دوربین خیلی خفن"
-        info="لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از ..."
-        handleSave={handleSave}
-        isSaved={false}
-        rate={8}
-      />
+      <div className=" grid grid-cols-2 gap-2">
+        <ProductCard
+          imgUrl={ProductImg}
+          imgAlt="a"
+          name="یه دوربین خیلی خفن"
+          price={1500000}
+          handleSave={handleSave}
+          isSaved={true}
+          rate={4}
+        />
+        <ProductCard
+          imgUrl={ProductImg2}
+          imgAlt="a"
+          name="یه دوربین خیلی خفن"
+          price={1500000}
+          handleSave={handleSave}
+          isSaved={false}
+          rate={5}
+        />
+      </div>
     </div>
   );
 }

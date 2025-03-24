@@ -6,6 +6,8 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
 import { GoMail } from "react-icons/go";
+import Image from "next/image";
+import Divider from "@/components/ui/Divider";
 
 export default function ChatHistory() {
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
@@ -34,6 +36,9 @@ export default function ChatHistory() {
   const handleRoomClick = (roomId: number, buyerId: number) => {
     router.push(`/seller/chat/${roomId}?buyerId=${buyerId}`);
   };
+  const handleSupportHistory = () => {
+    router.push("/seller/support/history");
+  };
 
   return (
     <div className="h-screen bg-secondary">
@@ -61,8 +66,28 @@ export default function ChatHistory() {
       <div className="border-r">
         <div className="p-4 text-end">
           <div className="space-y-2">
+            <div
+              className=" flex justify-end mx-2 my-6"
+              onClick={handleSupportHistory}
+            >
+              <div className=" mx-5">
+                <div className="font-semibold font-PeydaBold">
+                  چت های پشتیبانی
+                </div>
+                <div className="text-sm text-gray-800">رنــتـا</div>
+              </div>
+              {/* <Image
+                src={otherParticipant?.profileImage[0]}
+                alt={otherParticipant?.firstName}
+                width={40}
+                height={40}
+                className=" rounded-full"
+              /> */}
+            </div>
+            <Divider />
             {chatRooms?.map((room) => {
               const otherParticipant = getOtherParticipant(room);
+
               return (
                 <div
                   key={room.id}
@@ -73,11 +98,22 @@ export default function ChatHistory() {
                       : "hover:bg-gray-500"
                   }`}
                 >
-                  <div className="font-semibold">
-                    {otherParticipant?.firstName || otherParticipant?.phone}
-                  </div>
-                  <div className="text-sm text-gray-800">
-                    {room.messages[0]?.content}
+                  <div className=" flex justify-end">
+                    <div className=" mx-5">
+                      <div className="font-semibold font-PeydaBold">
+                        {otherParticipant?.firstName || otherParticipant?.phone}
+                      </div>
+                      <div className="text-sm text-gray-800">
+                        {room.messages[0]?.content}
+                      </div>
+                    </div>
+                    <Image
+                      src={otherParticipant?.profileImage[0]}
+                      alt={otherParticipant?.firstName}
+                      width={40}
+                      height={40}
+                      className=" rounded-full"
+                    />
                   </div>
                 </div>
               );

@@ -22,8 +22,8 @@ const SupportChatRoom = () => {
   const currentUserId = session?.user?.id ? parseInt(session.user.id, 10) : 0;
 
   return (
-    <div>
-      <div onClick={handleBack}>
+    <div className=" min-h-screen">
+      <div onClick={handleBack} className=" my-5">
         <FaArrowLeftLong />
       </div>
       <h1>Support Chat Room #{ticket.chatRoomSupportId}</h1>

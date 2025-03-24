@@ -22,7 +22,7 @@ const MyApp: AppType = ({
       <RecoilNexus />
 
       <SessionProvider session={session}>
-        <div className="glow-effect text-white">
+        <div className="glow-effect text-white min-h-screen">
           {/* <Header /> */}
           <div className=" flex flex-col items-center justify-center">
             <Component {...pageProps} />

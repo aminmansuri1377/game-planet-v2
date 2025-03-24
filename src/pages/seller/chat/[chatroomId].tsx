@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { useEffect, useRef, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -91,10 +92,19 @@ const ChatRoomPage = () => {
       </div>
       <div className=" text-center">
         {buyer && (
-          <h1>
-            {buyer.firstName}
-            {buyer.lastName}
-          </h1>
+          <div className=" flex gap-3">
+            <Image
+              src={buyer?.profileImage[0]}
+              alt={buyer?.firstName}
+              width={40}
+              height={40}
+              className=" rounded-full"
+            />
+            <h1 className=" mt-3">
+              {buyer.firstName}
+              {buyer.lastName}
+            </h1>
+          </div>
         )}
       </div>
       <div className="flex-1 overflow-y-auto py-4">

@@ -34,7 +34,7 @@ function HeadOfPages({ title, icon, back }) {
             {title}
           </h1>
         </div>
-        <div className=" mt-4">{icon}</div>
+        <div className=" mt-10">{icon}</div>
       </div>
     </div>
   );

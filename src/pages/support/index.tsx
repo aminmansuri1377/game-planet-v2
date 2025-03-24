@@ -4,6 +4,9 @@ import CustomButton from "@/components/ui/CustomButton";
 import { trpc } from "../../../utils/trpc";
 import { useRouter } from "next/router";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import HeadOfPages from "@/components/ui/HeadOfPages";
+import RoundButton from "@/components/ui/RoundButton";
+import { BiSupport } from "react-icons/bi";
 
 function index() {
   const { data: session, status } = useSession();
@@ -35,20 +38,39 @@ function index() {
   };
 
   return (
-    <div>
-      <div onClick={handleBack}>
-        <FaArrowLeftLong />
+    <div className=" min-h-screen">
+      <HeadOfPages
+        title="پشتیبانی"
+        back={
+          <div onClick={handleBack} className=" m-5">
+            <FaArrowLeftLong />
+          </div>
+        }
+        icon={
+          <div className="w-14 text-center mx-auto">
+            <RoundButton
+              Children={
+                <div>
+                  <BiSupport size={40} className="text-center" />
+                </div>
+              }
+            />
+          </div>
+        }
+      />
+
+      <div className=" text-center my-8">
+        <CustomButton
+          title="ایجاد چت پشتیبانی جدید"
+          type="primary-btn"
+          onClick={handleCreateTicket}
+        />
+        <CustomButton
+          title="تاریخچه چت پشتیانی"
+          type="primary-btn"
+          onClick={handleSupportHistory}
+        />
       </div>
-      <CustomButton
-        title="Create Support Ticket"
-        type="primary-btn"
-        onClick={handleCreateTicket}
-      />
-      <CustomButton
-        title="Support History Chat"
-        type="primary-btn"
-        onClick={handleSupportHistory}
-      />
     </div>
   );
 }

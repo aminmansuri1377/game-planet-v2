@@ -1,7 +1,10 @@
+import CustomButton from "@/components/ui/CustomButton";
 import { trpc } from "../../../utils/trpc";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import HeadOfPages from "@/components/ui/HeadOfPages";
+import RoundButton from "@/components/ui/RoundButton";
 
 const SupportHistoryPage = () => {
   const { data: session } = useSession();
@@ -19,21 +22,29 @@ const SupportHistoryPage = () => {
   if (isLoading) return <div>Loading...</div>;
 
   return (
-    <div>
-      <div onClick={handleBack}>
-        <FaArrowLeftLong />
-      </div>
-      <h1>Support History</h1>
+    <div className=" min-h-screen">
+      <HeadOfPages
+        title="تاریخچه چت پشتیانی"
+        back={
+          <div onClick={handleBack} className=" m-5">
+            <FaArrowLeftLong />
+          </div>
+        }
+        icon=""
+      />
       {tickets?.map((ticket) => (
-        <div key={ticket.id}>
-          <p>Chat Room ID: {ticket.chatRoomSupportId}</p>
-          <p>Status: {ticket.status}</p>
-          <button
+        <div
+          key={ticket.id}
+          className=" text-center bg-cardbg p-3 m-2 rounded-3xl"
+        >
+          <p>چت پشتیانی: {ticket.chatRoomSupportId}</p>
+          <p>وضعیت: {ticket.status}</p>
+          <CustomButton
             onClick={() => router.push(`/support/${ticket.chatRoomSupportId}`)}
-            disabled={ticket.status === "CLOSED"}
-          >
-            {ticket.status === "CLOSED" ? "View Chat" : "Continue Chat"}
-          </button>
+            disabled={ticket.status === "بسته شده"}
+            title={ticket.status === "CLOSED" ? "نمایش چت" : "ادامه چت"}
+            type="secondary-btn"
+          />
         </div>
       ))}
     </div>

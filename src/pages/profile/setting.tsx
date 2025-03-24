@@ -15,6 +15,8 @@ import Uploader from "@/components/uploader/Uploader";
 import { trpc } from "../../../utils/trpc";
 import toast from "react-hot-toast";
 import CustomButton from "@/components/ui/CustomButton";
+import HeadOfPages from "@/components/ui/HeadOfPages";
+import RoundButton from "@/components/ui/RoundButton";
 
 function setting() {
   const router = useRouter();
@@ -57,77 +59,63 @@ function setting() {
     setOpen(false);
   };
   return (
-    <div className=" w-full">
-      <Box>
-        <div className="flex justify-between items-center mx-5">
-          <div onClick={handleBack}>
+    <div className=" w-full min-h-screen">
+      <HeadOfPages
+        title="تنظیمات"
+        back={
+          <div onClick={handleBack} className=" m-5">
             <FaArrowLeftLong />
           </div>
-          <div className="flex rounded-full bg-gradient-to-tr shadow-xl shadow-purple-800 from-[#9E16BD] to-[#5F1470] p-3 items-center text-center mr-2">
-            <IoSettingsOutline size={34} className="text-gray-300" />
+        }
+        icon={
+          <div className="w-14 text-center mx-auto">
+            <RoundButton
+              Children={
+                <div>
+                  <IoSettingsOutline size={40} className="text-center" />
+                </div>
+              }
+            />
           </div>
-          <div></div>
-        </div>
-        <h1 className=" font-PeydaBlack my-5"> {t("rent.settings")} </h1>
-
-        <div className="">
-          <Box lessPaddingY className={"my-5"}>
-            <div
-              className=" flex justify-end items-center"
-              onClick={() => setOpen(true)}
-            >
-              <h1 className=" font-PeydaBold text-white mx-3">
-                {t("rent.editProfile")}
-              </h1>
-              <MdOutlineEdit size={30} />
-            </div>
-          </Box>
-          <Box lessPaddingY className={"my-5"}>
-            <div className=" flex justify-end items-center">
-              <h1 className=" font-PeydaBold text-white mx-3">
-                {t("rent.manageNotifications")}
-              </h1>
-              <IoIosNotificationsOutline size={30} />
-            </div>
-          </Box>
-          <Box lessPaddingY className={"my-5"}>
+        }
+      />
+      <div className=" p-6">
+        <Box>
+          <div className="">
+            <Box lessPaddingY className={"my-5"}>
+              <div className=" flex justify-end items-center">
+                <h1 className=" font-PeydaBold text-white mx-3">
+                  {t("rent.manageNotifications")}
+                </h1>
+                <IoIosNotificationsOutline size={30} />
+              </div>
+            </Box>
+            {/* <Box lessPaddingY className={"my-5"}>
             <div className=" flex justify-end items-center">
               <h1 className=" font-PeydaBold text-white mx-3">
                 {t("rent.wallet")}
               </h1>
               <LuWallet size={30} />
             </div>
-          </Box>
-          <Box lessPaddingY className={"my-5"}>
+          </Box> */}
             <div className=" flex justify-end items-center">
               <h1 className=" font-PeydaBold text-white mx-3">
-                change profile photo
+                تغییر عکس پروفایل
               </h1>
               <Uploader
                 bucket="profile-photo"
                 singleUpload={true}
                 onUpload={(urls) => setImageUrls(urls)}
               />
-              <LuWallet size={30} />
               <CustomButton
                 title="update"
                 type="primary-btn"
                 onClick={onSubmit}
               />
             </div>
-          </Box>
-          <div onClick={handleOut}>
-            <Box lessPaddingY className={"my-5"}>
-              <div className=" flex justify-end items-center">
-                <h1 className=" font-PeydaBold text-white mx-3">
-                  {t("rent.logout")}{" "}
-                </h1>
-                <HiOutlineLogout size={30} />
-              </div>
-            </Box>
           </div>
-        </div>
-      </Box>
+        </Box>
+      </div>
       <CustomModal type="general" show={open} onClose={closeModal}>
         <EditProfile />
       </CustomModal>
