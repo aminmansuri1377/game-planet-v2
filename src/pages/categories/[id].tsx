@@ -186,10 +186,10 @@ const CategoryProductsPage = () => {
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <div>
+    <div className=" min-h-screen px-3">
       <Header />
       <div className="py-6 px-2">
-        <div onClick={() => router.back()}>
+        <div onClick={() => router.back()} className=" my-3">
           <FaArrowLeftLong />
         </div>
 
@@ -261,28 +261,30 @@ const CategoryProductsPage = () => {
             <span>Sort by Nearest Location</span>
           </label>
         </div>
-        <div className="space-y-4">
-          {sortedProducts?.map((product) => {
-            const isSaved = savedProducts?.some(
-              (sp) => sp.productId === product.id
-            );
-            return (
-              <div
-                key={product.id}
-                onClick={() => router.push(`/singleProduct/${product.id}`)}
-              >
-                <ProductCard
-                  imgUrl={ProductImg}
-                  imgAlt={product.name}
-                  name={product.name}
-                  info={`Price: $${product.price} , ${product.description}`}
-                  handleSave={(e) => handleSave(product.id, e)} // Pass the event
-                  isSaved={isSaved}
-                  rate={8}
-                />
-              </div>
-            );
-          })}
+        <div className="space-y-4 ">
+          <div className="grid grid-cols-2 gap-2">
+            {sortedProducts?.map((product) => {
+              const isSaved = savedProducts?.some(
+                (sp) => sp.productId === product.id
+              );
+              return (
+                <div
+                  key={product.id}
+                  onClick={() => router.push(`/singleProduct/${product.id}`)}
+                >
+                  <ProductCard
+                    imgUrl={ProductImg}
+                    imgAlt={product.name}
+                    name={product.name}
+                    price={`${product.price}`}
+                    handleSave={(e) => handleSave(product.id, e)} // Pass the event
+                    isSaved={isSaved}
+                    rate={8}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

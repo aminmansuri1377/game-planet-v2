@@ -12,6 +12,7 @@ import { buyerLocationAtom } from "../../../store/atoms/buyerLocationAtom";
 import ProductCard from "@/components/ui/ProductCard";
 import ProductImg from "../../../public/images/p2.webp";
 import toast from "react-hot-toast";
+import Header from "@/components/Header";
 
 const Map = dynamic(() => import("@/components/MyMap"), {
   ssr: false,
@@ -178,8 +179,9 @@ const SearchResultsPage = () => {
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <div className="p-6">
-      <div onClick={() => router.back()}>
+    <div className="px-6">
+      <Header />
+      <div onClick={() => router.back()} className=" my-3">
         <FaArrowLeftLong />
       </div>
 
@@ -253,27 +255,29 @@ const SearchResultsPage = () => {
         </label>
       </div>
       <div className="space-y-4">
-        {sortedProducts?.map((product) => {
-          const isSaved = savedProducts?.some(
-            (sp) => sp.productId === product.id
-          );
-          return (
-            <div
-              key={product.id}
-              onClick={() => router.push(`/singleProduct/${product.id}`)}
-            >
-              <ProductCard
-                imgUrl={ProductImg}
-                imgAlt={product.name}
-                name={product.name}
-                info={`Price: $${product.price} , ${product.description}`}
-                handleSave={(e) => handleSave(product.id, e)} // Pass the event
-                isSaved={isSaved}
-                rate={8}
-              />
-            </div>
-          );
-        })}
+        <div className="grid grid-cols-2 gap-2">
+          {sortedProducts?.map((product) => {
+            const isSaved = savedProducts?.some(
+              (sp) => sp.productId === product.id
+            );
+            return (
+              <div
+                key={product.id}
+                onClick={() => router.push(`/singleProduct/${product.id}`)}
+              >
+                <ProductCard
+                  imgUrl={ProductImg}
+                  imgAlt={product.name}
+                  name={product.name}
+                  price={`${product.price}`}
+                  handleSave={(e) => handleSave(product.id, e)} // Pass the event
+                  isSaved={isSaved}
+                  rate={8}
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

@@ -8,7 +8,6 @@ import { useSession } from "next-auth/react";
 import Loading from "../../components/ui/Loading";
 import { useTranslation } from "react-i18next";
 import { FcBinoculars } from "react-icons/fc";
-import jalaali from "jalaali-js";
 import ToastContent from "../../components/ui/ToastContent";
 import toast from "react-hot-toast";
 import RoundButton from "@/components/ui/RoundButton";
@@ -49,15 +48,6 @@ function Basket() {
   const handleStatusChange = (id: number, newStatus: string) => {
     updateOrderStatus.mutate({ id, status: newStatus });
   };
-  const gregorianToPersian = (date: Date): string => {
-    const gregorianDate = new Date(date);
-    const { jy, jm, jd } = jalaali.toJalaali(
-      gregorianDate.getFullYear(),
-      gregorianDate.getMonth() + 1, // Months are 0-based in JS
-      gregorianDate.getDate()
-    );
-    return `${jy}/${jm}/${jd}`; // Format: YYYY/MM/DD
-  };
 
   if (isLoading) return <Loading />;
   if (error) return <p>Error: {error.message}</p>;
@@ -95,12 +85,6 @@ function Basket() {
                     data={order}
                     handleStatusChange={handleStatusChange}
                   />
-                  <p className="font-PeydaBold text-sm">
-                    Sending Type: {order.sendingType}
-                    start date: {gregorianToPersian(new Date(order?.startDate))}
-                    end date: {gregorianToPersian(new Date(order?.endDate))}
-                    total Price : {order?.totalPrice}
-                  </p>
                 </div>
               ))}
           </div>
