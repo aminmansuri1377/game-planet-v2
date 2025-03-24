@@ -14,7 +14,7 @@ function Footer() {
       <div className=" bottom-0 bg-[#00154b] rounded-t-3xl pb-7 border-2 border-[#2c52b2]">
         <div className=" flex text-center items-center">
           <Image src={logo} alt="logo" className="scale-50" />
-          <h1 className="text-center font-black text-3xl ">GAME PLANET</h1>
+          <h1 className="text-center font-black text-3xl ">RENTTA</h1>
         </div>
         <div className=" flex justify-around font-PeydaBold px-3">
           <h1>{t("rent.homePage")}</h1>

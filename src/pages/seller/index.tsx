@@ -5,6 +5,11 @@ import CustomButton from "../../components/ui/CustomButton";
 import { useTranslation } from "react-i18next";
 import { trpc } from "../../../utils/trpc";
 import { isProfileComplete } from "../../../utils/checkProfileCompletion";
+import SellerHeader from "@/components/SellerHeader";
+import Image from "next/image";
+import { LiaClipboardListSolid } from "react-icons/lia";
+import { AiFillProduct } from "react-icons/ai";
+import { GoPlusCircle } from "react-icons/go";
 
 const SellerHomePage = () => {
   const { data: session, status } = useSession();
@@ -36,56 +41,61 @@ const SellerHomePage = () => {
     router.push("/");
   };
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen px-6">
+      <SellerHeader />
       <div className="max-w-4xl mx-auto p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-6">Seller Dashboard</h1>
-
         {/* Seller Information */}
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Name
-            </label>
-            <p className="mt-1 text-lg text-gray-900">{session?.user?.name}</p>
+        {seller && (
+          <div className="space-y-4">
+            <div className=" bg-cardbg rounded-full p-1 flex justify-end">
+              <p className="text-lg text-text1 m-2">
+                {seller?.firstName}
+                {seller?.lastName}
+              </p>
+              <div>
+                {seller?.profileImage && (
+                  <Image
+                    src={seller?.profileImage[0]}
+                    alt={seller?.id}
+                    width={50}
+                    height={50}
+                    className=" rounded-full"
+                  />
+                )}
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <p className="mt-1 text-lg text-gray-900">{session?.user?.email}</p>
-          </div>
-        </div>
+        )}
 
         {/* Buttons */}
-        <CustomButton
-          title={t("rent.productCreation")}
-          type="primary-btn"
+        <div className=" flex gap-4 my-4 justify-center">
+          <div
+            className=" py-4 px-7 rounded-lg bg-cardbg"
+            onClick={() => {
+              router.push("/seller/products");
+            }}
+          >
+            <AiFillProduct size={70} />
+            <h1 className=" font-PeydaBold my-3">{t("rent.products")}</h1>
+          </div>
+          <div
+            className=" py-4 px-7 rounded-lg bg-cardbg"
+            onClick={() => router.push("/seller/orders")}
+          >
+            <LiaClipboardListSolid size={70} />
+            <h1 className=" font-PeydaBold my-3">{t("rent.orders")}</h1>
+          </div>
+        </div>
+        <div
+          className=" py-4 px-7 rounded-lg bg-cardbg flex justify-end"
           onClick={() => router.push("/seller/createProduct")}
-        />
-        <CustomButton
-          title={t("rent.products")}
-          type="primary-btn"
-          onClick={() => {
-            console.log("Navigating to /seller/products");
-            router.push("/seller/products");
-          }}
-        />
-        <CustomButton
-          title={t("rent.orders")}
-          type="primary-btn"
-          onClick={() => router.push("/seller/orders")}
-        />
-        <CustomButton
-          title="chat"
-          type="primary-btn"
-          onClick={() => router.push("/seller/chat")}
-        />
-        <CustomButton
-          title="support"
-          type="primary-btn"
-          onClick={() => router.push("/seller/support")}
-        />
-        <CustomButton
+        >
+          <h1 className=" font-PeydaBold mt-1 mx-2">
+            {t("rent.productCreation")}
+          </h1>
+          <GoPlusCircle size={35} />
+        </div>
+        {/* <CustomButton
           title="setting"
           type="primary-btn"
           onClick={() => router.push("/seller/setting")}
@@ -96,16 +106,7 @@ const SellerHomePage = () => {
             type="primary-btn"
             onClick={() => router.push("/seller/completeProfile")}
           />
-        )}
-
-        {/* Sign Out Button */}
-        <div className="mt-8">
-          <CustomButton
-            type="alert-btn"
-            title={t("rent.logout")}
-            onClick={handleSignOut}
-          />
-        </div>
+        )} */}
       </div>
     </div>
   );

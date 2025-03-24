@@ -120,8 +120,8 @@ const ChatRoomPage = () => {
             <div
               className={`rounded-lg px-4 py-2 ${
                 msg.senderType === "SELLER" && msg.senderId === 1
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-700 text-white"
+                  ? "bg-primary text-white"
+                  : "bg-cardbg text-white"
               }`}
             >
               {msg.content}

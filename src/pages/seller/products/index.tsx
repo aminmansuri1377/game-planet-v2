@@ -9,6 +9,11 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { AiTwotoneDelete } from "react-icons/ai";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
+import ProductCard from "@/components/ui/ProductCard";
+import SellerProductCard from "@/components/ui/SellerProductCard";
+import HeadOfPages from "@/components/ui/HeadOfPages";
+import RoundButton from "@/components/ui/RoundButton";
+import { AiFillProduct } from "react-icons/ai";
 
 const Products = () => {
   const router = useRouter();
@@ -67,28 +72,46 @@ const Products = () => {
   };
 
   return (
-    <div>
-      <div onClick={handleBack}>
-        <FaArrowLeftLong />
-      </div>
-      <div>
-        {products?.map((product) => (
-          <div key={product.id} className="flex text-center items-center">
-            <div onClick={() => handleUpdateProduct(product.id)}>
-              <Box>
-                <h1 className="font-PeydaBold text-center text-lg">
-                  {product.name}
-                </h1>
-                <p>{product.description}</p>
-                <p>Price: ${product.price}</p>
-                <p>Inventory: {product.inventory}</p>
-                <p>Sending Type: {product.sendingType.join(", ")}</p>
-              </Box>
-            </div>
-            <AiTwotoneDelete
-              size={30}
-              onClick={() => handleDeleteProduct(product.id)}
+    <div className=" min-h-screen">
+      <HeadOfPages
+        title="محصولات"
+        back={
+          <div onClick={handleBack} className=" m-5">
+            <FaArrowLeftLong />
+          </div>
+        }
+        icon={
+          <div className="w-14 text-center mx-auto">
+            <RoundButton
+              Children={
+                <div>
+                  <AiFillProduct size={40} className="text-center" />
+                </div>
+              }
             />
+          </div>
+        }
+      />
+
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mx-3">
+        {products?.map((product) => (
+          <div key={product.id} className="">
+            <div onClick={() => handleUpdateProduct(product.id)}>
+              <SellerProductCard
+                imgUrl={product.images ? product.images[0] : ""}
+                imgAlt={product.name}
+                name={product.name}
+                price={`${product.price}`}
+                // handleSave={(e) => handleSave(product.id, e)}
+                // isSaved={isSaved}
+                rate={8}
+              />
+              <AiTwotoneDelete
+                size={30}
+                onClick={() => handleDeleteProduct(product.id)}
+                className=" mt-[-40px]"
+              />
+            </div>
           </div>
         ))}
       </div>

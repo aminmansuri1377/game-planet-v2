@@ -24,7 +24,7 @@ export default function ChatHistory() {
   });
 
   const getOtherParticipant = (room: any) => {
-    if (currentUserType === "SELLER") {
+    if (currentUserType === "BUYER") {
       return room.seller || room.manager;
     } else if (currentUserType === "SELLER") {
       return room.buyer || room.manager;

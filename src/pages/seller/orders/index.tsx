@@ -13,6 +13,10 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import jalaali from "jalaali-js";
+import HeadOfPages from "@/components/ui/HeadOfPages";
+import RoundButton from "@/components/ui/RoundButton";
+import { LiaClipboardListSolid } from "react-icons/lia";
+import TicketBasket from "@/components/basket/TicketBasket";
 
 function SellerOrderManagement() {
   const { t } = useTranslation();
@@ -73,12 +77,26 @@ function SellerOrderManagement() {
 
   return (
     <div className="w-full">
-      <div onClick={handleBack}>
-        <FaArrowLeftLong />
-      </div>
-      <h1 className="mx-auto font-PeydaBlack text-center">
-        {t("rent.orders")}
-      </h1>
+      <HeadOfPages
+        title="سفارشات"
+        back={
+          <div onClick={handleBack} className=" m-5">
+            <FaArrowLeftLong />
+          </div>
+        }
+        icon={
+          <div className="w-14 text-center mx-auto">
+            <RoundButton
+              Children={
+                <div>
+                  <LiaClipboardListSolid size={40} className="text-center" />
+                </div>
+              }
+            />
+          </div>
+        }
+      />
+
       <div className="text-end">
         <input
           type="text"
@@ -92,18 +110,10 @@ function SellerOrderManagement() {
         {orders &&
           orders.map((order) => (
             <div key={order.id}>
-              <Box>
-                <TicketOrder
-                  data={order}
-                  handleStatusChange={handleStatusChange}
-                />
-                <p className="font-PeydaBold text-sm">
-                  Sending Type: {order.sendingType}
-                  start date: {gregorianToPersian(new Date(order?.startDate))}
-                  end date: {gregorianToPersian(new Date(order?.endDate))}
-                  total Price : {order?.totalPrice}
-                </p>
-              </Box>
+              <TicketOrder
+                data={order}
+                handleStatusChange={handleStatusChange}
+              />
             </div>
           ))}
       </div>

@@ -1,31 +1,36 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Box from "./Box";
-import DateObject from "react-date-object";
-import persian from "react-date-object/calendars/persian";
-import persian_fa from "react-date-object/locales/persian_fa";
 import { FaCircleCheck } from "react-icons/fa6";
 import { MdErrorOutline } from "react-icons/md";
 import { MdDeliveryDining } from "react-icons/md";
 import { MdSettingsBackupRestore } from "react-icons/md";
 import { MdCancel } from "react-icons/md";
-import OrderTicketDetail from "./ui/OrderTicketDetail";
-import OrderTicketStatus from "./ui/OrderTicketStatus";
-import { IoMdArrowDropdown } from "react-icons/io";
-import { IoMdArrowDropup } from "react-icons/io";
+import DateObject from "react-date-object";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
 import CustomButton from "./ui/CustomButton";
+import jalaali from "jalaali-js";
+import Image from "next/image";
 import { trpc } from "../../utils/trpc";
 
-function TicketOrder({ data, handleStatusChange }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const { t } = useTranslation();
-
+function TicketBasket({ data, handleStatusChange }) {
   const readDateOrder = new DateObject({
     date: data?.createdAt,
     calendar: persian,
     locale: persian_fa,
   });
-
+  const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
+  const gregorianToPersian = (date: Date): string => {
+    const gregorianDate = new Date(date);
+    const { jy, jm, jd } = jalaali.toJalaali(
+      gregorianDate.getFullYear(),
+      gregorianDate.getMonth() + 1, // Months are 0-based in JS
+      gregorianDate.getDate()
+    );
+    return `${jy}/${jm}/${jd}`; // Format: YYYY/MM/DD
+  };
   const increaseInventoryMutation =
     trpc.main.increaseProductInventory.useMutation({
       onSuccess: () => {
@@ -43,118 +48,176 @@ function TicketOrder({ data, handleStatusChange }) {
     handleStatusChange(id, status), handleIncreaseInventory(id);
   };
   return (
-    <div className=" bg-cardbg rounded-xl">
-      <Box lessPaddingY>
-        <div className="flex justify-between">
-          <h2>{data?.userEmail}</h2>
-          <h2>{data?.username}</h2>
-          <h2>:کاربر</h2>
-        </div>
-      </Box>
-      <button onClick={() => setIsOpen(!isOpen)} className="text-gray-600">
-        {isOpen ? (
-          <IoMdArrowDropup size={30} color="white" />
-        ) : (
-          <IoMdArrowDropdown size={30} color="white" />
-        )}
-      </button>
-      <div
-        className={`overflow-hidden transition-all duration-300 ${
-          isOpen ? "max-h-screen" : "max-h-0"
-        }`}
-      >
-        <div className="flex w-full justify-between">
-          <div className=" w-4/5">
-            <h1 className="mx-1 font-PeydaBold text-sm my-3">
-              {t("rent.status")}
-            </h1>
-            {data?.status === "waiting for confirmation" && (
-              <div>
-                <OrderTicketStatus
-                  Icon={MdErrorOutline}
-                  text={t("rent.awaitingConfirmation")}
-                  isActive="waiting for confirmation"
+    <div className=" bg-cardbg m-3 rounded-lg">
+      {data && (
+        <div>
+          <div className="">
+            <div>
+              {data?.product?.images && (
+                <Image
+                  src={data?.product?.images[0]}
+                  alt={data?.id}
+                  width={150}
+                  height={150}
+                  className=" rounded-t-lg w-full"
                 />
-                <div>
-                  <h1>do you accept?</h1>
-                  <CustomButton
-                    type="primary-btn"
-                    title="yes"
-                    onClick={() =>
-                      handleStatusChange(data?.id, "confirmed and sent")
-                    }
-                  />
-                  <CustomButton
-                    type="alert-btn"
-                    title="no"
-                    onClick={() => towActionHandler(data?.id, "denied")}
-                  />
-                </div>
+              )}
+            </div>
+            <div>
+              <div
+                className={` ${open ? "text-center" : "text-end"} mx-3 my-3`}
+              >
+                <h2 className="font-PeydaBold">{data?.product?.name}</h2>
               </div>
-            )}
-            {data?.status === "confirmed and sent" && (
-              <div>
-                <OrderTicketStatus
-                  Icon={MdDeliveryDining}
-                  text={t("rent.sent")}
-                  isActive="confirmed and sent"
-                />
+
+              <div
+                className={`flex ${
+                  open ? "justify-center" : "justify-end"
+                } mx-3`}
+              >
+                {data?.status === "waiting for confirmation" ? (
+                  <div>
+                    <div className=" flex">
+                      <MdErrorOutline size={20} className="" color="yellow" />
+                      <h1 className=" font-PeydaBold text-yellow-300 text-md">
+                        {t("rent.awaitingConfirmation")}
+                      </h1>
+                    </div>
+                    <div>
+                      <h1>do you accept?</h1>
+                      <CustomButton
+                        type="primary-btn"
+                        title="yes"
+                        onClick={() =>
+                          handleStatusChange(data?.id, "confirmed and sent")
+                        }
+                      />
+                      <CustomButton
+                        type="alert-btn"
+                        title="no"
+                        onClick={() => towActionHandler(data?.id, "denied")}
+                      />
+                    </div>
+                  </div>
+                ) : data?.status === "confirmed and sent" ? (
+                  <div>
+                    <div className=" flex">
+                      <MdDeliveryDining size={20} className="" color="blue" />
+                      <h1 className=" font-PeydaBold text-blue-400 text-md">
+                        {t("rent.sent")}
+                      </h1>
+                    </div>
+                  </div>
+                ) : data?.status === "delivered" ? (
+                  <div>
+                    <div className=" flex">
+                      <FaCircleCheck
+                        size={20}
+                        className=""
+                        color="lightGreen"
+                      />
+                      <h1 className=" font-PeydaBold text-green-400 text-md">
+                        {t("rent.delivered")}
+                      </h1>
+                    </div>
+                    <div>
+                      <h1>do you take it back correct?</h1>
+                      <CustomButton
+                        type="primary-btn"
+                        title="yes"
+                        onClick={() =>
+                          handleStatusChange(data?.id, "taken back")
+                        }
+                      />
+                    </div>
+                  </div>
+                ) : data?.status === "taken back" ? (
+                  <div className=" flex">
+                    <MdSettingsBackupRestore
+                      size={20}
+                      className=""
+                      color="black"
+                    />
+                    <h1 className=" font-PeydaBold text-black text-md">
+                      {t("rent.takenBack")}
+                    </h1>
+                    <div>do you want to add it to Warehouse?</div>
+                    <CustomButton
+                      type="primary-btn"
+                      title="yes"
+                      onClick={() => towActionHandler(data?.id, "taken back")}
+                    />
+                  </div>
+                ) : data?.status === "denied" ? (
+                  <div className=" flex">
+                    <MdCancel size={20} className="" color="red" />
+                    <h1 className=" font-PeydaBold text-red-600 text-md">
+                      {t("rent.canceled")}
+                    </h1>
+                  </div>
+                ) : (
+                  ""
+                )}
+                <h1 className=" font-PeydaBold">:{t("rent.status")}</h1>
               </div>
-            )}
-            {data?.status === "delivered" && (
-              <div>
-                <OrderTicketStatus
-                  Icon={FaCircleCheck}
-                  text={t("rent.delivered")}
-                  isActive="delivered"
-                />
-                <div>
-                  <h1>do you take it back correct?</h1>
-                  <CustomButton
-                    type="primary-btn"
-                    title="yes"
-                    onClick={() => handleStatusChange(data?.id, "taken back")}
-                  />
-                </div>
-              </div>
-            )}
-            {data?.status === "taken back" && (
-              <div>
-                <OrderTicketStatus
-                  Icon={MdSettingsBackupRestore}
-                  text={t("rent.takenBack")}
-                  isActive="taken back"
-                />
-                <div>do you want to add it to Warehouse?</div>
-                <CustomButton
-                  type="primary-btn"
-                  title="yes"
-                  onClick={() => towActionHandler(data?.id, "taken back")}
-                />
-              </div>
-            )}
-            {data?.status === "denied" && (
-              <OrderTicketStatus
-                Icon={MdCancel}
-                text={t("rent.canceled")}
-                isActive="denied"
-              />
-            )}
+            </div>
           </div>
-          <div className=" ml-5">
-            <OrderTicketDetail
-              value={readDateOrder.format("dddd DD MMMM YYYY ، hh:mm ")}
-              text={""}
-            />
-            <OrderTicketDetail
-              value={data?.productName || ""}
-              text={t("rent.product")}
-            />
-          </div>
+          {open && (
+            <div className="grid grid-cols-2 gap-2 mx-2">
+              <Box lessPaddingY>
+                <div className="flex justify-between">
+                  <h2 className="font-PeydaBold">{data?.totalPrice}</h2>
+                  <h2 className="font-PeydaBold">:{t("rent.totalPrice")}</h2>
+                </div>
+              </Box>
+              <Box lessPaddingY>
+                <div className="flex justify-between">
+                  <h2 className="font-PeydaBold">{data?.quantity}</h2>
+                  <h2 className="font-PeydaBold">:تعداد</h2>
+                </div>
+              </Box>
+              <Box lessPaddingY>
+                <div className=" mx-auto">
+                  <h2 className="font-PeydaBold">:تاریخ ثبت</h2>
+                  <h2 className="font-PeydaBold text-xs">
+                    {readDateOrder.format("dddd DD MMMM YYYY ، hh:mm ")}
+                  </h2>
+                </div>
+              </Box>
+              <Box lessPaddingY>
+                <div className="flex justify-between">
+                  <h2 className="font-PeydaBold">{data?.sendingType}</h2>
+                  <h2 className="font-PeydaBold">:نوع تحویل</h2>
+                </div>
+              </Box>
+              <Box lessPaddingY>
+                <div className="flex justify-between">
+                  <h2 className="font-PeydaBold">
+                    {gregorianToPersian(new Date(data?.startDate))}
+                  </h2>
+                  <h2 className="font-PeydaBold">:شروع</h2>
+                </div>
+              </Box>
+              <Box lessPaddingY>
+                <div className="flex justify-between">
+                  <h2 className="font-PeydaBold">
+                    {gregorianToPersian(new Date(data?.endDate))}
+                  </h2>
+                  <h2 className="font-PeydaBold">:اتمام</h2>
+                </div>
+              </Box>
+            </div>
+          )}
+          <h1
+            className=" font-PeydaRegular text-center mt-4 text-blue-400 test-md"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? "مشاهده کمتر" : "مشاهده بیشتر"}
+          </h1>
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
-export default TicketOrder;
+export default TicketBasket;

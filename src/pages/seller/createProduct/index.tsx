@@ -15,6 +15,10 @@ import Loading from "@/components/ui/Loading";
 import dynamic from "next/dynamic";
 import { Input } from "@/components/ui/input";
 import Uploader from "@/components/uploader/Uploader";
+import HeadOfPages from "@/components/ui/HeadOfPages";
+import RoundButton from "@/components/ui/RoundButton";
+import { GoPlusCircle } from "react-icons/go";
+
 const Map = dynamic(() => import("@/components/MyMap"), {
   ssr: false,
 });
@@ -189,12 +193,33 @@ export default function CreateProductForm() {
   }
   return (
     <div>
-      <div onClick={() => router.back()}>
-        <FaArrowLeftLong />
-      </div>
-      <form onSubmit={handleSubmit(onSubmit)} className="mx-auto text-center">
-        <h2 className="font-PeydaBold text-lg">{t("rent.productCreation")}</h2>
+      <HeadOfPages
+        title="ایجاد محصول"
+        back={
+          <div onClick={() => router.back()} className=" m-5">
+            <FaArrowLeftLong />
+          </div>
+        }
+        icon={
+          <div className="w-14 text-center mx-auto">
+            <RoundButton
+              Children={
+                <div>
+                  <GoPlusCircle size={40} className="text-center" />
+                </div>
+              }
+            />
+          </div>
+        }
+      />
 
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mx-auto text-center mt-8"
+      >
+        <h1 className=" font-PeydaRegular text-lg">
+          اطلاعات محصول خود را وارد کنید
+        </h1>
         {/* Product Name */}
         <Input
           className=" py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
