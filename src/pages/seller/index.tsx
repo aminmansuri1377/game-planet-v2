@@ -47,7 +47,12 @@ const SellerHomePage = () => {
         {/* Seller Information */}
         {seller && (
           <div className="space-y-4">
-            <div className=" bg-cardbg rounded-full p-1 flex justify-end">
+            <div
+              className=" bg-cardbg rounded-full p-1 flex justify-end"
+              onClick={() => {
+                router.push("/seller/profile");
+              }}
+            >
               <p className="text-lg text-text1 m-2">
                 {seller?.firstName}
                 {seller?.lastName}

@@ -114,14 +114,14 @@ function SellerHeader() {
           <h1 className="text-center font-black text-text2 text-4xl mx-4 mb-5">
             RENTA{" "}
           </h1>
-          <div
+          {/* <div
             onClick={() => router.push({ pathname: "/seller/profile" })}
             className=" flex justify-end my-1"
           >
             <h2 className=" text-text2 mx-5 font-PeydaBold">پروفایل</h2>
             <CgProfile size={28} className="text-text2" />
           </div>
-          <Divider />
+          <Divider /> */}
           {/* <div
             onClick={() => router.push({ pathname: "/profile/basket" })}
             className=" flex justify-end my-1"

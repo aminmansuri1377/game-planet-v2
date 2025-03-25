@@ -12,7 +12,12 @@ import persian_fa from "react-date-object/locales/persian_fa";
 import CustomButton from "../ui/CustomButton";
 import jalaali from "jalaali-js";
 import Image from "next/image";
-
+import CustomModal from "../ui/CustomModal";
+import { FaMapLocationDot } from "react-icons/fa6";
+import dynamic from "next/dynamic";
+const Map = dynamic(() => import("@/components/MyMap"), {
+  ssr: false,
+});
 function TicketBasket({ data, handleStatusChange }) {
   const readDateOrder = new DateObject({
     date: data?.createdAt,
@@ -20,6 +25,10 @@ function TicketBasket({ data, handleStatusChange }) {
     locale: persian_fa,
   });
   const [open, setOpen] = useState(false);
+  const [show, setShow] = useState(false);
+  const [address, setAddress] = useState("");
+  const [position, setPosition] = useState([35.6892, 51.389]);
+
   const { t } = useTranslation();
   const gregorianToPersian = (date: Date): string => {
     const gregorianDate = new Date(date);
@@ -29,6 +38,14 @@ function TicketBasket({ data, handleStatusChange }) {
       gregorianDate.getDate()
     );
     return `${jy}/${jm}/${jd}`; // Format: YYYY/MM/DD
+  };
+  const closeModal = () => {
+    setShow(false);
+  };
+  const openModal = (lat, lang, add) => {
+    setShow(true);
+    setPosition([lat, lang]);
+    setAddress(add);
   };
   return (
     <div className=" bg-cardbg m-3 rounded-lg">
@@ -59,7 +76,7 @@ function TicketBasket({ data, handleStatusChange }) {
                 } mx-3`}
               >
                 {data?.status === "waiting for confirmation" ? (
-                  <div className=" flex">
+                  <div className=" flex justify-end">
                     <MdErrorOutline
                       size={20}
                       className="mx-auto"
@@ -68,31 +85,39 @@ function TicketBasket({ data, handleStatusChange }) {
                     <h1 className=" font-PeydaBold text-yellow-300 text-md">
                       {t("rent.awaitingConfirmation")}
                     </h1>
+                    <h1 className=" font-PeydaBold">:{t("rent.status")}</h1>
                   </div>
                 ) : data?.status === "confirmed and sent" ? (
                   <div>
-                    <div className=" flex">
+                    <div className=" flex justify-end">
                       <MdDeliveryDining size={20} className="" color="blue" />
                       <h1 className=" font-PeydaBold text-blue-400 text-md">
                         {t("rent.sent")}
                       </h1>
+
+                      <h1 className=" font-PeydaBold">:{t("rent.status")}</h1>
                     </div>
-                    <h1>do you Received it ok? </h1>
-                    <CustomButton
-                      type="primary-btn"
-                      title="yes"
-                      onClick={() => handleStatusChange(data.id, "delivered")}
-                    />
+                    <div className=" bg-secondary rounded-md p-4 m-4">
+                      <h1 className=" font-PeydaBold ">
+                        آیا محصول را سالم تحویل گرفتید ؟{" "}
+                      </h1>
+                      <CustomButton
+                        type="primary-btn"
+                        title="بله"
+                        onClick={() => handleStatusChange(data.id, "delivered")}
+                      />
+                    </div>
                   </div>
                 ) : data?.status === "delivered" ? (
-                  <div className=" flex">
+                  <div className=" flex justify-end">
                     <FaCircleCheck size={20} className="" color="lightGreen" />
                     <h1 className=" font-PeydaBold text-green-400 text-md">
                       {t("rent.delivered")}
                     </h1>
+                    <h1 className=" font-PeydaBold">:{t("rent.status")}</h1>
                   </div>
                 ) : data?.status === "taken back" ? (
-                  <div className=" flex">
+                  <div className=" flex justify-end">
                     <MdSettingsBackupRestore
                       size={20}
                       className=""
@@ -101,65 +126,79 @@ function TicketBasket({ data, handleStatusChange }) {
                     <h1 className=" font-PeydaBold text-black text-md">
                       {t("rent.takenBack")}
                     </h1>
+                    <h1 className=" font-PeydaBold">:{t("rent.status")}</h1>
                   </div>
                 ) : data?.status === "denied" ? (
-                  <div className=" flex">
+                  <div className=" flex justify-end">
                     <MdCancel size={20} className="" color="red" />
                     <h1 className=" font-PeydaBold text-red-600 text-md">
                       {t("rent.canceled")}
                     </h1>
+                    <h1 className=" font-PeydaBold">:{t("rent.status")}</h1>
                   </div>
                 ) : (
                   ""
                 )}
-                <h1 className=" font-PeydaBold">:{t("rent.status")}</h1>
               </div>
             </div>
           </div>
           {open && (
-            <div className="grid grid-cols-2 gap-2 mx-2">
-              <Box lessPaddingY>
-                <div className="flex justify-between">
-                  <h2 className="font-PeydaBold">{data?.totalPrice}</h2>
-                  <h2 className="font-PeydaBold">:{t("rent.totalPrice")}</h2>
-                </div>
-              </Box>
-              <Box lessPaddingY>
-                <div className="flex justify-between">
-                  <h2 className="font-PeydaBold">{data?.quantity}</h2>
-                  <h2 className="font-PeydaBold">:تعداد</h2>
-                </div>
-              </Box>
-              <Box lessPaddingY>
-                <div className=" mx-auto">
-                  <h2 className="font-PeydaBold">:تاریخ ثبت</h2>
-                  <h2 className="font-PeydaBold text-xs">
-                    {readDateOrder.format("dddd DD MMMM YYYY ، hh:mm ")}
-                  </h2>
-                </div>
-              </Box>
-              <Box lessPaddingY>
-                <div className="flex justify-between">
-                  <h2 className="font-PeydaBold">{data?.sendingType}</h2>
-                  <h2 className="font-PeydaBold">:نوع تحویل</h2>
-                </div>
-              </Box>
-              <Box lessPaddingY>
-                <div className="flex justify-between">
-                  <h2 className="font-PeydaBold">
-                    {gregorianToPersian(new Date(data?.startDate))}
-                  </h2>
-                  <h2 className="font-PeydaBold">:شروع</h2>
-                </div>
-              </Box>
-              <Box lessPaddingY>
-                <div className="flex justify-between">
-                  <h2 className="font-PeydaBold">
-                    {gregorianToPersian(new Date(data?.endDate))}
-                  </h2>
-                  <h2 className="font-PeydaBold">:اتمام</h2>
-                </div>
-              </Box>
+            <div>
+              <FaMapLocationDot
+                size={40}
+                className=" mx-auto my-4"
+                onClick={() =>
+                  openModal(
+                    data?.product?.latitude,
+                    data?.product?.longitude,
+                    data?.product?.address
+                  )
+                }
+              />
+              <div className="grid grid-cols-2 gap-2 mx-2">
+                <Box lessPaddingY>
+                  <div className="flex justify-between">
+                    <h2 className="font-PeydaBold">{data?.totalPrice}</h2>
+                    <h2 className="font-PeydaBold">:{t("rent.totalPrice")}</h2>
+                  </div>
+                </Box>
+                <Box lessPaddingY>
+                  <div className="flex justify-between">
+                    <h2 className="font-PeydaBold">{data?.quantity}</h2>
+                    <h2 className="font-PeydaBold">:تعداد</h2>
+                  </div>
+                </Box>
+                <Box lessPaddingY>
+                  <div className=" mx-auto">
+                    <h2 className="font-PeydaBold">:تاریخ ثبت</h2>
+                    <h2 className="font-PeydaBold text-xs">
+                      {readDateOrder.format("dddd DD MMMM YYYY ، hh:mm ")}
+                    </h2>
+                  </div>
+                </Box>
+                <Box lessPaddingY>
+                  <div className="flex justify-between">
+                    <h2 className="font-PeydaBold">{data?.sendingType}</h2>
+                    <h2 className="font-PeydaBold">:نوع تحویل</h2>
+                  </div>
+                </Box>
+                <Box lessPaddingY>
+                  <div className="flex justify-between">
+                    <h2 className="font-PeydaBold">
+                      {gregorianToPersian(new Date(data?.startDate))}
+                    </h2>
+                    <h2 className="font-PeydaBold">:شروع</h2>
+                  </div>
+                </Box>
+                <Box lessPaddingY>
+                  <div className="flex justify-between">
+                    <h2 className="font-PeydaBold">
+                      {gregorianToPersian(new Date(data?.endDate))}
+                    </h2>
+                    <h2 className="font-PeydaBold">:اتمام</h2>
+                  </div>
+                </Box>
+              </div>
             </div>
           )}
           <h1
@@ -170,6 +209,11 @@ function TicketBasket({ data, handleStatusChange }) {
           </h1>
         </div>
       )}
+      <CustomModal type="general" show={show} onClose={closeModal}>
+        {" "}
+        <Map position={position} zoom={10} locations={[]} />
+        <p className=" font-PeydaRegular">{address}</p>
+      </CustomModal>
     </div>
   );
 }

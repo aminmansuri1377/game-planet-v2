@@ -312,8 +312,7 @@ export const gameRouter = router({
   updateProduct: procedure
     .input(
       z.object({
-        productId: z.number(), // Product ID
-        sellerId: z.number(), // Seller ID
+        id: z.number(),
         name: z.string().optional(),
         description: z.string().optional(),
         price: z.number().optional(),
@@ -321,17 +320,22 @@ export const gameRouter = router({
         sendingType: z
           .array(z.enum(["SELLER_SENDS", "BUYER_PICKS_UP"]))
           .optional(),
+        categoryId: z.number().optional(),
+        guarantyId: z.number().optional(),
+        latitude: z.number().optional(),
+        longitude: z.number().optional(),
+        city: z.string().optional(),
+        address: z.string().optional(),
+        images: z.array(z.string()).optional(),
       })
     )
     .mutation(async ({ input }) => {
+      const { id, ...data } = input;
       return await prisma.product.update({
-        where: { id: input.productId },
+        where: { id },
         data: {
-          name: input.name,
-          description: input.description,
-          price: input.price,
-          inventory: input.inventory,
-          sendingType: input.sendingType,
+          ...data,
+          updatedAt: new Date(), // Always update the timestamp
         },
       });
     }),
