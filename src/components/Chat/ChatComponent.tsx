@@ -33,14 +33,14 @@ export const ChatComponent = ({
   const [message, setMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { data: messages, refetch } = trpc.main.getMessages.useQuery(
+  const { data: messages, refetch } = trpc.main.getSupportMessages.useQuery(
     { chatRoomId },
     {
       refetchInterval: 1000 * 10 * 2, // Refetch every 2 minutes (120,000 milliseconds)
       refetchOnWindowFocus: false, // Optional: Disable refetch on window focus
     }
   );
-  const sendMessage = trpc.main.sendMessage.useMutation({
+  const sendMessage = trpc.main.sendSupportMessage.useMutation({
     onSuccess: () => {
       refetch();
     },

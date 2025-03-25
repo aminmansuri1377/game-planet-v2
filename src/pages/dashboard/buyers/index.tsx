@@ -11,6 +11,9 @@ import { LuArrowBigLeftDash } from "react-icons/lu";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import HeadOfPages from "@/components/ui/HeadOfPages";
+import RoundButton from "@/components/ui/RoundButton";
+import { MdOutlinePersonAdd } from "react-icons/md";
 
 function index() {
   const router = useRouter();
@@ -38,35 +41,51 @@ function index() {
   // if (isLoading) return <Loading />;
   // if (error) return <p>Error: {error.message}</p>;
   return (
-    <div className=" w-full">
-      <div onClick={handleBack}>
-        <FaArrowLeftLong />
-      </div>
+    <div className=" w-full min-h-screen">
+      <HeadOfPages
+        title="اجاره کنندگان"
+        back={
+          <div onClick={handleBack} className=" m-5">
+            <FaArrowLeftLong />
+          </div>
+        }
+        icon={
+          <div className="w-14 text-center mx-auto">
+            <RoundButton
+              Children={
+                <div>
+                  <MdOutlinePersonAdd size={40} className="text-center" />
+                </div>
+              }
+            />
+          </div>
+        }
+      />
 
-      <div>
-        <h2>Buyers</h2>
+      <div className=" mt-12 mx-2 bg-cardbg p-1 rounded-lg">
         <table>
           <thead>
             <tr>
-              <th>Phone</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>ID Number</th>
+              <th>تلفن</th>
+              <th>نام</th>
+              <th></th>
+              <th>کدملی</th>
             </tr>
           </thead>
           <tbody>
-            {buyers?.map((buyer) => (
-              <tr key={buyer.id}>
-                <td>
-                  <Link href={`/dashboard/singleBuyer/${buyer.id}`}>
-                    {buyer.phone}
-                  </Link>
-                </td>
-                <td>{buyer.firstName}</td>
-                <td>{buyer.lastName}</td>
-                <td>{buyer.IDnumber}</td>
-              </tr>
-            ))}
+            {buyers &&
+              buyers?.map((buyer) => (
+                <tr key={buyer.id}>
+                  <td>
+                    <Link href={`/dashboard/singleBuyer/${buyer.id}`}>
+                      {buyer.phone}
+                    </Link>
+                  </td>
+                  <td>{buyer.firstName}</td>
+                  <td>{buyer.lastName}</td>
+                  <td>{buyer.IDnumber}</td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

@@ -12,6 +12,9 @@ import { LuArrowBigLeftDash } from "react-icons/lu";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useRouter } from "next/router";
 import jalaali from "jalaali-js";
+import HeadOfPages from "@/components/ui/HeadOfPages";
+import RoundButton from "@/components/ui/RoundButton";
+import { LiaClipboardListSolid } from "react-icons/lia";
 
 function index() {
   const router = useRouter();
@@ -69,13 +72,27 @@ function index() {
   if (error) return <p>Error: {error.message}</p>;
   return (
     <div className=" w-full">
-      <div onClick={handleBack}>
-        <FaArrowLeftLong />
-      </div>
-      <h1 className=" mx-auto font-PeydaBlack text-center">
-        {t("rent.orders")}
-      </h1>
-      <div className=" text-end">
+      <HeadOfPages
+        title="سفارشات"
+        back={
+          <div onClick={handleBack} className=" m-5">
+            <FaArrowLeftLong />
+          </div>
+        }
+        icon={
+          <div className="w-14 text-center mx-auto">
+            <RoundButton
+              Children={
+                <div>
+                  <LiaClipboardListSolid size={40} className="text-center" />
+                </div>
+              }
+            />
+          </div>
+        }
+      />
+
+      <div className=" text-end mt-12">
         <input
           type="text"
           placeholder="Search user..."
@@ -88,15 +105,7 @@ function index() {
         {orders &&
           orders?.map((i) => (
             <div key={i.id}>
-              <Box>
-                <TicketOrder data={i} handleStatusChange={handleStatusChange} />
-                <p className="font-PeydaBold text-sm">
-                  Sending Type: {i.sendingType}
-                  start date: {gregorianToPersian(new Date(i?.startDate))}
-                  end date: {gregorianToPersian(new Date(i?.endDate))}
-                  total Price : {i?.totalPrice}
-                </p>
-              </Box>
+              <TicketOrder data={i} handleStatusChange={handleStatusChange} />
             </div>
           ))}
       </div>

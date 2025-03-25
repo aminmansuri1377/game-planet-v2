@@ -9,8 +9,12 @@ import { toast } from "react-hot-toast";
 import { LuArrowBigRightDash } from "react-icons/lu";
 import { LuArrowBigLeftDash } from "react-icons/lu";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import { MdOutlinePersonRemoveAlt1 } from "react-icons/md";
+
 import { useRouter } from "next/router";
 import Link from "next/link";
+import HeadOfPages from "@/components/ui/HeadOfPages";
+import RoundButton from "@/components/ui/RoundButton";
 
 function index() {
   const router = useRouter();
@@ -38,19 +42,37 @@ function index() {
   // if (isLoading) return <Loading />;
   // if (error) return <p>Error: {error.message}</p>;
   return (
-    <div className=" w-full">
-      <div onClick={handleBack}>
-        <FaArrowLeftLong />
-      </div>
-      <div>
-        <h2>Sellers</h2>
+    <div className=" w-full min-h-screen">
+      <HeadOfPages
+        title="اجاره دهندگان"
+        back={
+          <div onClick={handleBack} className=" m-5">
+            <FaArrowLeftLong />
+          </div>
+        }
+        icon={
+          <div className="w-14 text-center mx-auto">
+            <RoundButton
+              Children={
+                <div>
+                  <MdOutlinePersonRemoveAlt1
+                    size={40}
+                    className="text-center"
+                  />
+                </div>
+              }
+            />
+          </div>
+        }
+      />
+      <div className=" mt-12 mx-2 bg-cardbg p-1 rounded-lg">
         <table>
           <thead>
             <tr>
-              <th>Phone</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>ID Number</th>
+              <th>تلفن</th>
+              <th>نام</th>
+              <th></th>
+              <th>کدملی</th>
             </tr>
           </thead>
           <tbody>

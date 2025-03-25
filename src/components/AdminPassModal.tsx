@@ -19,7 +19,7 @@ function AdminPassModal({ onSuccess }) {
   const { t } = useTranslation();
 
   return (
-    <div className="">
+    <div className=" min-h-screen mt-10 text-center">
       <div className="">
         <h2 className="text-lg text-black font-bold mb-4 font-PeydaBold">
           {t("rent.enterPassword")}

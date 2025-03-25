@@ -11,7 +11,7 @@ function panel() {
     router.push("/dashboard/signIn");
   };
   return (
-    <div className=" text-end">
+    <div className=" text-end min-h-s">
       <AdminPassModal onSuccess={handleSuccess} />
     </div>
   );

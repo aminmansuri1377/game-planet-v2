@@ -35,7 +35,7 @@ const ManagerSupportChatRoom = () => {
         Chatting with {userType}: {user?.firstName} {user?.lastName}
       </p>
       <ChatComponent
-        chatRoomId={ticket.chatRoomSupportId}
+        chatRoomId={ticket.id}
         currentUserType="MANAGER"
         currentUserId={session?.user?.id ? parseInt(session.user.id, 10) : 0}
       />

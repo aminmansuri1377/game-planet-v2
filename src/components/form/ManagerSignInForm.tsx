@@ -65,7 +65,7 @@ const ManagerSignInForm = () => {
   };
 
   return (
-    <div>
+    <div className=" min-h-screen mt-16">
       <div onClick={handleBack}>
         <FaArrowLeftLong />
       </div>
@@ -77,7 +77,7 @@ const ManagerSignInForm = () => {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("rent.email")}</FormLabel>
+                  <FormLabel>تلفن</FormLabel>
                   <FormControl>
                     <Input placeholder="09120000" {...field} />
                   </FormControl>

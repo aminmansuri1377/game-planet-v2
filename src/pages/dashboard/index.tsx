@@ -7,6 +7,11 @@ import Cookies from "js-cookie";
 import { HiOutlineSquaresPlus } from "react-icons/hi2";
 import { trpc } from "../../../utils/trpc";
 import { useSession } from "next-auth/react";
+import HeadOfPages from "@/components/ui/HeadOfPages";
+import { BiSupport } from "react-icons/bi";
+import RoundButton from "@/components/ui/RoundButton";
+import { MdOutlineManageAccounts } from "react-icons/md";
+import { CiLogout } from "react-icons/ci";
 
 function Index() {
   const { t } = useTranslation();
@@ -51,33 +56,54 @@ function Index() {
   }
 
   return (
-    <div className=" text-center mx-auto">
+    <div className=" text-center mx-auto min-h-screen">
+      <HeadOfPages
+        title="ادمین"
+        back={
+          <div className=" m-5" onClick={handleLogout}>
+            <CiLogout size={40} className="text-center " />
+          </div>
+        }
+        icon={
+          <div className="w-14 text-center mx-auto">
+            <RoundButton
+              Children={
+                <div>
+                  <MdOutlineManageAccounts size={40} className="text-center" />
+                </div>
+              }
+            />
+          </div>
+        }
+      />
       {/* <CustomButton
         title={t("rent.productCreation")}
         type="primary-btn"
         onClick={() => router.push("/dashboard/createProduct")}
       /> */}
-      <CustomButton
-        title={t("rent.products")}
-        type="primary-btn"
-        onClick={() => router.push("/dashboard/products")}
-      />
-      <CustomButton
-        title={t("rent.orders")}
-        type="primary-btn"
-        onClick={() => router.push("/dashboard/orders")}
-      />
-      <CustomButton
-        title="buyers"
-        type="primary-btn"
-        onClick={() => router.push("/dashboard/buyers")}
-      />
-      <CustomButton
-        title="sellers"
-        type="primary-btn"
-        onClick={() => router.push("/dashboard/sellers")}
-      />
-      <div>
+      <div className=" mt-12">
+        <CustomButton
+          title={t("rent.products")}
+          type="primary-btn"
+          onClick={() => router.push("/dashboard/products")}
+        />
+        <CustomButton
+          title={t("rent.orders")}
+          type="primary-btn"
+          onClick={() => router.push("/dashboard/orders")}
+        />
+        <CustomButton
+          title="اجاره کنندگان"
+          type="primary-btn"
+          onClick={() => router.push("/dashboard/buyers")}
+        />
+        <CustomButton
+          title="اجاره دهندگان"
+          type="primary-btn"
+          onClick={() => router.push("/dashboard/sellers")}
+        />
+      </div>
+      <div className=" m-8">
         <h1>Support Tickets</h1>
         {unassignedTickets?.map((ticket) => (
           <div key={ticket.id} className="p-4 border rounded-lg shadow-sm">
@@ -96,24 +122,16 @@ function Index() {
               }
               className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
-              Accept Ticket
+              قبول پشتیبانی
             </button>
           </div>
         ))}
       </div>
       <CustomButton
-        title="Support History"
+        title="تاریخچه چت"
         type="primary-btn"
         onClick={() => router.push("/dashboard/support/history")}
       />
-      <div className=" mt-20">
-        <button
-          className="bg-red-500 text-white py-2 px-4 rounded-lg font-PeydaBold"
-          onClick={handleLogout}
-        >
-          {t("rent.logout")}
-        </button>
-      </div>
     </div>
   );
 }
