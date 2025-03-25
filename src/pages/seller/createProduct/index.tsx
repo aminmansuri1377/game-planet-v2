@@ -47,6 +47,7 @@ export default function CreateProductForm() {
     []
   );
   const [loading, setLoading] = useState(true);
+  const [uploaded, setUploaded] = useState(false);
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
   const [position, setPosition] = useState([35.6892, 51.389]);
   const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
@@ -248,24 +249,25 @@ export default function CreateProductForm() {
         <Input
           className=" py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
           type="number"
-          placeholder={t("rent.inventory")}
+          placeholder="موجودی"
           {...register("inventory", { required: true, valueAsNumber: true })}
         />
         <Input
           className=" py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
           type="text"
-          placeholder={"address"}
+          placeholder={"آدرس"}
           {...register("address", { required: true, valueAsNumber: true })}
         />
         <Uploader
           onUpload={(urls) => setImageUrls(urls)}
           bucket="product-images"
+          setUploaded={setUploaded}
         />
         <div className="w-4/5 mx-auto my-2 text-end relative mb-10">
-          <label className="block font-PeydaBold text-sm mb-2">City</label>
+          <label className="block font-PeydaBold text-sm mb-2">شهر</label>
           <input
             type="text"
-            placeholder="Search for a city"
+            placeholder="جستجوی شهر"
             value={cityQuery}
             onChange={(e) => handleCitySearch(e.target.value)}
             className="py-3 px-4 w-full mx-auto my-2 text-end font-PeydaBold rounded-full bg-gradient-to-r from-gra-100 to-gra-200"
@@ -291,7 +293,7 @@ export default function CreateProductForm() {
           {...register("categoryId", { required: true, valueAsNumber: true })}
         >
           <option className=" bg-primary" value="">
-            Select a category
+            انتخاب دسته بندی
           </option>
           {categories.map((category) => (
             <option
@@ -310,7 +312,7 @@ export default function CreateProductForm() {
           {...register("guarantyId", { required: true, valueAsNumber: true })}
         >
           <option className=" bg-primary" value="">
-            Select a guaranty
+            نوع ضمانت
           </option>
           {guaranty.map((guaranty) => (
             <option
@@ -325,9 +327,7 @@ export default function CreateProductForm() {
 
         {/* Sending Type */}
         <div className="w-4/5 mx-auto my-2 text-end">
-          <label className="block font-PeydaBold text-sm mb-2">
-            {t("rent.sendingType")}
-          </label>
+          <label className="block font-PeydaBold text-sm mb-2">نوع نحویل</label>
           <div className="space-y-2">
             <label className="flex items-center space-x-2">
               <input
@@ -336,7 +336,7 @@ export default function CreateProductForm() {
                 onChange={() => handleSendingTypeChange("SELLER_SENDS")}
                 className="form-checkbox"
               />
-              <span>{t("rent.sellerSends")}</span>
+              <span className="font-PeydaBold">میبرم براش</span>
             </label>
             <label className="flex items-center space-x-2">
               <input
@@ -345,14 +345,14 @@ export default function CreateProductForm() {
                 onChange={() => handleSendingTypeChange("BUYER_PICKS_UP")}
                 className="form-checkbox"
               />
-              <span>{t("rent.buyerPicksUp")}</span>
+              <span className="font-PeydaBold">بیاد بگیره ازم</span>
             </label>
           </div>
         </div>
 
         <div className="w-4/5 mx-auto my-2 text-end">
           <label className="block font-PeydaBold text-sm mb-2">
-            Product Location
+            موقعیت مکانی محصول
           </label>
           <Map
             position={position}
@@ -373,6 +373,7 @@ export default function CreateProductForm() {
           title={t("rent.create")}
           type="primary-btn"
           loading={createProduct.isLoading}
+          disabled={!uploaded}
         />
       </form>
     </div>

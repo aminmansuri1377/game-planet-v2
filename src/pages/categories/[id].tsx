@@ -273,7 +273,7 @@ const CategoryProductsPage = () => {
                   onClick={() => router.push(`/singleProduct/${product.id}`)}
                 >
                   <ProductCard
-                    imgUrl={ProductImg}
+                    imgUrl={product?.images ? product?.images[0] : ProductImg}
                     imgAlt={product.name}
                     name={product.name}
                     price={`${product.price}`}

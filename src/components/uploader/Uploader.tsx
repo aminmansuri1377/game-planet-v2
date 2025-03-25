@@ -4,15 +4,19 @@ import { ChangeEvent, useRef, useState, useTransition } from "react";
 import { convertBlobUrlToFile } from "@/lib/utils";
 import Image from "next/image";
 import { uploadImage } from "../../../supabase/storage/client";
+import CustomButton from "../ui/CustomButton";
+import { CiImageOn } from "react-icons/ci";
 
 function Uploader({
   onUpload,
   singleUpload = false,
   bucket,
+  setUploaded,
 }: {
   onUpload: (urls: string[]) => void;
   singleUpload?: boolean;
   bucket?: string;
+  setUploaded;
 }) {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -50,6 +54,7 @@ function Uploader({
       console.log(urls);
       setImageUrls([]);
       onUpload(urls);
+      setUploaded(true);
     });
   };
 
@@ -59,7 +64,7 @@ function Uploader({
   };
   console.log("imageUrls", imageUrls);
   return (
-    <div className="bg-slate-500 flex justify-center items-center flex-col gap-8">
+    <div className="bg-transparent border-2 border-primary m-5 rounded-xl flex justify-center items-center flex-col gap-4">
       <input
         type="file"
         hidden
@@ -68,14 +73,19 @@ function Uploader({
         onChange={handleImageChange}
         disabled={isPending}
       />
-
-      <button
+      <CustomButton
+        type="secondary-btn"
+        title="انتخاب عکس"
+        onClick={() => imageInputRef.current?.click()}
+      />
+      {!imageUrls || (imageUrls.length === 0 && <CiImageOn size={40} />)}
+      {/* <button
         className="bg-slate-600 py-2 w-40 rounded-lg"
         onClick={() => imageInputRef.current?.click()}
         disabled={isPending}
       >
         Select Images
-      </button>
+      </button> */}
 
       <div className="m-2">
         {imageUrls.map((url, index) => (
@@ -91,14 +101,12 @@ function Uploader({
           </div>
         ))}
       </div>
-
-      <button
-        onClick={handleClickUploadImagesButton}
-        className="bg-slate-600 py-2 w-40 rounded-lg"
+      <CustomButton
+        type="primary-btn"
+        title={isPending ? "Uploading..." : "بارگذاری عکس"}
         disabled={isPending}
-      >
-        {isPending ? "Uploading..." : "Upload Images"}
-      </button>
+        onClick={handleClickUploadImagesButton}
+      />
     </div>
   );
 }

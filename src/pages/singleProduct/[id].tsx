@@ -264,7 +264,7 @@ function SingleProductPage() {
 
     if (Array.isArray(dates)) {
       const formattedDates = dates
-        .map((date) => date?.format?.("YYYY-MM-DD"))
+        .map((date) => date?.format?.("DD-MM-YYYY"))
         .filter((date) => date); // Filter out undefined or invalid dates
 
       console.log("Formatted dates after filtering:", formattedDates); // Debugging
@@ -367,7 +367,7 @@ function SingleProductPage() {
             <ImageSwapper images={productData.images} />
             <div className=" my-2 flex justify-between items-center">
               <CustomButton
-                title={`روزی ${productData.price}`}
+                title={`شبی ${productData.price}`}
                 type="primary-btn"
               />
               <h1 className="font-PeydaBold text-2xl text-center mr-5">
@@ -393,12 +393,12 @@ function SingleProductPage() {
             <div className=" text-center">
               {productData.category && (
                 <p className="font-PeydaBold text-sm">
-                  Category: {productData.category.name}
+                  دسته بندی: {productData.category.name}
                 </p>
               )}
               {productData.guaranty && (
                 <p className="font-PeydaBold text-sm">
-                  guaranty: {productData.guaranty.text}
+                  نوع ضمانت: {productData.guaranty.text}
                 </p>
               )}
             </div>
@@ -427,13 +427,15 @@ function SingleProductPage() {
             {startDate && (
               <div className="text-center mt-4">
                 <h2 className="font-PeydaBold text-lg">
-                  Start Date: {startDate}
+                  تاریخ تحویل گرفتن: {startDate}
                 </h2>
               </div>
             )}
             {endDate && (
               <div className="text-center mt-4">
-                <h2 className="font-PeydaBold text-lg">End Date: {endDate}</h2>
+                <h2 className="font-PeydaBold text-lg">
+                  تاریخ پس دادن: {endDate}
+                </h2>
               </div>
             )}
             {startDate && endDate && (
@@ -459,9 +461,9 @@ function SingleProductPage() {
                 </div>
               </div>
             )}
-            <h1>Select Sending Type</h1>
+            <h1 className=" font-PeydaRegular">انتخاب نوع تحویل</h1>
             {productData.sendingType.length > 1 ? (
-              <div>
+              <div className=" my-3">
                 <label className="flex items-center space-x-2">
                   <input
                     type="radio"
@@ -469,7 +471,7 @@ function SingleProductPage() {
                     onChange={() => setSelectedSendingType("SELLER_SENDS")}
                     className="form-radio"
                   />
-                  <span>{t("rent.sellerSends")}</span>
+                  <span className="font-PeydaBold">خودش برام میاره</span>
                 </label>
                 <label className="flex items-center space-x-2">
                   <input
@@ -478,7 +480,7 @@ function SingleProductPage() {
                     onChange={() => setSelectedSendingType("BUYER_PICKS_UP")}
                     className="form-radio"
                   />
-                  <span>{t("rent.buyerPicksUp")}</span>
+                  <span className="font-PeydaBold">باید برم بگیرم ازش</span>
                 </label>
               </div>
             ) : (
@@ -486,10 +488,10 @@ function SingleProductPage() {
             )}
             <input
               type="text"
-              placeholder="Enter your address"
+              placeholder="آدرس دقیق را وارد کنید"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className=" text-black"
+              className=" text-black my-3"
             />
             <CustomButton
               onClick={handleOrder}
