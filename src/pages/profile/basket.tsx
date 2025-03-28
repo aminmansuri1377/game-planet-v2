@@ -45,8 +45,27 @@ function Basket() {
     },
   });
 
-  const handleStatusChange = (id: number, newStatus: string) => {
-    updateOrderStatus.mutate({ id, status: newStatus });
+  const handleStatusChange = async (id: number, newStatus: string) => {
+    try {
+      // Update order status
+      await updateOrderStatus.mutateAsync({ id, status: newStatus });
+
+      // Update contract step
+      await trpc.main.updateContractStep.mutate({
+        orderId: id,
+        newStatus,
+      });
+
+      toast.custom(
+        <ToastContent
+          type="success"
+          message="Order status and contract updated successfully!"
+        />
+      );
+      router.reload();
+    } catch (err) {
+      toast.custom(<ToastContent type="error" message={err?.message} />);
+    }
   };
 
   if (isLoading) return <Loading />;
