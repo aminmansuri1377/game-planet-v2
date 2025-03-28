@@ -260,53 +260,49 @@ function SingleProductPage() {
     setOpen(false);
   };
   const handleDateChange = (dates: any) => {
-    console.log("Dates received from picker:", dates); // Debugging
-
     if (Array.isArray(dates)) {
       const formattedDates = dates
-        .map((date) => date?.format?.("DD-MM-YYYY"))
-        .filter((date) => date); // Filter out undefined or invalid dates
-
-      console.log("Formatted dates after filtering:", formattedDates); // Debugging
+        .map((date) => {
+          if (date && date.format) {
+            return date.format("YYYY-MM-DD"); // Use standard format first
+          }
+          return null;
+        })
+        .filter((date) => date);
 
       if (formattedDates.length === 2) {
         const [firstDate, secondDate] = formattedDates;
 
+        // Convert to Jalaali (Persian) format if needed
+        const jalaaliFirst = firstDate.split("-").join("-");
+        const jalaaliSecond = secondDate.split("-").join("-");
+
         // Ensure start date is before end date
         if (firstDate > secondDate) {
-          setStartDate(secondDate);
-          setEndDate(firstDate);
-          setRangeDate([secondDate, firstDate]); // Update rangeDate
+          setStartDate(jalaaliSecond);
+          setEndDate(jalaaliFirst);
+          setRangeDate([jalaaliSecond, jalaaliFirst]);
         } else {
-          setStartDate(firstDate);
-          setEndDate(secondDate);
-          setRangeDate([firstDate, secondDate]); // Update rangeDate
+          setStartDate(jalaaliFirst);
+          setEndDate(jalaaliSecond);
+          setRangeDate([jalaaliFirst, jalaaliSecond]);
         }
 
-        // Calculate total price if product data is available
-        if (productData && typeof productData.price === "number") {
+        // Calculate total price
+        if (productData) {
           try {
-            const startDateObj = convertToDate(firstDate);
-            const endDateObj = convertToDate(secondDate);
+            const startDateObj = convertToDate(jalaaliFirst);
+            const endDateObj = convertToDate(jalaaliSecond);
 
-            if (
-              !(startDateObj instanceof Date) ||
-              !(endDateObj instanceof Date)
-            ) {
-              console.error("Invalid date conversion:", {
+            if (startDateObj && endDateObj) {
+              const totalPrice = calculateTotalPrice(
                 startDateObj,
                 endDateObj,
-              });
-              setTotalPrice(null);
-              return;
+                productData.price,
+                finalAmount
+              );
+              setTotalPrice(totalPrice);
             }
-
-            const totalPrice = calculateTotalPrice(
-              startDateObj,
-              endDateObj,
-              productData.price
-            );
-            setTotalPrice(totalPrice);
           } catch (error) {
             console.error("Error converting dates:", error);
             toast.custom(
@@ -318,11 +314,6 @@ function SingleProductPage() {
             setTotalPrice(null);
           }
         }
-      } else {
-        // setStartDate(null);
-        // setEndDate(null);
-        // setRangeDate([]); // Clear rangeDate
-        // setTotalPrice(null);
       }
     }
   };
