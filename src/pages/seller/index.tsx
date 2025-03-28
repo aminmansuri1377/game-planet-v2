@@ -16,7 +16,7 @@ const SellerHomePage = () => {
   const router = useRouter();
   const { t } = useTranslation();
   const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
-
+  console.log("first", session);
   const {
     data: seller,
     isLoading: isSellerLoading,

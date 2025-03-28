@@ -29,6 +29,7 @@ function SingleProductPage() {
   const router = useRouter();
   const { id } = router.query;
   const { data: session, status } = useSession();
+  console.log("first", session);
   const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
   const [finalAmount, setFinalAmount] = useState<number>(1);
   const [address, setAddress] = useState("");

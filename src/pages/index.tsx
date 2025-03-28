@@ -17,6 +17,7 @@ import { AiOutlineSafety } from "react-icons/ai";
 import { TbPigMoney } from "react-icons/tb";
 import { LuLeaf } from "react-icons/lu";
 import { LuAlarmClock } from "react-icons/lu";
+import { useSession } from "next-auth/react";
 
 const WelcomePage = () => {
   const { t } = useTranslation();
@@ -26,7 +27,8 @@ const WelcomePage = () => {
     isLoading: isCategoriesLoading,
     error: categoriesError,
   } = trpc.main.getCategories.useQuery();
-
+  const { data: session, status } = useSession();
+  console.log("first", session);
   const handleCategoryClick = (categoryId: number) => {
     router.push(`/categories/${categoryId}`);
   };
