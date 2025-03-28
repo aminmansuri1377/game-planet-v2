@@ -130,9 +130,6 @@ model Order {
   latitude    Float?      
   longitude   Float?
   address     String?
-
-
-  Contract Contract[]
 }
 enum SendingType {
   SELLER_SENDS
@@ -207,12 +204,3 @@ model Location {
   seller      Seller?  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
 }
 
-model Contract {
-  id          Int      @id @default(autoincrement())
-  orderId     Int      @unique
-  order       Order    @relation(fields: [orderId], references: [id])
-  content     Json     // Stores the contract content with all paragraphs
-  currentStep Int      @default(1) // Tracks which step/paragraph we're on
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}

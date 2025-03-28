@@ -397,18 +397,6 @@ export const gameRouter = router({
             },
           },
         });
-        await prisma.contract.create({
-          data: {
-            orderId: order.id,
-            content: contractTemplates.base(
-              order,
-              order.user,
-              order.seller,
-              order.product
-            ),
-            currentStep: 1,
-          },
-        });
         return order;
       });
 
@@ -983,53 +971,4 @@ export const gameRouter = router({
     }),
 
   //////////// contract
-  getContractByOrderId: procedure
-    .input(z.object({ orderId: z.number() }))
-    .query(async ({ input }) => {
-      return await prisma.contract.findUnique({
-        where: { orderId: input.orderId },
-        include: { order: true },
-      });
-    }),
-
-  updateContractStep: procedure
-    .input(
-      z.object({
-        orderId: z.number(),
-        newStatus: z.string(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      // Get current contract
-      const contract = await prisma.contract.findUnique({
-        where: { orderId: input.orderId },
-        include: {
-          order: { include: { user: true, seller: true, product: true } },
-        },
-      });
-
-      if (!contract) throw new Error("Contract not found");
-
-      // Determine new step based on status
-      let newStep = contract.currentStep;
-      switch (input.newStatus) {
-        case "confirmed and sent":
-          newStep = 2;
-          break;
-        case "delivered":
-          newStep = 3;
-          break;
-        case "taken back":
-          newStep = 4;
-          break;
-        // Add more cases as needed
-      }
-
-      return await prisma.contract.update({
-        where: { orderId: input.orderId },
-        data: {
-          currentStep: newStep,
-        },
-      });
-    }),
 });

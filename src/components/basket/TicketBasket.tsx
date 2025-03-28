@@ -233,7 +233,7 @@ function TicketBasket({ data, handleStatusChange }) {
         <p className=" font-PeydaRegular">{address}</p>
       </CustomModal>
       <CustomModal type="general" show={showCon} onClose={closeModalCon}>
-        <ContractViewer orderId={selectedOrderId} />
+        {/* <ContractViewer orderId={selectedOrderId} /> */}
       </CustomModal>
     </div>
   );
