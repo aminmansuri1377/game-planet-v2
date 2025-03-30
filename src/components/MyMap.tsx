@@ -92,7 +92,7 @@ export default function MyMap({
       center={position}
       zoom={zoom}
       scrollWheelZoom={false}
-      className="h-[500px] w-full"
+      className="h-[400px] w-full rounded-3xl"
     >
       <MapClickListener setCoordinates={setCoordinates} />{" "}
       {/* Add the listener component */}

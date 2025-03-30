@@ -86,23 +86,28 @@ const CompleteProfile = ({ userId, userType }: CompleteProfileProps) => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-gray-700 rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6">Complete Your Profile</h1>
+    <div className="max-w-md mx-auto p-6 rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold mb-6 font-PeydaBold">
+        تکمیل حساب کاربری
+      </h1>
       <Uploader
         onUpload={(urls) => setImageUrls(urls)}
         bucket="idcard"
         singleUpload={true}
       />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4 text-center font-PeydaRegular"
+        >
           <FormField
             control={form.control}
             name="firstName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>First Name</FormLabel>
+                <FormLabel>نام</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your first name" {...field} />
+                  <Input placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -113,9 +118,9 @@ const CompleteProfile = ({ userId, userType }: CompleteProfileProps) => {
             name="lastName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Last Name</FormLabel>
+                <FormLabel className="">نام خانوادگی</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your last name" {...field} />
+                  <Input placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -126,9 +131,9 @@ const CompleteProfile = ({ userId, userType }: CompleteProfileProps) => {
             name="IDnumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>ID Number</FormLabel>
+                <FormLabel>کد ملی</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your ID number" {...field} />
+                  <Input placeholder="" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -138,7 +143,7 @@ const CompleteProfile = ({ userId, userType }: CompleteProfileProps) => {
             type="primary-btn"
             loading={isLoading}
             className="w-full"
-            title="Update Profile"
+            title="تایید"
           />
         </form>
       </Form>

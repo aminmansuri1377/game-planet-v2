@@ -1,7 +1,7 @@
 import { trpc } from "../../../utils/trpc";
 import Loading from "../../components/ui/Loading";
 import DeviceCard from "../../components/ui/DeviceCard";
-import React from "react";
+import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useRouter } from "next/router";
@@ -15,10 +15,10 @@ import { WithRole } from "@/components/auth/WithRole";
 
 const SavedProductsPage = () => {
   const router = useRouter();
+  const utils = trpc.useUtils();
 
   const { data: session } = useSession();
   const buyerId = session?.user?.id ? parseInt(session.user.id, 10) : null;
-
   const { data: savedProducts } = trpc.main.getSavedProducts.useQuery(
     {
       buyerId,
@@ -44,17 +44,37 @@ const SavedProductsPage = () => {
       toast.error(err.message);
     },
   });
-  const handleSave = (productId: number, e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent event from bubbling up to the parent div
-
+  const handleSave = async (productId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!buyerId) return;
 
     const isSaved = savedProducts?.some((sp) => sp.productId === productId);
 
-    if (isSaved) {
-      unsaveProductMutation.mutate({ buyerId, productId });
-    } else {
-      saveProductMutation.mutate({ buyerId, productId });
+    // Optimistic update
+    utils.main.getSavedProducts.setData({ buyerId }, (old) => {
+      if (!old) return old;
+      return isSaved
+        ? old.filter((sp) => sp.productId !== productId)
+        : [
+            ...old,
+            {
+              buyerId,
+              productId,
+              product: savedProducts?.find((p) => p.id === productId),
+            },
+          ];
+    });
+
+    try {
+      if (isSaved) {
+        await unsaveProductMutation.mutateAsync({ buyerId, productId });
+      } else {
+        await saveProductMutation.mutateAsync({ buyerId, productId });
+      }
+    } catch (err) {
+      // Revert if error
+      utils.main.getSavedProducts.invalidate({ buyerId });
+      console.error(err);
     }
   };
 

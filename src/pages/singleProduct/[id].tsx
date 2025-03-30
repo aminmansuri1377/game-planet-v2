@@ -332,7 +332,7 @@ function SingleProductPage() {
         <div className="mt-4 text-center">
           <p>Please complete your profile before creating a product.</p>
           <button
-            onClick={() => router.push("/buyer/completeProfile")}
+            onClick={() => router.push("/profile/CompleteProfile")}
             className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
           >
             Complete Profile

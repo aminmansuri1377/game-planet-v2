@@ -71,7 +71,9 @@ function Basket() {
 
   if (isLoading) return <Loading />;
   if (error) return <p>Error: {error.message}</p>;
-
+  if (!session) {
+    return <div>Please log in</div>;
+  }
   return (
     <WithRole allowedRoles={["buyer"]}>
       <div className="w-full min-h-screen">

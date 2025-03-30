@@ -47,6 +47,7 @@ const CategoryProductsPage = () => {
   const [position, setPosition] = useState([35.6892, 51.389]);
   const [sortByPrice, setSortByPrice] = useState(false); // State for sorting by price
   const [sortByNearest, setSortByNearest] = useState(false); // State for sorting by nearest
+  const utils = trpc.useUtils();
 
   const handleSetCoordinates = (coords: [number, number]) => {
     setCoordinates(coords);
@@ -126,17 +127,37 @@ const CategoryProductsPage = () => {
       toast.error(err.message);
     },
   });
-  const handleSave = (productId: number, e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent event from bubbling up to the parent div
-
+  const handleSave = async (productId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!buyerId) return;
 
     const isSaved = savedProducts?.some((sp) => sp.productId === productId);
 
-    if (isSaved) {
-      unsaveProductMutation.mutate({ buyerId, productId });
-    } else {
-      saveProductMutation.mutate({ buyerId, productId });
+    // Optimistic update
+    utils.main.getSavedProducts.setData({ buyerId }, (old) => {
+      if (!old) return old;
+      return isSaved
+        ? old.filter((sp) => sp.productId !== productId)
+        : [
+            ...old,
+            {
+              buyerId,
+              productId,
+              product: products?.find((p) => p.id === productId),
+            },
+          ];
+    });
+
+    try {
+      if (isSaved) {
+        await unsaveProductMutation.mutateAsync({ buyerId, productId });
+      } else {
+        await saveProductMutation.mutateAsync({ buyerId, productId });
+      }
+    } catch (err) {
+      // Revert if error
+      utils.main.getSavedProducts.invalidate({ buyerId });
+      console.error(err);
     }
   };
   const handleSortByPriceChange = () => {

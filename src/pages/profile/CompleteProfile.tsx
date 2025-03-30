@@ -20,7 +20,7 @@ function Index() {
   return (
     <WithRole allowedRoles={["buyer"]}>
       <div>
-        <div onClick={handleBack}>
+        <div onClick={handleBack} className="m-5">
           <FaArrowLeftLong />
         </div>
         <CompleteProfile userId={userId} userType="buyer" />

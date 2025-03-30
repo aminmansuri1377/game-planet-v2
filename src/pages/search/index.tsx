@@ -40,6 +40,7 @@ const SearchResultsPage = () => {
   const router = useRouter();
   const { query } = router.query;
   const { data: session } = useSession();
+  const utils = trpc.useUtils();
 
   const buyerId = session?.user?.id ? parseInt(session.user.id, 10) : null;
   const [buyerLocation, setBuyerLocation] = useRecoilState(buyerLocationAtom);
@@ -138,17 +139,37 @@ const SearchResultsPage = () => {
       toast.error(err.message);
     },
   });
-  const handleSave = (productId: number, e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent event from bubbling up to the parent div
-
+  const handleSave = async (productId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!buyerId) return;
 
     const isSaved = savedProducts?.some((sp) => sp.productId === productId);
 
-    if (isSaved) {
-      unsaveProductMutation.mutate({ buyerId, productId });
-    } else {
-      saveProductMutation.mutate({ buyerId, productId });
+    // Optimistic update
+    utils.main.getSavedProducts.setData({ buyerId }, (old) => {
+      if (!old) return old;
+      return isSaved
+        ? old.filter((sp) => sp.productId !== productId)
+        : [
+            ...old,
+            {
+              buyerId,
+              productId,
+              product: products?.find((p) => p.id === productId),
+            },
+          ];
+    });
+
+    try {
+      if (isSaved) {
+        await unsaveProductMutation.mutateAsync({ buyerId, productId });
+      } else {
+        await saveProductMutation.mutateAsync({ buyerId, productId });
+      }
+    } catch (err) {
+      // Revert if error
+      utils.main.getSavedProducts.invalidate({ buyerId });
+      console.error(err);
     }
   };
   const productLocations =
