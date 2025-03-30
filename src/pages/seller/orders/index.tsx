@@ -17,6 +17,7 @@ import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
 import { LiaClipboardListSolid } from "react-icons/lia";
 import TicketBasket from "@/components/basket/TicketBasket";
+import { WithRole } from "@/components/auth/WithRole";
 
 function SellerOrderManagement() {
   const { t } = useTranslation();
@@ -95,48 +96,50 @@ function SellerOrderManagement() {
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <div className="w-full">
-      <HeadOfPages
-        title="سفارشات"
-        back={
-          <div onClick={handleBack} className=" m-5">
-            <FaArrowLeftLong />
-          </div>
-        }
-        icon={
-          <div className="w-14 text-center mx-auto">
-            <RoundButton
-              Children={
-                <div>
-                  <LiaClipboardListSolid size={40} className="text-center" />
-                </div>
-              }
-            />
-          </div>
-        }
-      />
-
-      <div className="text-end">
-        <input
-          type="text"
-          placeholder="Search user..."
-          value={searchQuery}
-          onChange={handleSearch}
-          className="border p-2 rounded text-black my-2"
-        />
-      </div>
-      <div>
-        {orders &&
-          orders.map((order) => (
-            <div key={order.id}>
-              <TicketOrder
-                data={order}
-                handleStatusChange={handleStatusChange}
+    <WithRole allowedRoles={["seller"]}>
+      <div className="w-full">
+        <HeadOfPages
+          title="سفارشات"
+          back={
+            <div onClick={handleBack} className=" m-5">
+              <FaArrowLeftLong />
+            </div>
+          }
+          icon={
+            <div className="w-14 text-center mx-auto">
+              <RoundButton
+                Children={
+                  <div>
+                    <LiaClipboardListSolid size={40} className="text-center" />
+                  </div>
+                }
               />
             </div>
-          ))}
+          }
+        />
+
+        <div className="text-end">
+          <input
+            type="text"
+            placeholder="Search user..."
+            value={searchQuery}
+            onChange={handleSearch}
+            className="border p-2 rounded text-black my-2"
+          />
+        </div>
+        <div>
+          {orders &&
+            orders.map((order) => (
+              <div key={order.id}>
+                <TicketOrder
+                  data={order}
+                  handleStatusChange={handleStatusChange}
+                />
+              </div>
+            ))}
+        </div>
       </div>
-    </div>
+    </WithRole>
   );
 }
 

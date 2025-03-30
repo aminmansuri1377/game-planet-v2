@@ -19,6 +19,7 @@ import { isProfileComplete } from "../../../utils/checkProfileCompletion";
 import Image from "next/image";
 import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
+import { WithRole } from "@/components/auth/WithRole";
 function profile() {
   const { t } = useTranslation();
   const { data: session, status } = useSession();
@@ -61,73 +62,75 @@ function profile() {
   }
   console.log("buyer", buyer);
   return (
-    <div className="w-full min-h-screen text-center">
-      <HeadOfPages
-        title="پروفایل"
-        back={
-          <div onClick={handleBack} className=" m-5">
-            <FaArrowLeftLong />
-          </div>
-        }
-        icon={
-          <div className="w-20 text-center mx-auto">
-            <div>
-              {buyer &&
-                buyer?.profileImage &&
-                buyer?.profileImage.length !== 0 && (
-                  <Image
-                    src={buyer?.profileImage[0]}
-                    alt={`Slide`}
-                    className="w-full h-auto object-cover rounded-full"
-                    width={200}
-                    height={100}
-                    loading="lazy"
-                  />
-                )}
+    <WithRole allowedRoles={["buyer"]}>
+      <div className="w-full min-h-screen text-center">
+        <HeadOfPages
+          title="پروفایل"
+          back={
+            <div onClick={handleBack} className=" m-5">
+              <FaArrowLeftLong />
             </div>
+          }
+          icon={
+            <div className="w-20 text-center mx-auto">
+              <div>
+                {buyer &&
+                  buyer?.profileImage &&
+                  buyer?.profileImage.length !== 0 && (
+                    <Image
+                      src={buyer?.profileImage[0]}
+                      alt={`Slide`}
+                      className="w-full h-auto object-cover rounded-full"
+                      width={200}
+                      height={100}
+                      loading="lazy"
+                    />
+                  )}
+              </div>
+            </div>
+          }
+        />
+        {buyer && (
+          <div className=" text-center mt-14">
+            <h1 className=" font-PeydaBlack ">
+              {buyer.firstName}
+              {buyer.lastName}
+            </h1>
+            <h1 className=" font-PeydaBlack ">
+              {session && session?.user?.phone}
+            </h1>
+            <h1 className=" font-PeydaBlack ">{buyer.IDnumber}</h1>
+            {/* <h2 className=" my-1"> {session && session?.user?.id}</h2> */}
           </div>
-        }
-      />
-      {buyer && (
-        <div className=" text-center mt-14">
-          <h1 className=" font-PeydaBlack ">
-            {buyer.firstName}
-            {buyer.lastName}
-          </h1>
-          <h1 className=" font-PeydaBlack ">
-            {session && session?.user?.phone}
-          </h1>
-          <h1 className=" font-PeydaBlack ">{buyer.IDnumber}</h1>
-          {/* <h2 className=" my-1"> {session && session?.user?.id}</h2> */}
-        </div>
-      )}
+        )}
 
-      <div className="flex justify-evenly">
-        <div onClick={() => router.push("./profile/MyAddresses")}>
-          <Box lessPaddingY>
-            <SlLocationPin size={50} className=" mx-auto mt-8" />
-            <h1 className=" font-PeydaBold my-2">{t("rent.myAddresses")}</h1>
-            <h2 className=" font-PeydaThin text-[12px] mb-8 mx-1">
-              {t("rent.savedAddresses")}
-            </h2>
-          </Box>
+        <div className="flex justify-evenly">
+          <div onClick={() => router.push("./profile/MyAddresses")}>
+            <Box lessPaddingY>
+              <SlLocationPin size={50} className=" mx-auto mt-8" />
+              <h1 className=" font-PeydaBold my-2">{t("rent.myAddresses")}</h1>
+              <h2 className=" font-PeydaThin text-[12px] mb-8 mx-1">
+                {t("rent.savedAddresses")}
+              </h2>
+            </Box>
+          </div>
         </div>
+        {!isProfileComplete(buyer) && (
+          <div
+            onClick={() => router.push("./profile/CompleteProfile")}
+            className=" mx-7"
+          >
+            <Box lessPaddingY>
+              <div className=" flex items-center justify-end">
+                <h1 className=" font-PeydaBold mr-2">تکمیل پروفایل</h1>
+                <IoSettingsOutline size={30} />
+              </div>
+            </Box>
+          </div>
+        )}
+        <Button onClick={handleSignOut}>{t("rent.logout")}</Button>
       </div>
-      {!isProfileComplete(buyer) && (
-        <div
-          onClick={() => router.push("./profile/CompleteProfile")}
-          className=" mx-7"
-        >
-          <Box lessPaddingY>
-            <div className=" flex items-center justify-end">
-              <h1 className=" font-PeydaBold mr-2">تکمیل پروفایل</h1>
-              <IoSettingsOutline size={30} />
-            </div>
-          </Box>
-        </div>
-      )}
-      <Button onClick={handleSignOut}>{t("rent.logout")}</Button>
-    </div>
+    </WithRole>
   );
 }
 

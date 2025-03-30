@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { ChatComponent } from "@/components/Chat/ChatComponent";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import { WithRole } from "@/components/auth/WithRole";
 
 const ManagerSupportChatRoom = () => {
   const router = useRouter();
@@ -24,22 +25,24 @@ const ManagerSupportChatRoom = () => {
   const userType = ticket.buyer ? "Buyer" : "Seller";
 
   return (
-    <div className="p-6">
-      <div onClick={handleBack}>
-        <FaArrowLeftLong />
+    <WithRole allowedRoles={["manager"]}>
+      <div className="p-6">
+        <div onClick={handleBack}>
+          <FaArrowLeftLong />
+        </div>
+        <h1 className="text-2xl font-bold mb-6">
+          Support Chat Room #{ticket.chatRoomSupportId}
+        </h1>
+        <p className="mb-4">
+          Chatting with {userType}: {user?.firstName} {user?.lastName}
+        </p>
+        <ChatComponent
+          chatRoomId={ticket.id}
+          currentUserType="MANAGER"
+          currentUserId={session?.user?.id ? parseInt(session.user.id, 10) : 0}
+        />
       </div>
-      <h1 className="text-2xl font-bold mb-6">
-        Support Chat Room #{ticket.chatRoomSupportId}
-      </h1>
-      <p className="mb-4">
-        Chatting with {userType}: {user?.firstName} {user?.lastName}
-      </p>
-      <ChatComponent
-        chatRoomId={ticket.id}
-        currentUserType="MANAGER"
-        currentUserId={session?.user?.id ? parseInt(session.user.id, 10) : 0}
-      />
-    </div>
+    </WithRole>
   );
 };
 

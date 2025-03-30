@@ -3,6 +3,7 @@ import CompleteProfile from "@/components/form/CompleteProfile";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import { WithRole } from "@/components/auth/WithRole";
 
 function Index() {
   const { data: session, status } = useSession();
@@ -21,12 +22,14 @@ function Index() {
   console.log("ttttttt", session);
 
   return (
-    <div>
-      <div onClick={handleBack}>
-        <FaArrowLeftLong />
+    <WithRole allowedRoles={["seller"]}>
+      <div>
+        <div onClick={handleBack}>
+          <FaArrowLeftLong />
+        </div>
+        <CompleteProfile userId={userId} userType="seller" />
       </div>
-      <CompleteProfile userId={userId} userType="seller" />
-    </div>
+    </WithRole>
   );
 }
 

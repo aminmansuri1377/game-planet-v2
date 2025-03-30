@@ -432,6 +432,22 @@ export const gameRouter = router({
         },
       });
     }),
+  getOrderById: procedure
+    .input(
+      z.object({
+        id: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await prisma.order.findUnique({
+        where: { id: input.id },
+        include: {
+          product: true,
+          seller: true,
+          user: true,
+        },
+      });
+    }),
   // Update order status (for SELLER or APP_MANAGER)
   updateOrderStatus: procedure
     .input(

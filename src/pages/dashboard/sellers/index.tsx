@@ -15,6 +15,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
+import { WithRole } from "@/components/auth/WithRole";
 
 function index() {
   const router = useRouter();
@@ -42,56 +43,58 @@ function index() {
   // if (isLoading) return <Loading />;
   // if (error) return <p>Error: {error.message}</p>;
   return (
-    <div className=" w-full min-h-screen">
-      <HeadOfPages
-        title="اجاره دهندگان"
-        back={
-          <div onClick={handleBack} className=" m-5">
-            <FaArrowLeftLong />
-          </div>
-        }
-        icon={
-          <div className="w-14 text-center mx-auto">
-            <RoundButton
-              Children={
-                <div>
-                  <MdOutlinePersonRemoveAlt1
-                    size={40}
-                    className="text-center"
-                  />
-                </div>
-              }
-            />
-          </div>
-        }
-      />
-      <div className=" mt-12 mx-2 bg-cardbg p-1 rounded-lg">
-        <table>
-          <thead>
-            <tr>
-              <th>تلفن</th>
-              <th>نام</th>
-              <th></th>
-              <th>کدملی</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sellers?.map((seller) => (
-              <tr key={seller.id}>
-                <td>
-                  <Link href={`/dashboard/singleSeller/${seller.id}`}>
-                    {seller.phone}
-                  </Link>
-                </td>
-                <td>{seller.firstName}</td>
-                <td>{seller.lastName}</td>
-                <td>{seller.IDnumber}</td>
+    <WithRole allowedRoles={["manager"]}>
+      <div className=" w-full min-h-screen">
+        <HeadOfPages
+          title="اجاره دهندگان"
+          back={
+            <div onClick={handleBack} className=" m-5">
+              <FaArrowLeftLong />
+            </div>
+          }
+          icon={
+            <div className="w-14 text-center mx-auto">
+              <RoundButton
+                Children={
+                  <div>
+                    <MdOutlinePersonRemoveAlt1
+                      size={40}
+                      className="text-center"
+                    />
+                  </div>
+                }
+              />
+            </div>
+          }
+        />
+        <div className=" mt-12 mx-2 bg-cardbg p-1 rounded-lg">
+          <table>
+            <thead>
+              <tr>
+                <th>تلفن</th>
+                <th>نام</th>
+                <th></th>
+                <th>کدملی</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {sellers?.map((seller) => (
+                <tr key={seller.id}>
+                  <td>
+                    <Link href={`/dashboard/singleSeller/${seller.id}`}>
+                      {seller.phone}
+                    </Link>
+                  </td>
+                  <td>{seller.firstName}</td>
+                  <td>{seller.lastName}</td>
+                  <td>{seller.IDnumber}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </WithRole>
   );
 }
 

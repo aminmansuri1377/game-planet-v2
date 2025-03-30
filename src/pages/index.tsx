@@ -18,6 +18,7 @@ import { TbPigMoney } from "react-icons/tb";
 import { LuLeaf } from "react-icons/lu";
 import { LuAlarmClock } from "react-icons/lu";
 import { useSession } from "next-auth/react";
+import { WithRole } from "@/components/auth/WithRole";
 
 const WelcomePage = () => {
   const { t } = useTranslation();

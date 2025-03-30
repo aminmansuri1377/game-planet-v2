@@ -23,6 +23,7 @@ import ImageSwapper from "@/components/ui/ImageSwapper";
 import { CiCircleCheck } from "react-icons/ci";
 import img2 from "../../../public/images/p2.webp";
 import Counter from "@/components/ui/Counter";
+import { WithRole } from "@/components/auth/WithRole";
 
 function SingleProductPage() {
   const { t } = useTranslation();
@@ -342,164 +343,166 @@ function SingleProductPage() {
   }
   // console.log("productData.images", productData.images);
   return (
-    <div>
-      <div className=" px-5">
-        <Header />
-        <div onClick={() => router.back()} className=" mt-2 mb-6">
-          <FaArrowLeftLong />
-        </div>
-        <CustomButton
-          onClick={handleStartChat}
-          title="چت با فروشنده"
-          type="secondary-btn"
-          loading={createChatMutation.isLoading}
-        />
-        {productData && (
-          <div>
-            <ImageSwapper images={productData.images} />
-            <div className=" my-2 flex justify-between items-center">
-              <CustomButton
-                title={`شبی ${productData.price}`}
-                type="primary-btn"
-              />
-              <h1 className="font-PeydaBold text-2xl text-center mr-5">
-                {productData.name}
-              </h1>
-            </div>
-            <p className="font-PeydaBold text-sm text-end mt-5 mx-8">
-              {productData.description}
-            </p>
-            <div className=" bg-cardbg rounded-xl px-3 py-5 my-6">
-              <div>
-                <h1 className=" font-PeydaBold text-text1 text-center">{`اجاره دهنده : ${productData.sellerId}`}</h1>
-              </div>
-              <div className="">
-                <div className=" flex justify-end m-5">
-                  <h1 className=" font-PeydaRegular mx-5">
-                    تایید شده توسط رنتا
-                  </h1>
-                  <CiCircleCheck size={20} className=" text-green-500" />
-                </div>
-              </div>
-            </div>
-            <div className=" text-center">
-              {productData.category && (
-                <p className="font-PeydaBold text-sm">
-                  دسته بندی: {productData.category.name}
-                </p>
-              )}
-              {productData.guaranty && (
-                <p className="font-PeydaBold text-sm">
-                  نوع ضمانت: {productData.guaranty.text}
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-
-        <CustomButton
-          onClick={() => setOpen(true)}
-          title={t("rent.order")}
-          type="primary-btn"
-        />
-        <CustomModal type="general" show={open} onClose={closeModal}>
-          <div>
-            <div className=" my-2">{totalPrice}</div>
-            <div className=" my-2">{finalAmount}</div>
-
-            <div className="flex justify-center">
-              <CustomDatePicker
-                range
-                textBtn="بازه زمانی را مشخص کنید"
-                value={[startDate, endDate].filter((date) => date)} // Pass both dates as an array
-                onChange={handleDateChange}
-                dateSeparator=" تا "
-              />
-            </div>
-            {startDate && (
-              <div className="text-center mt-4">
-                <h2 className="font-PeydaBold text-lg">
-                  تاریخ تحویل گرفتن: {startDate}
-                </h2>
-              </div>
-            )}
-            {endDate && (
-              <div className="text-center mt-4">
-                <h2 className="font-PeydaBold text-lg">
-                  تاریخ پس دادن: {endDate}
-                </h2>
-              </div>
-            )}
-            {startDate && endDate && (
-              <div className="rounded-xl bg-cardbg my-4 flex justify-between">
-                <Image
-                  src={img2}
-                  alt="p"
-                  width={150}
-                  height={150}
-                  className="rounded-l-xl"
-                />
-                <div className="text-center m-4">
-                  <h1 className="font-PeydaBold text-text1 text-xl">
-                    {productData.name}
-                  </h1>
-                  <Counter
-                    text=": تعداد"
-                    quantity={finalAmount}
-                    amount={finalAmount}
-                    onUpdatePrice={handleUpdatePrice}
-                    onUpdateQuantity={setFinalAmount}
-                  />
-                </div>
-              </div>
-            )}
-            <h1 className=" font-PeydaRegular">انتخاب نوع تحویل</h1>
-            {productData.sendingType.length > 1 ? (
-              <div className=" my-3">
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    checked={selectedSendingType === "SELLER_SENDS"}
-                    onChange={() => setSelectedSendingType("SELLER_SENDS")}
-                    className="form-radio"
-                  />
-                  <span className="font-PeydaBold">خودش برام میاره</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    checked={selectedSendingType === "BUYER_PICKS_UP"}
-                    onChange={() => setSelectedSendingType("BUYER_PICKS_UP")}
-                    className="form-radio"
-                  />
-                  <span className="font-PeydaBold">باید برم بگیرم ازش</span>
-                </label>
-              </div>
-            ) : (
-              <p>{t(`rent.${productData.sendingType[0]}`)}</p>
-            )}
-            <input
-              type="text"
-              placeholder="آدرس دقیق را وارد کنید"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className=" text-black my-3"
-            />
-            <CustomButton
-              onClick={handleOrder}
-              title={t("rent.order")}
-              type="primary-btn"
-              loading={createOrderMutation.isLoading}
-            />
-          </div>
-        </CustomModal>
-      </div>
+    <WithRole allowedRoles={["buyer"]}>
       <div>
+        <div className=" px-5">
+          <Header />
+          <div onClick={() => router.back()} className=" mt-2 mb-6">
+            <FaArrowLeftLong />
+          </div>
+          <CustomButton
+            onClick={handleStartChat}
+            title="چت با فروشنده"
+            type="secondary-btn"
+            loading={createChatMutation.isLoading}
+          />
+          {productData && (
+            <div>
+              <ImageSwapper images={productData.images} />
+              <div className=" my-2 flex justify-between items-center">
+                <CustomButton
+                  title={`شبی ${productData.price}`}
+                  type="primary-btn"
+                />
+                <h1 className="font-PeydaBold text-2xl text-center mr-5">
+                  {productData.name}
+                </h1>
+              </div>
+              <p className="font-PeydaBold text-sm text-end mt-5 mx-8">
+                {productData.description}
+              </p>
+              <div className=" bg-cardbg rounded-xl px-3 py-5 my-6">
+                <div>
+                  <h1 className=" font-PeydaBold text-text1 text-center">{`اجاره دهنده : ${productData.sellerId}`}</h1>
+                </div>
+                <div className="">
+                  <div className=" flex justify-end m-5">
+                    <h1 className=" font-PeydaRegular mx-5">
+                      تایید شده توسط رنتا
+                    </h1>
+                    <CiCircleCheck size={20} className=" text-green-500" />
+                  </div>
+                </div>
+              </div>
+              <div className=" text-center">
+                {productData.category && (
+                  <p className="font-PeydaBold text-sm">
+                    دسته بندی: {productData.category.name}
+                  </p>
+                )}
+                {productData.guaranty && (
+                  <p className="font-PeydaBold text-sm">
+                    نوع ضمانت: {productData.guaranty.text}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          <CustomButton
+            onClick={() => setOpen(true)}
+            title={t("rent.order")}
+            type="primary-btn"
+          />
+          <CustomModal type="general" show={open} onClose={closeModal}>
+            <div>
+              <div className=" my-2">{totalPrice}</div>
+              <div className=" my-2">{finalAmount}</div>
+
+              <div className="flex justify-center">
+                <CustomDatePicker
+                  range
+                  textBtn="بازه زمانی را مشخص کنید"
+                  value={[startDate, endDate].filter((date) => date)} // Pass both dates as an array
+                  onChange={handleDateChange}
+                  dateSeparator=" تا "
+                />
+              </div>
+              {startDate && (
+                <div className="text-center mt-4">
+                  <h2 className="font-PeydaBold text-lg">
+                    تاریخ تحویل گرفتن: {startDate}
+                  </h2>
+                </div>
+              )}
+              {endDate && (
+                <div className="text-center mt-4">
+                  <h2 className="font-PeydaBold text-lg">
+                    تاریخ پس دادن: {endDate}
+                  </h2>
+                </div>
+              )}
+              {startDate && endDate && (
+                <div className="rounded-xl bg-cardbg my-4 flex justify-between">
+                  <Image
+                    src={img2}
+                    alt="p"
+                    width={150}
+                    height={150}
+                    className="rounded-l-xl"
+                  />
+                  <div className="text-center m-4">
+                    <h1 className="font-PeydaBold text-text1 text-xl">
+                      {productData.name}
+                    </h1>
+                    <Counter
+                      text=": تعداد"
+                      quantity={finalAmount}
+                      amount={finalAmount}
+                      onUpdatePrice={handleUpdatePrice}
+                      onUpdateQuantity={setFinalAmount}
+                    />
+                  </div>
+                </div>
+              )}
+              <h1 className=" font-PeydaRegular">انتخاب نوع تحویل</h1>
+              {productData.sendingType.length > 1 ? (
+                <div className=" my-3">
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      checked={selectedSendingType === "SELLER_SENDS"}
+                      onChange={() => setSelectedSendingType("SELLER_SENDS")}
+                      className="form-radio"
+                    />
+                    <span className="font-PeydaBold">خودش برام میاره</span>
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      checked={selectedSendingType === "BUYER_PICKS_UP"}
+                      onChange={() => setSelectedSendingType("BUYER_PICKS_UP")}
+                      className="form-radio"
+                    />
+                    <span className="font-PeydaBold">باید برم بگیرم ازش</span>
+                  </label>
+                </div>
+              ) : (
+                <p>{t(`rent.${productData.sendingType[0]}`)}</p>
+              )}
+              <input
+                type="text"
+                placeholder="آدرس دقیق را وارد کنید"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className=" text-black my-3"
+              />
+              <CustomButton
+                onClick={handleOrder}
+                title={t("rent.order")}
+                type="primary-btn"
+                loading={createOrderMutation.isLoading}
+              />
+            </div>
+          </CustomModal>
+        </div>
         <div>
-          <CommentsSection productId={productData.id} buyerId={userId} />
+          <div>
+            <CommentsSection productId={productData.id} buyerId={userId} />
+          </div>
         </div>
       </div>
-    </div>
+    </WithRole>
   );
 }
 

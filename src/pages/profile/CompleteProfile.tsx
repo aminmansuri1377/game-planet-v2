@@ -3,6 +3,7 @@ import CompleteProfile from "@/components/form/CompleteProfile";
 import { useSession } from "next-auth/react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useRouter } from "next/router";
+import { WithRole } from "@/components/auth/WithRole";
 
 function Index() {
   const { data: session, status } = useSession();
@@ -17,12 +18,14 @@ function Index() {
     return <div>Error: Invalid user ID. Please log in again.</div>;
   }
   return (
-    <div>
-      <div onClick={handleBack}>
-        <FaArrowLeftLong />
+    <WithRole allowedRoles={["buyer"]}>
+      <div>
+        <div onClick={handleBack}>
+          <FaArrowLeftLong />
+        </div>
+        <CompleteProfile userId={userId} userType="buyer" />
       </div>
-      <CompleteProfile userId={userId} userType="buyer" />
-    </div>
+    </WithRole>
   );
 }
 

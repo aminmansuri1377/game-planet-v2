@@ -7,6 +7,7 @@ import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
 import { MdOutlinePersonRemoveAlt1 } from "react-icons/md";
 import Image from "next/image";
+import { WithRole } from "@/components/auth/WithRole";
 
 const UserDetailsPage = () => {
   const router = useRouter();
@@ -30,48 +31,50 @@ const UserDetailsPage = () => {
   }
 
   return (
-    <div className=" w-full min-h-screen">
-      <HeadOfPages
-        title="اجاره دهنده"
-        back={
-          <div onClick={handleBack} className=" m-5">
-            <FaArrowLeftLong />
+    <WithRole allowedRoles={["manager"]}>
+      <div className=" w-full min-h-screen">
+        <HeadOfPages
+          title="اجاره دهنده"
+          back={
+            <div onClick={handleBack} className=" m-5">
+              <FaArrowLeftLong />
+            </div>
+          }
+          icon={
+            <div className="w-14 text-center mx-auto">
+              <RoundButton
+                Children={
+                  <div>
+                    <MdOutlinePersonRemoveAlt1
+                      size={40}
+                      className="text-center"
+                    />
+                  </div>
+                }
+              />
+            </div>
+          }
+        />
+        {seller && (
+          <div className=" m-5">
+            <h2>
+              Seller: {seller.firstName} {seller.lastName}
+            </h2>
+            <p>Phone: {seller.phone}</p>
+            <p>ID Number: {seller.IDnumber}</p>
+            {seller?.idCardImage && (
+              <Image
+                src={seller?.idCardImage}
+                alt={seller?.lastName}
+                width={200}
+                height={200}
+              />
+            )}
+            {/* Add seller products and orders here */}
           </div>
-        }
-        icon={
-          <div className="w-14 text-center mx-auto">
-            <RoundButton
-              Children={
-                <div>
-                  <MdOutlinePersonRemoveAlt1
-                    size={40}
-                    className="text-center"
-                  />
-                </div>
-              }
-            />
-          </div>
-        }
-      />
-      {seller && (
-        <div className=" m-5">
-          <h2>
-            Seller: {seller.firstName} {seller.lastName}
-          </h2>
-          <p>Phone: {seller.phone}</p>
-          <p>ID Number: {seller.IDnumber}</p>
-          {seller?.idCardImage && (
-            <Image
-              src={seller?.idCardImage}
-              alt={seller?.lastName}
-              width={200}
-              height={200}
-            />
-          )}
-          {/* Add seller products and orders here */}
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </WithRole>
   );
 };
 

@@ -6,6 +6,7 @@ import ToastContent from "@/components/ui/ToastContent";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import { WithRole } from "@/components/auth/WithRole";
 const Map = dynamic(() => import("@/components/MyMap"), {
   ssr: false,
 });
@@ -61,51 +62,53 @@ function MyAddresses() {
     });
   };
   return (
-    <div>
-      <div onClick={handleBack}>
-        <FaArrowLeftLong />
-      </div>
-      <div className="w-4/5 mx-auto my-2 text-end">
-        <input
-          type="text"
-          placeholder="Enter your title"
-          value={title}
-          onChange={(e) => setTtitle(e.target.value)}
-          className=" text-black"
-        />
-        <label className="block font-PeydaBold text-sm mb-2">Location</label>
-        <Map
-          position={position}
-          zoom={10}
-          setCoordinates={handleSetCoordinates}
-          locations={[]}
-        />
-        {coordinates && (
-          <div className="mt-4">
-            <p>Selected Coordinates:</p>
-            <p>Latitude: {coordinates[0]}</p>
-            <p>Longitude: {coordinates[1]}</p>
-          </div>
-        )}
-        <input
-          type="text"
-          placeholder="Enter your address"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          className=" text-black"
-        />
-      </div>
-      <button onClick={handleSaveLocation}>Save Location</button>
-      {locations?.map((location) => (
-        <div key={location.id}>
-          <p>Address: {location.title}</p>
-          <p>Address: {location.address}</p>
-          <p>
-            Coordinates: {location.latitude}, {location.longitude}
-          </p>
+    <WithRole allowedRoles={["buyer"]}>
+      <div>
+        <div onClick={handleBack}>
+          <FaArrowLeftLong />
         </div>
-      ))}
-    </div>
+        <div className="w-4/5 mx-auto my-2 text-end">
+          <input
+            type="text"
+            placeholder="Enter your title"
+            value={title}
+            onChange={(e) => setTtitle(e.target.value)}
+            className=" text-black"
+          />
+          <label className="block font-PeydaBold text-sm mb-2">Location</label>
+          <Map
+            position={position}
+            zoom={10}
+            setCoordinates={handleSetCoordinates}
+            locations={[]}
+          />
+          {coordinates && (
+            <div className="mt-4">
+              <p>Selected Coordinates:</p>
+              <p>Latitude: {coordinates[0]}</p>
+              <p>Longitude: {coordinates[1]}</p>
+            </div>
+          )}
+          <input
+            type="text"
+            placeholder="Enter your address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            className=" text-black"
+          />
+        </div>
+        <button onClick={handleSaveLocation}>Save Location</button>
+        {locations?.map((location) => (
+          <div key={location.id}>
+            <p>Address: {location.title}</p>
+            <p>Address: {location.address}</p>
+            <p>
+              Coordinates: {location.latitude}, {location.longitude}
+            </p>
+          </div>
+        ))}
+      </div>
+    </WithRole>
   );
 }
 

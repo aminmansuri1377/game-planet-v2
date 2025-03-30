@@ -12,6 +12,7 @@ import { BiSupport } from "react-icons/bi";
 import RoundButton from "@/components/ui/RoundButton";
 import { MdOutlineManageAccounts } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
+import { WithRole } from "@/components/auth/WithRole";
 
 function Index() {
   const { t } = useTranslation();
@@ -56,83 +57,88 @@ function Index() {
   }
 
   return (
-    <div className=" text-center mx-auto min-h-screen">
-      <HeadOfPages
-        title="ادمین"
-        back={
-          <div className=" m-5" onClick={handleLogout}>
-            <CiLogout size={40} className="text-center " />
-          </div>
-        }
-        icon={
-          <div className="w-14 text-center mx-auto">
-            <RoundButton
-              Children={
-                <div>
-                  <MdOutlineManageAccounts size={40} className="text-center" />
-                </div>
-              }
-            />
-          </div>
-        }
-      />
-      {/* <CustomButton
+    <WithRole allowedRoles={["manager"]}>
+      <div className=" text-center mx-auto min-h-screen">
+        <HeadOfPages
+          title="ادمین"
+          back={
+            <div className=" m-5" onClick={handleLogout}>
+              <CiLogout size={40} className="text-center " />
+            </div>
+          }
+          icon={
+            <div className="w-14 text-center mx-auto">
+              <RoundButton
+                Children={
+                  <div>
+                    <MdOutlineManageAccounts
+                      size={40}
+                      className="text-center"
+                    />
+                  </div>
+                }
+              />
+            </div>
+          }
+        />
+        {/* <CustomButton
         title={t("rent.productCreation")}
         type="primary-btn"
         onClick={() => router.push("/dashboard/createProduct")}
       /> */}
-      <div className=" mt-12">
+        <div className=" mt-12">
+          <CustomButton
+            title={t("rent.products")}
+            type="primary-btn"
+            onClick={() => router.push("/dashboard/products")}
+          />
+          <CustomButton
+            title={t("rent.orders")}
+            type="primary-btn"
+            onClick={() => router.push("/dashboard/orders")}
+          />
+          <CustomButton
+            title="اجاره کنندگان"
+            type="primary-btn"
+            onClick={() => router.push("/dashboard/buyers")}
+          />
+          <CustomButton
+            title="اجاره دهندگان"
+            type="primary-btn"
+            onClick={() => router.push("/dashboard/sellers")}
+          />
+        </div>
+        <div className=" m-8">
+          <h1>Support Tickets</h1>
+          {unassignedTickets?.map((ticket) => (
+            <div key={ticket.id} className="p-4 border rounded-lg shadow-sm">
+              <p className="font-semibold">
+                Ticket ID: {ticket.id} - Status: {ticket.status}
+              </p>
+              <p>
+                User:{" "}
+                {ticket.buyer
+                  ? `Buyer - ${ticket.buyer.firstName} ${ticket.buyer.lastName}`
+                  : `Seller - ${ticket.seller?.firstName} ${ticket.seller?.lastName}`}
+              </p>
+              <button
+                onClick={() =>
+                  handleAcceptTicket(ticket.id, ticket.chatRoomSupportId)
+                }
+                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                قبول پشتیبانی
+              </button>
+            </div>
+          ))}
+        </div>
         <CustomButton
-          title={t("rent.products")}
+          title="تاریخچه چت"
           type="primary-btn"
-          onClick={() => router.push("/dashboard/products")}
-        />
-        <CustomButton
-          title={t("rent.orders")}
-          type="primary-btn"
-          onClick={() => router.push("/dashboard/orders")}
-        />
-        <CustomButton
-          title="اجاره کنندگان"
-          type="primary-btn"
-          onClick={() => router.push("/dashboard/buyers")}
-        />
-        <CustomButton
-          title="اجاره دهندگان"
-          type="primary-btn"
-          onClick={() => router.push("/dashboard/sellers")}
+          onClick={() => router.push("/dashboard/support/history")}
         />
       </div>
-      <div className=" m-8">
-        <h1>Support Tickets</h1>
-        {unassignedTickets?.map((ticket) => (
-          <div key={ticket.id} className="p-4 border rounded-lg shadow-sm">
-            <p className="font-semibold">
-              Ticket ID: {ticket.id} - Status: {ticket.status}
-            </p>
-            <p>
-              User:{" "}
-              {ticket.buyer
-                ? `Buyer - ${ticket.buyer.firstName} ${ticket.buyer.lastName}`
-                : `Seller - ${ticket.seller?.firstName} ${ticket.seller?.lastName}`}
-            </p>
-            <button
-              onClick={() =>
-                handleAcceptTicket(ticket.id, ticket.chatRoomSupportId)
-              }
-              className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              قبول پشتیبانی
-            </button>
-          </div>
-        ))}
-      </div>
-      <CustomButton
-        title="تاریخچه چت"
-        type="primary-btn"
-        onClick={() => router.push("/dashboard/support/history")}
-      />
-    </div>
+    </WithRole>
   );
 }
 

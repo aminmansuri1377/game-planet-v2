@@ -14,6 +14,7 @@ import SellerProductCard from "@/components/ui/SellerProductCard";
 import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
 import { AiFillProduct } from "react-icons/ai";
+import { WithRole } from "@/components/auth/WithRole";
 
 const Products = () => {
   const router = useRouter();
@@ -72,50 +73,52 @@ const Products = () => {
   };
 
   return (
-    <div className=" min-h-screen">
-      <HeadOfPages
-        title="محصولات"
-        back={
-          <div onClick={handleBack} className=" m-5">
-            <FaArrowLeftLong />
-          </div>
-        }
-        icon={
-          <div className="w-14 text-center mx-auto">
-            <RoundButton
-              Children={
-                <div>
-                  <AiFillProduct size={40} className="text-center" />
-                </div>
-              }
-            />
-          </div>
-        }
-      />
-
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mx-3">
-        {products?.map((product) => (
-          <div key={product.id} className="">
-            <div onClick={() => handleUpdateProduct(product.id)}>
-              <SellerProductCard
-                imgUrl={product.images ? product.images[0] : ""}
-                imgAlt={product.name}
-                name={product.name}
-                price={`${product.price}`}
-                // handleSave={(e) => handleSave(product.id, e)}
-                // isSaved={isSaved}
-                rate={8}
-              />
-              <AiTwotoneDelete
-                size={30}
-                onClick={() => handleDeleteProduct(product.id)}
-                className=" mt-[-40px]"
+    <WithRole allowedRoles={["seller"]}>
+      <div className=" min-h-screen">
+        <HeadOfPages
+          title="محصولات"
+          back={
+            <div onClick={handleBack} className=" m-5">
+              <FaArrowLeftLong />
+            </div>
+          }
+          icon={
+            <div className="w-14 text-center mx-auto">
+              <RoundButton
+                Children={
+                  <div>
+                    <AiFillProduct size={40} className="text-center" />
+                  </div>
+                }
               />
             </div>
-          </div>
-        ))}
+          }
+        />
+
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mx-3">
+          {products?.map((product) => (
+            <div key={product.id} className="">
+              <div onClick={() => handleUpdateProduct(product.id)}>
+                <SellerProductCard
+                  imgUrl={product.images ? product.images[0] : ""}
+                  imgAlt={product.name}
+                  name={product.name}
+                  price={`${product.price}`}
+                  // handleSave={(e) => handleSave(product.id, e)}
+                  // isSaved={isSaved}
+                  rate={8}
+                />
+                <AiTwotoneDelete
+                  size={30}
+                  onClick={() => handleDeleteProduct(product.id)}
+                  className=" mt-[-40px]"
+                />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </WithRole>
   );
 };
 

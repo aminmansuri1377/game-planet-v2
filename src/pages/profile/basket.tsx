@@ -12,6 +12,7 @@ import ToastContent from "../../components/ui/ToastContent";
 import toast from "react-hot-toast";
 import RoundButton from "@/components/ui/RoundButton";
 import HeadOfPages from "@/components/ui/HeadOfPages";
+import { WithRole } from "@/components/auth/WithRole";
 
 function Basket() {
   const { t } = useTranslation();
@@ -72,50 +73,52 @@ function Basket() {
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <div className="w-full min-h-screen">
-      <HeadOfPages
-        title="سفارشات"
-        back={
-          <div onClick={handleBack} className=" m-5">
-            <FaArrowLeftLong />
-          </div>
-        }
-        icon={
-          <div className="w-14 text-center mx-auto">
-            <RoundButton
-              Children={
-                <div>
-                  <FaShoppingBasket size={40} className="text-center" />
-                </div>
-              }
-            />
-          </div>
-        }
-      />
-      {orders ? (
-        orders.length > 0 ? (
-          <div className=" overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
-            {orders
-              .slice()
-              .reverse()
-              .map((order, index) => (
-                <div key={index}>
-                  <TicketBasket
-                    data={order}
-                    handleStatusChange={handleStatusChange}
-                  />
-                </div>
-              ))}
-          </div>
+    <WithRole allowedRoles={["buyer"]}>
+      <div className="w-full min-h-screen">
+        <HeadOfPages
+          title="سفارشات"
+          back={
+            <div onClick={handleBack} className=" m-5">
+              <FaArrowLeftLong />
+            </div>
+          }
+          icon={
+            <div className="w-14 text-center mx-auto">
+              <RoundButton
+                Children={
+                  <div>
+                    <FaShoppingBasket size={40} className="text-center" />
+                  </div>
+                }
+              />
+            </div>
+          }
+        />
+        {orders ? (
+          orders.length > 0 ? (
+            <div className=" overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
+              {orders
+                .slice()
+                .reverse()
+                .map((order, index) => (
+                  <div key={index}>
+                    <TicketBasket
+                      data={order}
+                      handleStatusChange={handleStatusChange}
+                    />
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <h1 className="text-center font-bold mx-auto items-center">
+              <FcBinoculars size={50} />{" "}
+            </h1>
+          )
         ) : (
-          <h1 className="text-center font-bold mx-auto items-center">
-            <FcBinoculars size={50} />{" "}
-          </h1>
-        )
-      ) : (
-        "loading"
-      )}
-    </div>
+          "loading"
+        )}
+      </div>
+    </WithRole>
   );
 }
 

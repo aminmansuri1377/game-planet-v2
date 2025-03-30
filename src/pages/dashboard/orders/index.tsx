@@ -15,6 +15,7 @@ import jalaali from "jalaali-js";
 import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
 import { LiaClipboardListSolid } from "react-icons/lia";
+import { WithRole } from "@/components/auth/WithRole";
 
 function index() {
   const router = useRouter();
@@ -71,54 +72,56 @@ function index() {
   if (isLoading) return <Loading />;
   if (error) return <p>Error: {error.message}</p>;
   return (
-    <div className=" w-full">
-      <HeadOfPages
-        title="سفارشات"
-        back={
-          <div onClick={handleBack} className=" m-5">
-            <FaArrowLeftLong />
-          </div>
-        }
-        icon={
-          <div className="w-14 text-center mx-auto">
-            <RoundButton
-              Children={
-                <div>
-                  <LiaClipboardListSolid size={40} className="text-center" />
-                </div>
-              }
-            />
-          </div>
-        }
-      />
-
-      <div className=" text-end mt-12">
-        <input
-          type="text"
-          placeholder="Search user..."
-          value={searchQuery}
-          onChange={handleSearch}
-          className="border p-2 rounded text-black my-2"
-        />
-      </div>
-      <div>
-        {orders &&
-          orders?.map((i) => (
-            <div key={i.id}>
-              <TicketOrder data={i} handleStatusChange={handleStatusChange} />
+    <WithRole allowedRoles={["manager"]}>
+      <div className=" w-full">
+        <HeadOfPages
+          title="سفارشات"
+          back={
+            <div onClick={handleBack} className=" m-5">
+              <FaArrowLeftLong />
             </div>
-          ))}
-      </div>
-      <div className="flex justify-center mt-4">
-        <button onClick={handlePrevPage} disabled={page === 1}>
-          <LuArrowBigLeftDash size={30} />{" "}
-        </button>
-        {/* <span className="mx-8">{`${page} / ${orders.totalPages}`}</span>
+          }
+          icon={
+            <div className="w-14 text-center mx-auto">
+              <RoundButton
+                Children={
+                  <div>
+                    <LiaClipboardListSolid size={40} className="text-center" />
+                  </div>
+                }
+              />
+            </div>
+          }
+        />
+
+        <div className=" text-end mt-12">
+          <input
+            type="text"
+            placeholder="Search user..."
+            value={searchQuery}
+            onChange={handleSearch}
+            className="border p-2 rounded text-black my-2"
+          />
+        </div>
+        <div>
+          {orders &&
+            orders?.map((i) => (
+              <div key={i.id}>
+                <TicketOrder data={i} handleStatusChange={handleStatusChange} />
+              </div>
+            ))}
+        </div>
+        <div className="flex justify-center mt-4">
+          <button onClick={handlePrevPage} disabled={page === 1}>
+            <LuArrowBigLeftDash size={30} />{" "}
+          </button>
+          {/* <span className="mx-8">{`${page} / ${orders.totalPages}`}</span>
         <button onClick={handleNextPage} disabled={page === orders.totalPages}>
           <LuArrowBigRightDash size={30} />{" "}
         </button> */}
+        </div>
       </div>
-    </div>
+    </WithRole>
   );
 }
 

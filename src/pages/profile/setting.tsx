@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import CustomButton from "@/components/ui/CustomButton";
 import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
+import { WithRole } from "@/components/auth/WithRole";
 
 function setting() {
   const router = useRouter();
@@ -59,38 +60,39 @@ function setting() {
     setOpen(false);
   };
   return (
-    <div className=" w-full min-h-screen">
-      <HeadOfPages
-        title="تنظیمات"
-        back={
-          <div onClick={handleBack} className=" m-5">
-            <FaArrowLeftLong />
-          </div>
-        }
-        icon={
-          <div className="w-14 text-center mx-auto">
-            <RoundButton
-              Children={
-                <div>
-                  <IoSettingsOutline size={40} className="text-center" />
+    <WithRole allowedRoles={["buyer"]}>
+      <div className=" w-full min-h-screen">
+        <HeadOfPages
+          title="تنظیمات"
+          back={
+            <div onClick={handleBack} className=" m-5">
+              <FaArrowLeftLong />
+            </div>
+          }
+          icon={
+            <div className="w-14 text-center mx-auto">
+              <RoundButton
+                Children={
+                  <div>
+                    <IoSettingsOutline size={40} className="text-center" />
+                  </div>
+                }
+              />
+            </div>
+          }
+        />
+        <div className=" p-6">
+          <Box>
+            <div className="">
+              <Box lessPaddingY className={"my-5"}>
+                <div className=" flex justify-end items-center">
+                  <h1 className=" font-PeydaBold text-white mx-3">
+                    {t("rent.manageNotifications")}
+                  </h1>
+                  <IoIosNotificationsOutline size={30} />
                 </div>
-              }
-            />
-          </div>
-        }
-      />
-      <div className=" p-6">
-        <Box>
-          <div className="">
-            <Box lessPaddingY className={"my-5"}>
-              <div className=" flex justify-end items-center">
-                <h1 className=" font-PeydaBold text-white mx-3">
-                  {t("rent.manageNotifications")}
-                </h1>
-                <IoIosNotificationsOutline size={30} />
-              </div>
-            </Box>
-            {/* <Box lessPaddingY className={"my-5"}>
+              </Box>
+              {/* <Box lessPaddingY className={"my-5"}>
             <div className=" flex justify-end items-center">
               <h1 className=" font-PeydaBold text-white mx-3">
                 {t("rent.wallet")}
@@ -98,28 +100,29 @@ function setting() {
               <LuWallet size={30} />
             </div>
           </Box> */}
-            <div className=" flex justify-end items-center">
-              <h1 className=" font-PeydaBold text-white mx-3">
-                تغییر عکس پروفایل
-              </h1>
-              <Uploader
-                bucket="profile-photo"
-                singleUpload={true}
-                onUpload={(urls) => setImageUrls(urls)}
-              />
-              <CustomButton
-                title="update"
-                type="primary-btn"
-                onClick={onSubmit}
-              />
+              <div className=" flex justify-end items-center">
+                <h1 className=" font-PeydaBold text-white mx-3">
+                  تغییر عکس پروفایل
+                </h1>
+                <Uploader
+                  bucket="profile-photo"
+                  singleUpload={true}
+                  onUpload={(urls) => setImageUrls(urls)}
+                />
+                <CustomButton
+                  title="update"
+                  type="primary-btn"
+                  onClick={onSubmit}
+                />
+              </div>
             </div>
-          </div>
-        </Box>
+          </Box>
+        </div>
+        <CustomModal type="general" show={open} onClose={closeModal}>
+          <EditProfile />
+        </CustomModal>
       </div>
-      <CustomModal type="general" show={open} onClose={closeModal}>
-        <EditProfile />
-      </CustomModal>
-    </div>
+    </WithRole>
   );
 }
 
