@@ -24,6 +24,7 @@ model Buyer {
   profileImage  Json? 
   SupportTicket SupportTicket[]
   Location Location[]
+  confirmed    Boolean @default(false)
 }
 model Seller {
   id           Int       @id @default(autoincrement())
@@ -40,6 +41,7 @@ model Seller {
   profileImage  Json? 
   SupportTicket SupportTicket[]
   Location Location[]
+  confirmed    Boolean @default(false)
 }
 model Manager {
   id           Int       @id @default(autoincrement())

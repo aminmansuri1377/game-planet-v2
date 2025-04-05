@@ -22,7 +22,25 @@ const UserDetailsPage = () => {
   const { data: buyer } = trpc.main.getBuyerById.useQuery({
     userId: Number(userId),
   });
+  const utils = trpc.useUtils();
+  const confirmBuyer = trpc.main.confirmBuyer.useMutation({
+    onSuccess: () => {
+      utils.main.getBuyerById.invalidate({ userId: Number(userId) });
+    },
+  });
+  const unconfirmBuyer = trpc.main.unconfirmBuyer.useMutation({
+    onSuccess: () => {
+      utils.main.getBuyerById.invalidate({ userId: Number(userId) });
+    },
+  });
 
+  const handleConfirm = () => {
+    confirmBuyer.mutate({ userId: Number(userId) });
+  };
+
+  const handleUnconfirm = () => {
+    unconfirmBuyer.mutate({ userId: Number(userId) });
+  };
   if (!buyer) {
     return (
       <div>
@@ -70,6 +88,24 @@ const UserDetailsPage = () => {
                 height={200}
               />
             )}
+            <div className="mt-4">
+              <p>Status: {buyer.confirmed ? "Confirmed" : "Not Confirmed"}</p>
+              {buyer.confirmed ? (
+                <button
+                  onClick={handleUnconfirm}
+                  className="bg-red-500 text-white px-4 py-2 rounded"
+                >
+                  Unconfirm
+                </button>
+              ) : (
+                <button
+                  onClick={handleConfirm}
+                  className="bg-green-500 text-white px-4 py-2 rounded"
+                >
+                  Confirm
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>

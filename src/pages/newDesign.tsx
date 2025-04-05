@@ -16,6 +16,19 @@ const comment = {
   text: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است",
   buyerId: "101",
 };
+const order = {
+  buyer: { name: "امین", idNum: "002", phone: "0910" },
+  seller: { name: "امید", idNum: "003", phone: "0910" },
+  product: {
+    start: "5",
+    end: "6",
+    finalPrice: "200",
+    name: "ps5",
+    guaranty: "گارانتی نوع1",
+  },
+  sendingType: "براش میبره",
+  address: "یسبسیظلیبلیبذطذبایبلطبیبیا",
+};
 function newDesign() {
   const handleSave = () => {};
   const [rangeDate, setRangeDate] = useState<any>([]);
@@ -44,7 +57,75 @@ function newDesign() {
         <TicketOrder />
       </div> */}
       <CommentCard comment={comment} />
-      <ImageSwapper />
+      <ImageSwapper />/
+      <div className="my-5 text-right font-PeydaRegular">
+        <h1>
+          اجاره گیرنده {order.buyer.name} به شماره ملی {order.buyer.idNum} به
+          شماره همراه {order.buyer.phone}
+        </h1>
+        <h1> {order.product.name}کالای</h1>
+        <h1>
+          را از ناریخ {order.product.start} تا تاریخ {order.product.end} به قیمت
+          نهایی {order.product.finalPrice} از اجاره دهنده {order.seller.name} به
+          شماره ملی {order.seller.idNum} به شماره همراه {order.seller.phone}
+        </h1>
+        <h1> میخواهد اجاره بگیرد</h1>
+        <h1>این سفارش دارای تضمین {order.product.guaranty}</h1>
+        <h1>این سفارش باید به آدرس {order.address} برود</h1>
+        <h1>و نوع تحویل کالا {order.sendingType} میباشد</h1>
+      </div>
+      <div className="my-5 text-right font-PeydaRegular">
+        <h1>
+          اجاره دهنده {order.seller.name} به شماره ملی {order.seller.idNum} به
+          شماره همراه {order.seller.phone}
+        </h1>
+        <h1>{order.product.name}قبول کرده که کالای </h1>
+        <h1>
+          را از ناریخ {order.product.start} تا تاریخ {order.product.end} به قیمت
+          نهایی {order.product.finalPrice}
+          به اجاره گیرنده {order.buyer.name} به شماره ملی {order.buyer.idNum} به
+          شماره همراه {order.buyer.phone}
+        </h1>
+        <h1>اجاره دهد و درحال اماده سازی و تحویل سفارش میباشد</h1>
+        <h1>این سفارش دارای تضمین {order.product.guaranty}</h1>
+        <h1>این سفارش باید به آدرس {order.address} برود</h1>
+        <h1>و نوع تحویل کالا {order.sendingType} میباشد</h1>
+      </div>
+      <div className="my-5 text-right font-PeydaRegular">
+        <h1>
+          اجاره گیرنده {order.buyer.name} به شماره ملی {order.buyer.idNum} به
+          شماره همراه {order.buyer.phone}
+        </h1>
+        <h1>{order.product.name} کالای</h1>
+        <h1>
+          را از ناریخ {order.product.start} تا تاریخ {order.product.end} به قیمت
+          نهایی {order.product.finalPrice} از اجاره دهنده {order.seller.name} به
+          شماره ملی {order.seller.idNum} به شماره همراه {order.seller.phone}
+        </h1>
+        به صورت سالم تحویل گرفته و تایید کرده که کالا سالم بوده و درحال استفاده
+        از محصول میباشد
+        <h1>این سفارش دارای تضمین {order.product.guaranty}</h1>
+        <h1>این سفارش باید به آدرس {order.address} برود</h1>
+        <h1>و نوع تحویل کالا {order.sendingType} میباشد</h1>
+      </div>
+      <div className="my-5 text-right font-PeydaRegular">
+        <h1>
+          اجاره دهنده {order.seller.name} به شماره ملی {order.seller.idNum} به
+          شماره همراه {order.seller.phone}
+        </h1>
+        <h1>{order.product.name}کالای</h1>
+        <h1>
+          را از ناریخ {order.product.start} تا تاریخ {order.product.end} به قیمت
+          نهایی {order.product.finalPrice}
+          را از اجاره گیرنده {order.buyer.name} به شماره ملی {order.buyer.idNum}{" "}
+          به شماره همراه {order.buyer.phone}
+        </h1>
+        <h1>سالم پس گرفته و تایید کرده و این قرارداد اجاره به پایان رسیده</h1>
+        <h1> میخواهد اجاره بگیرد</h1>
+        <h1>این سفارش دارای تضمین {order.product.guaranty}</h1>
+        <h1>این سفارش باید به آدرس {order.address} برود</h1>
+        <h1>و نوع تحویل کالا {order.sendingType} میباشد</h1>
+      </div>
       /
       <CustomDatePicker
         range

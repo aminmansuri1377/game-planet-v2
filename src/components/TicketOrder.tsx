@@ -15,6 +15,8 @@ import Image from "next/image";
 import { trpc } from "../../utils/trpc";
 import dynamic from "next/dynamic";
 import CustomModal from "./ui/CustomModal";
+import ContractViewer from "./form/ContractViewer";
+import { LiaFileContractSolid } from "react-icons/lia";
 const Map = dynamic(() => import("@/components/MyMap"), {
   ssr: false,
 });
@@ -26,7 +28,9 @@ function TicketBasket({ data, handleStatusChange }) {
   });
   const [open, setOpen] = useState(false);
   const [show, setShow] = useState(false);
+  const [showCon, setShowCon] = useState(false);
   const [address, setAddress] = useState("");
+  const [selectedOrderId, setSelectedOrderId] = useState(0);
   const [position, setPosition] = useState([35.6892, 51.389]);
   const { t } = useTranslation();
   const gregorianToPersian = (date: Date): string => {
@@ -61,6 +65,14 @@ function TicketBasket({ data, handleStatusChange }) {
   };
   const towActionHandler = (id, status) => {
     handleStatusChange(id, status), handleIncreaseInventory(id);
+  };
+  const closeModalCon = () => {
+    setShowCon(false);
+    setSelectedOrderId(0);
+  };
+  const openModalCon = (id) => {
+    setShowCon(true);
+    setSelectedOrderId(id);
   };
   return (
     <div className=" bg-cardbg m-3 rounded-lg">
@@ -199,6 +211,11 @@ function TicketBasket({ data, handleStatusChange }) {
                   openModal(data?.latitude, data?.longitude, data?.address)
                 }
               />
+              <LiaFileContractSolid
+                size={40}
+                className=" mx-auto my-4"
+                onClick={() => openModalCon(data?.id)}
+              />
               <div className="grid grid-cols-2 gap-2 mx-2">
                 <Box lessPaddingY>
                   <div className="flex justify-between">
@@ -256,6 +273,9 @@ function TicketBasket({ data, handleStatusChange }) {
       <CustomModal type="general" show={show} onClose={closeModal}>
         <Map position={position} zoom={10} locations={[]} />
         <p className=" font-PeydaRegular">{address}</p>
+      </CustomModal>
+      <CustomModal type="general" show={showCon} onClose={closeModalCon}>
+        <ContractViewer orderId={selectedOrderId} />
       </CustomModal>
     </div>
   );

@@ -1,6 +1,5 @@
-import { memo, FC } from "react"                                    
-                 import { useTranslation } from "react-i18next";;
-import * as handLoading from "../../../public/lottie/handLoading.json";
+import { memo, FC } from "react";
+import * as handLoading from "../../../public/lottie/handLoadingnew.json";
 import Lottie from "react-lottie";
 
 interface IProps {

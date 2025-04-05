@@ -4,10 +4,6 @@ import { trpc } from "../../../../utils/trpc";
 import Box from "../../../components/Box";
 import Loading from "../../../components/ui/Loading";
 import { useAuthRedirect } from "../../../components/hooks/useAuthRedirect";
-import ToastContent from "../../../components/ui/ToastContent";
-import { toast } from "react-hot-toast";
-import { LuArrowBigRightDash } from "react-icons/lu";
-import { LuArrowBigLeftDash } from "react-icons/lu";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -71,7 +67,6 @@ function index() {
                 <th>تلفن</th>
                 <th>نام</th>
                 <th></th>
-                <th>کدملی</th>
               </tr>
             </thead>
             <tbody>
@@ -85,7 +80,7 @@ function index() {
                     </td>
                     <td>{buyer.firstName}</td>
                     <td>{buyer.lastName}</td>
-                    <td>{buyer.IDnumber}</td>
+                    <td>{buyer.confirmed ? "✅" : "❌"}</td>
                   </tr>
                 ))}
             </tbody>

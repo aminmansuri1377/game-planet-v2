@@ -21,7 +21,25 @@ const UserDetailsPage = () => {
   const { data: seller } = trpc.main.getSellerById.useQuery({
     userId: Number(userId),
   });
+  const utils = trpc.useUtils();
+  const confirmSeller = trpc.main.confirmSeller.useMutation({
+    onSuccess: () => {
+      utils.main.getSellerById.invalidate({ userId: Number(userId) });
+    },
+  });
+  const unconfirmSeller = trpc.main.unconfirmSeller.useMutation({
+    onSuccess: () => {
+      utils.main.getSellerById.invalidate({ userId: Number(userId) });
+    },
+  });
 
+  const handleConfirm = () => {
+    confirmSeller.mutate({ userId: Number(userId) });
+  };
+
+  const handleUnconfirm = () => {
+    unconfirmSeller.mutate({ userId: Number(userId) });
+  };
   if (!seller) {
     return (
       <div>
@@ -70,6 +88,24 @@ const UserDetailsPage = () => {
                 height={200}
               />
             )}
+            <div className="mt-4">
+              <p>Status: {seller.confirmed ? "Confirmed" : "Not Confirmed"}</p>
+              {seller.confirmed ? (
+                <button
+                  onClick={handleUnconfirm}
+                  className="bg-red-500 text-white px-4 py-2 rounded"
+                >
+                  Unconfirm
+                </button>
+              ) : (
+                <button
+                  onClick={handleConfirm}
+                  className="bg-green-500 text-white px-4 py-2 rounded"
+                >
+                  Confirm
+                </button>
+              )}
+            </div>
             {/* Add seller products and orders here */}
           </div>
         )}

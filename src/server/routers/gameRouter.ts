@@ -159,6 +159,41 @@ export const gameRouter = router({
         data: { firstName, lastName, IDnumber, idCardImage, profileImage },
       });
     }),
+  confirmBuyer: procedure
+    .input(z.object({ userId: z.number() }))
+    .mutation(async ({ input }) => {
+      return await prisma.buyer.update({
+        where: { id: input.userId },
+        data: { confirmed: true },
+      });
+    }),
+
+  unconfirmBuyer: procedure
+    .input(z.object({ userId: z.number() }))
+    .mutation(async ({ input }) => {
+      return await prisma.buyer.update({
+        where: { id: input.userId },
+        data: { confirmed: false },
+      });
+    }),
+
+  confirmSeller: procedure
+    .input(z.object({ userId: z.number() }))
+    .mutation(async ({ input }) => {
+      return await prisma.seller.update({
+        where: { id: input.userId },
+        data: { confirmed: true },
+      });
+    }),
+
+  unconfirmSeller: procedure
+    .input(z.object({ userId: z.number() }))
+    .mutation(async ({ input }) => {
+      return await prisma.seller.update({
+        where: { id: input.userId },
+        data: { confirmed: false },
+      });
+    }),
   getBuyerById: procedure
     .input(z.object({ userId: z.number() }))
     .query(async ({ input }) => {

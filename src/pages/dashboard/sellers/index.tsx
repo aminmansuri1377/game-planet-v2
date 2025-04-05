@@ -74,7 +74,6 @@ function index() {
                 <th>تلفن</th>
                 <th>نام</th>
                 <th></th>
-                <th>کدملی</th>
               </tr>
             </thead>
             <tbody>
@@ -87,7 +86,7 @@ function index() {
                   </td>
                   <td>{seller.firstName}</td>
                   <td>{seller.lastName}</td>
-                  <td>{seller.IDnumber}</td>
+                  <td>{seller.confirmed ? "✅" : "❌"}</td>
                 </tr>
               ))}
             </tbody>

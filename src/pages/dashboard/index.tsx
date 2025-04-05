@@ -6,7 +6,7 @@ import { useAuthRedirect } from "../../components/hooks/useAuthRedirect";
 import Cookies from "js-cookie";
 import { HiOutlineSquaresPlus } from "react-icons/hi2";
 import { trpc } from "../../../utils/trpc";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import HeadOfPages from "@/components/ui/HeadOfPages";
 import { BiSupport } from "react-icons/bi";
 import RoundButton from "@/components/ui/RoundButton";
@@ -22,7 +22,8 @@ function Index() {
   const currentUserId = session?.user?.id
     ? parseInt(session.user.id, 10)
     : null;
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
     Cookies.remove("dashboardAuth");
     router.push("/");
   };
@@ -30,7 +31,7 @@ function Index() {
     trpc.main.getUnassignedTickets.useQuery();
   const assignTicket = trpc.main.assignTicketToManager.useMutation({
     onSuccess: () => {
-      refetch(); // Refresh the list of unassigned tickets
+      refetch();
     },
   });
 
@@ -46,6 +47,7 @@ function Index() {
       router.push(`/dashboard/support/${chatRoomSupportId}`); // Redirect to the chat room
     }
   };
+
   const { isAuthenticated, isMounted } = useAuthRedirect();
 
   if (!isMounted) {
