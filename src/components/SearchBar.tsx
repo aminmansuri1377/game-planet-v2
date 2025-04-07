@@ -30,7 +30,7 @@ const SearchBar = () => {
     <div className="relative">
       <input
         type="text"
-        placeholder="Search products..."
+        placeholder="جستجوی محصول..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         onKeyDown={(e) => {

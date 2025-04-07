@@ -11,6 +11,9 @@ import { buyerLocationAtom } from "../../../store/atoms/buyerLocationAtom";
 import Header from "@/components/Header";
 import ProductCard from "@/components/ui/ProductCard";
 import ProductImg from "../../../public/images/p2.webp";
+import { PiCityDuotone } from "react-icons/pi";
+import { MdOutlineDeleteForever } from "react-icons/md";
+
 import toast from "react-hot-toast";
 const Map = dynamic(() => import("@/components/MyMap"), {
   ssr: false,
@@ -215,7 +218,9 @@ const CategoryProductsPage = () => {
         </div>
 
         <div className="mb-6">
-          <h2 className="font-PeydaBold text-lg mb-2">Set Your Location</h2>
+          <h2 className="font-PeydaBold text-lg mb-2">
+            موقعیت مکانی خود را مشخص کنید
+          </h2>
           <Map
             position={position}
             locations={productLocations}
@@ -224,23 +229,31 @@ const CategoryProductsPage = () => {
           />
           {coordinates && (
             <div className="mt-4">
-              <p>Selected Coordinates:</p>
+              <p>موقعیت مکانی انتخاب شده</p>
               <p>Latitude: {coordinates[0]}</p>
               <p>Longitude: {coordinates[1]}</p>
             </div>
           )}
         </div>
 
-        <h1 className="text-2xl font-bold mb-6">Products in Category</h1>
+        {/* <h1 className="text-2xl font-bold mb-6">Products in Category</h1> */}
         <div className="mb-6">
-          <div className="relative mb-4">
+          <div className="relative mb-4 flex">
+            {selectedCity && (
+              <MdOutlineDeleteForever
+                size={30}
+                onClick={handleClearFilter}
+                className=" mt-2 text-red-500 rounded"
+              />
+            )}
             <input
               type="text"
-              placeholder="Filter by city"
+              placeholder="انتخاب شهر"
               value={cityQuery}
               onChange={(e) => handleCitySearch(e.target.value)}
-              className="py-3 px-4 w-full mx-auto my-2 text-end font-PeydaBold rounded-full bg-gradient-to-r from-gra-100 to-gra-200"
+              className="py-3 px-4 text-end font-PeydaBold rounded-full bg-gradient-to-r from-gra-100 to-gra-200"
             />
+            {/* <PiCityDuotone size={30} className=" mt-2 mx-2" /> */}
             {filteredCities.length > 0 && (
               <div className="absolute bg-white border border-gray-300 rounded-lg mt-1 w-full z-10 text-amber-950">
                 {filteredCities.map((city) => (
@@ -254,14 +267,6 @@ const CategoryProductsPage = () => {
                 ))}
               </div>
             )}
-            {selectedCity && (
-              <button
-                onClick={handleClearFilter}
-                className="mt-2 px-4 py-2 bg-red-500 text-white rounded"
-              >
-                Clear Filter
-              </button>
-            )}
           </div>
           <label className="flex items-center space-x-2">
             <input
@@ -270,7 +275,7 @@ const CategoryProductsPage = () => {
               onChange={handleSortByPriceChange}
               className="form-radio"
             />
-            <span>Sort by Price (Low to High)</span>
+            <span className=" font-PeydaRegular">کمترین قیمت ها</span>
           </label>
           <label className="flex items-center space-x-2">
             <input
@@ -279,7 +284,7 @@ const CategoryProductsPage = () => {
               onChange={handleSortByNearestChange}
               className="form-radio"
             />
-            <span>Sort by Nearest Location</span>
+            <span className=" font-PeydaRegular">نزدیک ترین محصولات</span>
           </label>
         </div>
         <div className="space-y-4 ">
@@ -288,6 +293,14 @@ const CategoryProductsPage = () => {
               const isSaved = savedProducts?.some(
                 (sp) => sp.productId === product.id
               );
+              const distance = coordinates
+                ? haversineDistance(
+                    coordinates[0],
+                    coordinates[1],
+                    product?.latitude,
+                    product?.longitude
+                  )
+                : null;
               return (
                 <div
                   key={product.id}
@@ -301,6 +314,7 @@ const CategoryProductsPage = () => {
                     handleSave={(e) => handleSave(product.id, e)} // Pass the event
                     isSaved={isSaved}
                     rate={8}
+                    distance={distance}
                   />
                 </div>
               );

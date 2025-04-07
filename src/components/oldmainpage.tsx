@@ -99,7 +99,7 @@ const WelcomePage = () => {
       />
       {coordinates && (
         <div className="mt-4">
-          <p>Selected Coordinates:</p>
+          <p>موقعیت مکانی انتخاب شده</p>
           <p>Latitude: {coordinates[0]}</p>
           <p>Longitude: {coordinates[1]}</p>
           <h3>Nearest Locations:</h3>
