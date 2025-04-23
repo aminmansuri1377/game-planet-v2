@@ -133,7 +133,36 @@ export const gameRouter = router({
         data: { profileImage },
       });
     }),
-
+  getBuyerProfile: procedure
+    .input(
+      z.object({
+        userId: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { userId } = input;
+      return await prisma.buyer.findUnique({
+        where: { id: userId },
+        select: {
+          profileImage: true,
+        },
+      });
+    }),
+  getSellerProfile: procedure
+    .input(
+      z.object({
+        userId: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { userId } = input;
+      return await prisma.seller.findUnique({
+        where: { id: userId },
+        select: {
+          profileImage: true,
+        },
+      });
+    }),
   completeSellerProfile: procedure
     .input(
       z.object({
@@ -778,6 +807,7 @@ export const gameRouter = router({
         content: z.string(),
         senderType: z.enum(["BUYER", "SELLER", "MANAGER"]),
         senderId: z.number(),
+        imageUrl: z.string().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -846,6 +876,7 @@ export const gameRouter = router({
         content: z.string(),
         senderType: z.enum(["BUYER", "SELLER", "MANAGER"]),
         senderId: z.number(),
+        imageUrl: z.string().optional(),
       })
     )
     .mutation(async ({ input }) => {

@@ -16,7 +16,7 @@ function Uploader({
   onUpload: (urls: string[]) => void;
   singleUpload?: boolean;
   bucket?: string;
-  setUploaded;
+  setUploaded?: (value: boolean) => void;
 }) {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -54,7 +54,7 @@ function Uploader({
       console.log(urls);
       setImageUrls([]);
       onUpload(urls);
-      setUploaded(true);
+      setUploaded?.(true);
     });
   };
 

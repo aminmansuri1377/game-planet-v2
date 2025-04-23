@@ -78,7 +78,6 @@ export default function MyMap({
   userLocation: [number, number] | null;
 }) {
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -86,7 +85,7 @@ export default function MyMap({
   if (!mounted) {
     return null; // Prevent SSR issues
   }
-
+  console.log("locations", locations);
   return (
     <MapContainer
       center={position}
@@ -111,7 +110,9 @@ export default function MyMap({
           position={location.coordinates}
           icon={productLocationIcon}
         >
-          <Popup>{location.name}</Popup>
+          <Popup>
+            {location.id} -- {location.name}
+          </Popup>
         </Marker>
       ))}
       {position && (

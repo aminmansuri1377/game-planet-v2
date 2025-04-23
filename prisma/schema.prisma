@@ -159,7 +159,7 @@ model Message {
   id        Int      @id @default(autoincrement())
   content   String
   createdAt DateTime @default(now())
-  
+  imageUrl  String?
   chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
   chatRoomId Int
   senderType String    // "BUYER" | "SELLER" | "MANAGER"
@@ -186,6 +186,7 @@ model SupportMessage {
   content      String
   senderType   String    // "BUYER", "SELLER", "MANAGER"
   senderId     Int
+  imageUrl  String?
   chatRoomSupportId   Int
   createdAt    DateTime  @default(now())
   @@index([chatRoomSupportId])
