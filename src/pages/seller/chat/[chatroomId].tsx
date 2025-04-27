@@ -2,9 +2,11 @@ import { useRouter } from "next/router";
 import { trpc } from "../../../../utils/trpc";
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useRef, useState } from "react";
-import { FaArrowLeftLong } from "react-icons/fa6";
+import { FaArrowLeftLong, FaPaperPlane } from "react-icons/fa6";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { ImageUploadButton } from "@/components/Chat/ImageUploadButton";
+import { MessageBubble } from "@/components/Chat/MessageBubble";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -14,10 +16,12 @@ const supabase = createClient(
 const ChatRoomPage = () => {
   const router = useRouter();
   const { chatroomId, buyerId } = router.query;
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const numericBuyerId = buyerId ? Number(buyerId) : null;
 
   const [message, setMessage] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
 
@@ -29,17 +33,15 @@ const ChatRoomPage = () => {
     }
   );
 
-  const {
-    data: buyer,
-    isLoading: isBuyerLoading,
-    error: BuyerError,
-  } = trpc.main.getBuyerById.useQuery(
+  const { data: buyer } = trpc.main.getBuyerById.useQuery(
     { userId: numericBuyerId! },
     { enabled: !!numericBuyerId }
   );
+
   const sendMessage = trpc.main.sendMessage.useMutation({
     onSuccess: () => {
       refetch();
+      setImageFile(null);
     },
   });
 
@@ -57,7 +59,7 @@ const ChatRoomPage = () => {
           filter: `chatRoomId=eq.${chatroomId}`,
         },
         () => {
-          refetch(); // Refetch messages when a new message is inserted
+          refetch();
         }
       )
       .subscribe();
@@ -73,79 +75,137 @@ const ChatRoomPage = () => {
 
   useEffect(scrollToBottom, [messages]);
 
+  const uploadImage = async () => {
+    if (!imageFile || !chatroomId || !userId) return null;
+
+    setIsUploading(true);
+    try {
+      const fileExt = imageFile.name.split(".").pop();
+      const fileName = `${userId}-${Date.now()}.${fileExt}`;
+      const filePath = `chat-images/${chatroomId}/${fileName}`;
+
+      const { error } = await supabase.storage
+        .from("chat-images")
+        .upload(filePath, imageFile);
+
+      if (error) throw error;
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("chat-images").getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      return null;
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleSendMessage = async () => {
-    if (!message.trim()) return;
+    if (!message.trim() && !imageFile) return;
+
+    let imageUrl = null;
+    if (imageFile) {
+      imageUrl = await uploadImage();
+      if (!imageUrl) return;
+    }
 
     await sendMessage.mutateAsync({
       chatRoomId: Number(chatroomId),
-      content: message,
-      senderType: "SELLER", // Replace with actual user type
-      senderId: userId && userId, // Replace with actual user ID
+      content: message || (imageFile ? "Sent an image" : ""),
+      senderType: "SELLER",
+      senderId: userId!,
+      imageUrl: imageUrl || undefined,
     });
     setMessage("");
   };
 
   return (
     <div className="flex h-full flex-col">
-      <div onClick={() => router.back()} className=" m-5">
+      <div onClick={() => router.back()} className="m-5">
         <FaArrowLeftLong />
       </div>
-      <div className=" text-center">
+      <div className="text-center">
         {buyer && (
-          <div className=" flex gap-3">
-            <Image
-              src={buyer?.profileImage[0]}
-              alt={buyer?.firstName}
-              width={40}
-              height={40}
-              className=" rounded-full"
-            />
-            <h1 className=" mt-3">
-              {buyer.firstName}
-              {buyer.lastName}
+          <div className="flex gap-3 justify-center items-center">
+            {buyer?.profileImage && (
+              <Image
+                src={buyer?.profileImage[0] || "/default-profile.png"}
+                alt={buyer?.firstName || "Buyer"}
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
+            )}
+            <h1 className="text-lg font-medium">
+              {buyer.firstName} {buyer.lastName}
             </h1>
           </div>
         )}
       </div>
-      <div className="flex-1 overflow-y-auto py-4">
+
+      <div className="flex-1 overflow-y-auto py-4 px-4">
         {messages?.map((msg) => (
           <div
             key={msg.id}
             className={`mb-4 flex ${
-              msg.senderType === "SELLER" && msg.senderId === 1
+              msg.senderType === "SELLER" && msg.senderId === userId
                 ? "justify-end"
                 : "justify-start"
             }`}
           >
-            <div
-              className={`rounded-lg px-4 py-2 ${
-                msg.senderType === "SELLER" && msg.senderId === 1
-                  ? "bg-primary text-white"
-                  : "bg-cardbg text-white"
-              }`}
-            >
-              {msg.content}
-            </div>
+            <MessageBubble
+              content={msg.content}
+              imageUrl={msg.imageUrl || undefined}
+              isCurrentUser={
+                msg.senderType === "SELLER" && msg.senderId === userId
+              }
+            />
           </div>
         ))}
         <div ref={messagesEndRef} />
       </div>
 
       <div className="border-t p-4">
-        <div className="">
+        {imageFile && (
+          <div className="mb-2 relative">
+            <Image
+              src={URL.createObjectURL(imageFile)}
+              alt="Preview"
+              width={100}
+              height={100}
+              className="rounded-lg"
+            />
+            <button
+              onClick={() => setImageFile(null)}
+              className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+            >
+              ×
+            </button>
+          </div>
+        )}
+        <div className="flex items-center gap-2">
+          <ImageUploadButton
+            onFileSelect={setImageFile}
+            disabled={isUploading}
+          />
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-            className="flex-1 rounded-lg border py-2 text-black"
+            className="flex-1 rounded-lg border py-2 px-4 text-black"
             placeholder="Type a message..."
+            disabled={isUploading}
           />
           <button
             onClick={handleSendMessage}
-            className="ml-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            disabled={isUploading || (!message.trim() && !imageFile)}
+            className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 disabled:bg-gray-400"
           >
-            Send
+            <FaPaperPlane />
           </button>
         </div>
       </div>

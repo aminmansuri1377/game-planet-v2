@@ -1,13 +1,13 @@
 import { atom } from "recoil";
-import { recoilPersist } from "recoil-persist";
 
-const { persistAtom } = recoilPersist();
-
-export const buyerLocationAtom = atom<{
+export interface BuyerLocation {
   latitude: number;
   longitude: number;
-} | null>({
-  key: "buyerLocationAtom",
+  address?: string;
+  locationId?: number;
+}
+
+export const buyerLocationAtom = atom<BuyerLocation | null>({
+  key: "buyerLocation",
   default: null,
-  effects_UNSTABLE: [persistAtom], // Persist the state
 });

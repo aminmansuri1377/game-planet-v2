@@ -184,7 +184,6 @@ const CategoryProductsPage = () => {
     products.map((product) => ({
       name: product.name,
       coordinates: [product?.latitude, product?.longitude],
-      id: product.id,
     }));
 
   // Sort products by nearest location if sortByNearest is true

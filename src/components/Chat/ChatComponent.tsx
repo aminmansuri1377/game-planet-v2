@@ -2,6 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { trpc } from "../../../utils/trpc";
 import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/router";
+import { FaPaperPlane } from "react-icons/fa6";
+import { ImageUploadButton } from "@/components/Chat/ImageUploadButton";
+import { MessageBubble } from "@/components/Chat/MessageBubble";
+import Image from "next/image";
 
 interface ChatComponentProps {
   chatRoomId: number;
@@ -20,29 +24,23 @@ export const ChatComponent = ({
   currentUserId,
 }: ChatComponentProps) => {
   const router = useRouter();
-  const path = router.asPath;
-  let userType;
-
-  if (path.includes("seller")) {
-    userType = "SELLER";
-  } else if (path.includes("dashboard")) {
-    userType = "MANAGER";
-  } else {
-    userType = "BUYER";
-  }
   const [message, setMessage] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { data: messages, refetch } = trpc.main.getSupportMessages.useQuery(
     { chatRoomId },
     {
-      refetchInterval: 1000 * 10 * 2, // Refetch every 2 minutes (120,000 milliseconds)
-      refetchOnWindowFocus: false, // Optional: Disable refetch on window focus
+      refetchInterval: 1000 * 10 * 2,
+      refetchOnWindowFocus: false,
     }
   );
+
   const sendMessage = trpc.main.sendSupportMessage.useMutation({
     onSuccess: () => {
       refetch();
+      setImageFile(null);
     },
   });
 
@@ -58,7 +56,7 @@ export const ChatComponent = ({
           filter: `chatRoomId=eq.${chatRoomId}`,
         },
         () => {
-          refetch(); // Refetch messages when a new message is inserted
+          refetch();
         }
       )
       .subscribe();
@@ -74,60 +72,117 @@ export const ChatComponent = ({
 
   useEffect(scrollToBottom, [messages]);
 
+  const uploadImage = async () => {
+    if (!imageFile || !chatRoomId || !currentUserId) return null;
+
+    setIsUploading(true);
+    try {
+      const fileExt = imageFile.name.split(".").pop();
+      const fileName = `${currentUserId}-${Date.now()}.${fileExt}`;
+      const filePath = `support-images/${chatRoomId}/${fileName}`;
+
+      const { error } = await supabase.storage
+        .from("support-images")
+        .upload(filePath, imageFile);
+
+      if (error) throw error;
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("support-images").getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      return null;
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleSendMessage = async () => {
-    if (!message.trim()) return;
+    if (!message.trim() && !imageFile) return;
+
+    let imageUrl = null;
+    if (imageFile) {
+      imageUrl = await uploadImage();
+      if (!imageUrl) return;
+    }
 
     await sendMessage.mutateAsync({
       chatRoomId,
-      content: message,
+      content: message || (imageFile ? "Sent an image" : ""),
       senderType: currentUserType,
       senderId: currentUserId,
+      imageUrl: imageUrl || undefined,
     });
     setMessage("");
   };
-  console.log("messages", messages);
-  console.log("userType", userType);
+
   return (
     <div className="flex h-full flex-col">
-      <div className="flex-1 overflow-y-auto py-4">
+      <div className="flex-1 overflow-y-auto py-4 px-4">
         {messages?.map((msg) => (
           <div
             key={msg.id}
             className={`mb-4 flex ${
-              msg.senderType === userType && msg.senderId === currentUserId
+              msg.senderType === currentUserType &&
+              msg.senderId === currentUserId
                 ? "justify-end"
                 : "justify-start"
             }`}
           >
-            <div
-              className={`rounded-lg px-4 py-2 ${
-                msg.senderType === userType && msg.senderId === currentUserId
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-700 text-white"
-              }`}
-            >
-              {msg.content}
-            </div>
+            <MessageBubble
+              content={msg.content}
+              imageUrl={msg.imageUrl || undefined}
+              isCurrentUser={
+                msg.senderType === currentUserType &&
+                msg.senderId === currentUserId
+              }
+            />
           </div>
         ))}
         <div ref={messagesEndRef} />
       </div>
 
       <div className="border-t p-4">
-        <div className="">
+        {imageFile && (
+          <div className="mb-2 relative">
+            <Image
+              src={URL.createObjectURL(imageFile)}
+              alt="Preview"
+              width={100}
+              height={100}
+              className="rounded-lg"
+            />
+            <button
+              onClick={() => setImageFile(null)}
+              className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+            >
+              ×
+            </button>
+          </div>
+        )}
+        <div className="flex items-center gap-2">
+          <ImageUploadButton
+            onFileSelect={setImageFile}
+            disabled={isUploading}
+          />
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-            className="flex-1 rounded-lg border py-2 text-black"
+            className="flex-1 rounded-lg border py-2 px-4 text-black"
             placeholder="Type a message..."
+            disabled={isUploading}
           />
           <button
             onClick={handleSendMessage}
-            className="ml-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            disabled={isUploading || (!message.trim() && !imageFile)}
+            className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 disabled:bg-gray-400"
           >
-            Send
+            <FaPaperPlane />
           </button>
         </div>
       </div>

@@ -102,18 +102,19 @@ const SellerHomePage = () => {
             </h1>
             <GoPlusCircle size={35} />
           </div>
+          {!isProfileComplete(seller) && (
+            <CustomButton
+              title="completeProfile"
+              type="primary-btn"
+              onClick={() => router.push("/seller/completeProfile")}
+            />
+          )}
           {/* <CustomButton
           title="setting"
           type="primary-btn"
           onClick={() => router.push("/seller/setting")}
         />
-        {!isProfileComplete(seller) && (
-          <CustomButton
-            title="completeProfile"
-            type="primary-btn"
-            onClick={() => router.push("/seller/completeProfile")}
-          />
-        )} */}
+         */}
         </div>
       </div>
     </WithRole>

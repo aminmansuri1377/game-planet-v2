@@ -240,7 +240,13 @@ export const gameRouter = router({
         include: { products: true, sellerOrders: true }, // Include products and orders for sellers
       });
     }),
-
+  getSellerLocations: procedure
+    .input(z.object({ sellerId: z.number() }))
+    .query(async ({ input }) => {
+      return await prisma.location.findMany({
+        where: { sellerId: input.sellerId },
+      });
+    }),
   getBuyers: procedure.query(async () => {
     return await prisma.buyer.findMany();
   }),
@@ -256,13 +262,15 @@ export const gameRouter = router({
         description: z.string(),
         price: z.number(),
         inventory: z.number(),
+        useSavedLocation: z.boolean().optional().default(false),
+        savedLocationId: z.string().optional(),
         sendingType: z.array(z.enum(["SELLER_SENDS", "BUYER_PICKS_UP"])),
         categoryId: z.number(),
         guarantyId: z.number(),
         latitude: z.number().optional(),
         longitude: z.number().optional(),
         city: z.string().optional(),
-        address: z.string().optional(),
+        address: z.string().min(1, "Address is required"),
         images: z.array(z.string()).optional(),
       })
     )
@@ -1051,6 +1059,20 @@ export const gameRouter = router({
         where: { id: input.locationId },
       });
     }),
+  getBuyerLocations: procedure
+    .input(z.object({ buyerId: z.number() }))
+    .query(async ({ input }) => {
+      return await prisma.location.findMany({
+        where: { buyerId: input.buyerId },
+      });
+    }),
 
+  getLocationById: procedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ input }) => {
+      return await prisma.location.findUnique({
+        where: { id: input.id },
+      });
+    }),
   //////////// contract
 });

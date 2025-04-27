@@ -106,13 +106,15 @@ export default function ChatHistory() {
                         {room.messages[0]?.content}
                       </div>
                     </div>
-                    <Image
-                      src={otherParticipant?.profileImage[0]}
-                      alt={otherParticipant?.firstName}
-                      width={40}
-                      height={40}
-                      className=" rounded-full"
-                    />
+                    {otherParticipant?.profileImage && (
+                      <Image
+                        src={otherParticipant?.profileImage[0]}
+                        alt={otherParticipant?.firstName}
+                        width={40}
+                        height={40}
+                        className=" rounded-full"
+                      />
+                    )}
                   </div>
                 </div>
               );

@@ -37,6 +37,8 @@ type ProductInput = {
   longitude?: number;
   city?: string;
   address?: string;
+  useSavedLocation: boolean;
+  savedLocationId?: number;
 };
 
 export default function CreateProductForm() {
@@ -51,6 +53,8 @@ export default function CreateProductForm() {
   const [uploaded, setUploaded] = useState(false);
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
   const [position, setPosition] = useState([35.6892, 51.389]);
+  const [useSavedLocation, setUseSavedLocation] = useState(false);
+  const [savedLocations, setSavedLocations] = useState<Location[]>([]);
   const [cities, setCities] = useState<{ id: number; name: string }[]>([]);
   const [filteredCities, setFilteredCities] = useState<
     { id: number; name: string }[]
@@ -82,11 +86,20 @@ export default function CreateProductForm() {
     setCityQuery(query);
   };
   const handleCitySelect = (cityName: string) => {
-    setValue("city", cityName); // Set the selected city in the form
-    setCityQuery(cityName); // Update the input field with the selected city
-    setFilteredCities([]); // Clear the suggestions dropdown
+    setValue("city", cityName);
+    setCityQuery(cityName);
+    setFilteredCities([]);
   };
-
+  const { data: locationsData } = trpc.main.getSellerLocations.useQuery(
+    { sellerId: userId! },
+    { enabled: !!userId && useSavedLocation }
+  );
+  console.log("locationsData", locationsData);
+  useEffect(() => {
+    if (locationsData) {
+      setSavedLocations(locationsData);
+    }
+  }, [locationsData]);
   const {
     data: seller,
     isLoading: isSellerLoading,
@@ -105,6 +118,7 @@ export default function CreateProductForm() {
     useForm<ProductInput>({
       defaultValues: {
         sendingType: [],
+        address: "",
       },
     });
 
@@ -144,22 +158,74 @@ export default function CreateProductForm() {
       return;
     }
 
+    // Validate based on location selection method
+    if (data.useSavedLocation) {
+      if (!data.savedLocationId) {
+        toast.custom(
+          <ToastContent
+            type="error"
+            message="Please select one of your saved locations"
+          />
+        );
+        return;
+      }
+    } else {
+      // For new location
+      if (!data.address) {
+        toast.custom(
+          <ToastContent type="error" message="Address is required" />
+        );
+        return;
+      }
+      if (!coordinates) {
+        toast.custom(
+          <ToastContent
+            type="error"
+            message="Please select a location on the map"
+          />
+        );
+        return;
+      }
+    }
+
     try {
-      createProduct.mutate({
+      const productData = {
         ...data,
         sellerId: userId,
-        latitude: coordinates?.[0],
-        longitude: coordinates?.[1],
         images: imageUrls,
-      });
+        // Only include coordinates if not using saved location
+        ...(data.useSavedLocation
+          ? {}
+          : {
+              latitude: coordinates?.[0],
+              longitude: coordinates?.[1],
+            }),
+      };
+
+      await createProduct.mutateAsync(productData);
+      toast.custom(
+        <ToastContent type="success" message="Product created successfully!" />
+      );
+      router.push("/seller/products");
     } catch (error) {
       toast.custom(
-        <ToastContent type="error" message="Failed to upload images." />
+        <ToastContent type="error" message="Failed to create product." />
       );
-    } finally {
     }
   };
-
+  const handleLocationSelect = (locationId: number) => {
+    const selectedLocation = savedLocations.find(
+      (loc) => loc.id === locationId
+    );
+    if (selectedLocation) {
+      setValue("address", selectedLocation.address, { shouldValidate: true });
+      setValue("latitude", selectedLocation.latitude);
+      setValue("longitude", selectedLocation.longitude);
+      setValue("city", selectedLocation.city || "");
+      // Set the coordinates state as well
+      setCoordinates([selectedLocation.latitude, selectedLocation.longitude]);
+    }
+  };
   const handleSendingTypeChange = (type: "SELLER_SENDS" | "BUYER_PICKS_UP") => {
     const currentTypes = watch("sendingType");
     if (currentTypes.includes(type)) {
@@ -254,12 +320,14 @@ export default function CreateProductForm() {
             placeholder="موجودی"
             {...register("inventory", { required: true, valueAsNumber: true })}
           />
-          <Input
-            className=" py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
-            type="text"
-            placeholder={"آدرس"}
-            {...register("address", { required: true, valueAsNumber: true })}
-          />
+          {/* {!useSavedLocation && (
+            <Input
+              className=" py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
+              type="text"
+              placeholder={"آدرس"}
+              {...register("address", { required: true, valueAsNumber: true })}
+            />
+          )} */}
           <Uploader
             onUpload={(urls) => setImageUrls(urls)}
             bucket="product-images"
@@ -355,23 +423,63 @@ export default function CreateProductForm() {
           </div>
 
           <div className="w-4/5 mx-auto my-2 text-end">
-            <label className="block font-PeydaBold text-sm mb-2">
-              موقعیت مکانی محصول
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={useSavedLocation}
+                onChange={(e) => setUseSavedLocation(e.target.checked)}
+                className="form-checkbox"
+              />
+              <span className="font-PeydaBold">
+                استفاده از آدرس های ذخیره شده
+              </span>
             </label>
-            <Map
-              position={position}
-              zoom={10}
-              setCoordinates={handleSetCoordinates}
-              locations={[]}
-            />
-            {coordinates && (
-              <div className="mt-4">
-                <p>موقعیت مکانی انتخاب شده</p>
-                <p>Latitude: {coordinates[0]}</p>
-                <p>Longitude: {coordinates[1]}</p>
-              </div>
-            )}
           </div>
+          {useSavedLocation ? (
+            <div className="w-4/5 mx-auto my-2 text-end">
+              <label className="block font-PeydaBold text-sm mb-2">
+                انتخاب از آدرس های ذخیره شده
+              </label>
+              <select
+                className="bg-gradient-to-r from-gra-100 to-gra-200 border-2 border-primary text-black rounded-xl py-3 px-4 w-full mx-auto my-2 text-end font-PeydaBold text-sm"
+                {...register("savedLocationId", {
+                  required: "Please select a location",
+                })}
+                onChange={(e) => handleLocationSelect(Number(e.target.value))}
+              >
+                <option value="">انتخاب آدرس</option>
+                {savedLocations.map((location) => (
+                  <option key={location.id} value={location.id}>
+                    {location.title} - {location.address}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <>
+              <Input
+                className="py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
+                type="text"
+                placeholder={"آدرس"}
+                {...register("address", {
+                  required: "Address is required",
+                })}
+              />
+
+              {/* Map component */}
+              <div className="w-4/5 mx-auto my-2 text-end">
+                <label className="block font-PeydaBold text-sm mb-2">
+                  موقعیت مکانی محصول
+                </label>
+                <Map
+                  position={position}
+                  zoom={10}
+                  setCoordinates={handleSetCoordinates}
+                  locations={[]}
+                />
+              </div>
+            </>
+          )}
           {/* Submit Button */}
           <CustomButton
             title={t("rent.create")}
