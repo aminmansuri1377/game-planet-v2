@@ -61,7 +61,7 @@ function Header() {
       >
         <div className="text-center items-center " onClick={handleHome}>
           <h1 className="text-center font-black text-text2 text-4xl  ">
-            RENTTA{" "}
+            RENTAA{" "}
           </h1>
         </div>
         {/* {session ? (

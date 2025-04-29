@@ -13,7 +13,7 @@ const Spinner: FC<IProps> = ({ type }) => {
     animationData: handLoading,
   };
   return (
-    <div className=" min-h-screen mx-auto items-center">
+    <div className=" h-screen mx-auto ">
       <Lottie options={defaultOptions} height={250} width={250} />{" "}
     </div>
   );

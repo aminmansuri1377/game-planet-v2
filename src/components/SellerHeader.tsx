@@ -112,7 +112,7 @@ function SellerHeader() {
       >
         <div className="p-5 flex flex-col gap-4">
           <h1 className="text-center font-black text-text2 text-4xl mx-4 mb-5">
-            RENTA{" "}
+            RENTAA{" "}
           </h1>
           {/* <div
             onClick={() => router.push({ pathname: "/seller/profile" })}
@@ -131,7 +131,7 @@ function SellerHeader() {
           </div>
           <Divider /> */}
           <div
-            onClick={() => router.push({ pathname: "/profile/setting" })}
+            onClick={() => router.push({ pathname: "seller/setting" })}
             className=" flex justify-end my-1"
           >
             <h2 className=" text-text2 mx-5 font-PeydaBold">تنظیمات</h2>

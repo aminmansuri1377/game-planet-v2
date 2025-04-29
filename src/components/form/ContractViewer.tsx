@@ -12,7 +12,7 @@ function ContractViewer({ orderId }) {
       { enabled: !!orderId }
     );
   console.log("order", order);
-  if (isOrderLoading) return <div>Loading contract...</div>;
+  if (isOrderLoading) return <div>بارگذاری قرارداد...</div>;
 
   return (
     <Box>

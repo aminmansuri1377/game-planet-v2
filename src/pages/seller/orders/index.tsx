@@ -92,7 +92,7 @@ function SellerOrderManagement() {
   const { isAuthenticated, isMounted } = useAuthRedirect();
   if (!isMounted) return null;
   if (!isAuthenticated) return null;
-  if (isLoading) return <Loading />;
+  // if (isLoading) return <Loading />;
   if (error) return <p>Error: {error.message}</p>;
 
   return (
@@ -118,26 +118,30 @@ function SellerOrderManagement() {
           }
         />
 
-        <div className="text-end">
+        <div className="text-end mx-5 mt-5">
           <input
             type="text"
-            placeholder="Search user..."
+            placeholder="جستجوی مشتری..."
             value={searchQuery}
             onChange={handleSearch}
-            className="border p-2 rounded text-black my-2"
+            className="border p-2 rounded text-black my-2 font-PeydaRegular"
           />
         </div>
-        <div>
-          {orders &&
-            orders.map((order) => (
-              <div key={order.id}>
-                <TicketOrder
-                  data={order}
-                  handleStatusChange={handleStatusChange}
-                />
-              </div>
-            ))}
-        </div>
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <div>
+            {orders &&
+              orders.map((order) => (
+                <div key={order.id}>
+                  <TicketOrder
+                    data={order}
+                    handleStatusChange={handleStatusChange}
+                  />
+                </div>
+              ))}
+          </div>
+        )}
       </div>
     </WithRole>
   );

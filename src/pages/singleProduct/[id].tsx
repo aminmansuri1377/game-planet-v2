@@ -320,22 +320,22 @@ function SingleProductPage() {
     }
   };
   // console.log("buyer", buyer);
-  if (isLoading) return <Loading />;
+  // if (isLoading) return <Loading />;
   if (error) return <p>Error: {error.message}</p>;
-  if (!productData) return <p>Product not found</p>;
+  // if (!productData) return <p>Product not found</p>;
   if (!isProfileComplete(buyer)) {
     return (
-      <div>
+      <div className=" text-center my-10">
         <div onClick={() => router.back()}>
           <FaArrowLeftLong />
         </div>
-        <div className="mt-4 text-center">
-          <p>Please complete your profile before creating a product.</p>
+        <div className="mt-4 text-center font-PeydaBold min-h-screen">
+          <p className=" my-10">لطفا حساب کاربری خود را تکمیل کنید.</p>
           <button
             onClick={() => router.push("/profile/CompleteProfile")}
             className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
           >
-            Complete Profile
+            تکمیل پروفایل
           </button>
         </div>
       </div>
@@ -356,46 +356,61 @@ function SingleProductPage() {
             type="secondary-btn"
             loading={createChatMutation.isLoading}
           />
-          {productData && (
+          {!productData ? (
+            <p>Product not found</p>
+          ) : (
             <div>
-              <ImageSwapper images={productData.images} />
-              <div className=" my-2 flex justify-between items-center">
-                <CustomButton
-                  title={`شبی ${productData.price}`}
-                  type="primary-btn"
-                />
-                <h1 className="font-PeydaBold text-2xl text-center mr-5">
-                  {productData.name}
-                </h1>
-              </div>
-              <p className="font-PeydaBold text-sm text-end mt-5 mx-8">
-                {productData.description}
-              </p>
-              <div className=" bg-cardbg rounded-xl px-3 py-5 my-6">
+              {isLoading ? (
+                <Loading />
+              ) : (
                 <div>
-                  <h1 className=" font-PeydaBold text-text1 text-center">{`اجاره دهنده : ${productData.sellerId}`}</h1>
+                  {productData && (
+                    <div>
+                      <ImageSwapper images={productData.images} />
+                      <div className=" my-2 flex justify-between items-center">
+                        <CustomButton
+                          title={`شبی ${productData?.price}`}
+                          type="primary-btn"
+                        />
+                        <h1 className="font-PeydaBold text-2xl text-center mr-5">
+                          {productData?.name}
+                        </h1>
+                      </div>
+                      <p className="font-PeydaBold text-sm text-end mt-5 mx-8">
+                        {productData?.description}
+                      </p>
+                      <div className=" bg-cardbg rounded-xl px-3 py-5 my-6">
+                        <div>
+                          <h1 className=" font-PeydaBold text-text1 text-center">{`اجاره دهنده : ${productData?.sellerId}`}</h1>
+                        </div>
+                        <div className="">
+                          <div className=" flex justify-end m-5">
+                            <h1 className=" font-PeydaRegular mx-5">
+                              تایید شده توسط رنتا
+                            </h1>
+                            <CiCircleCheck
+                              size={20}
+                              className=" text-green-500"
+                            />
+                          </div>
+                          <div className=" text-center">
+                            {productData?.category && (
+                              <p className="font-PeydaBold text-sm ">
+                                دسته بندی: {productData?.category.name}
+                              </p>
+                            )}
+                            {productData?.guaranty && (
+                              <p className="font-PeydaBold text-sm mt-5">
+                                نوع ضمانت: {productData?.guaranty.text}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className="">
-                  <div className=" flex justify-end m-5">
-                    <h1 className=" font-PeydaRegular mx-5">
-                      تایید شده توسط رنتا
-                    </h1>
-                    <CiCircleCheck size={20} className=" text-green-500" />
-                  </div>
-                </div>
-              </div>
-              <div className=" text-center">
-                {productData.category && (
-                  <p className="font-PeydaBold text-sm">
-                    دسته بندی: {productData.category.name}
-                  </p>
-                )}
-                {productData.guaranty && (
-                  <p className="font-PeydaBold text-sm">
-                    نوع ضمانت: {productData.guaranty.text}
-                  </p>
-                )}
-              </div>
+              )}
             </div>
           )}
 
@@ -456,7 +471,7 @@ function SingleProductPage() {
                 </div>
               )}
               <h1 className=" font-PeydaRegular">انتخاب نوع تحویل</h1>
-              {productData.sendingType.length > 1 ? (
+              {productData?.sendingType.length > 1 ? (
                 <div className=" my-3">
                   <label className="flex items-center space-x-2">
                     <input
@@ -485,7 +500,7 @@ function SingleProductPage() {
                 placeholder="آدرس دقیق را وارد کنید"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className=" text-black my-3"
+                className=" text-black my-3 p-5 rounded-lg font-PeydaRegular"
               />
               <CustomButton
                 onClick={handleOrder}

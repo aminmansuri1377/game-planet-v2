@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
+import Loading from "@/components/ui/Loading";
 
 const SupportHistoryPage = () => {
   const { data: session } = useSession();
@@ -19,8 +20,22 @@ const SupportHistoryPage = () => {
     { enabled: !!session?.user?.id }
   );
 
-  if (isLoading) return <div>Loading...</div>;
-
+  if (isLoading)
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
+  if (!session) {
+    return (
+      <div className=" min-h-screen font-PeydaBold my-20">
+        <div onClick={handleBack} className=" m-5">
+          <FaArrowLeftLong />
+        </div>
+        <div>لطفا وارد شوید</div>
+      </div>
+    );
+  }
   return (
     <div className=" min-h-screen">
       <HeadOfPages

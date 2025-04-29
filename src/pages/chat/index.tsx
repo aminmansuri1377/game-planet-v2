@@ -39,6 +39,16 @@ export default function ChatHistory() {
   const handleSupportHistory = () => {
     router.push("/support/history");
   };
+  if (!session) {
+    return (
+      <div className=" min-h-screen font-PeydaBold my-20">
+        <div onClick={() => router.back()} className=" m-5">
+          <FaArrowLeftLong />
+        </div>
+        <div>لطفا وارد شوید</div>
+      </div>
+    );
+  }
   return (
     <div className="h-screen bg-secondary">
       <HeadOfPages

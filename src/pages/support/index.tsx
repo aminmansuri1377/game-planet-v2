@@ -36,7 +36,16 @@ function index() {
   const handleSupportHistory = () => {
     router.push("/support/history");
   };
-
+  if (!session) {
+    return (
+      <div className=" min-h-screen font-PeydaBold my-20">
+        <div onClick={handleBack} className=" m-5">
+          <FaArrowLeftLong />
+        </div>
+        <div>لطفا وارد شوید</div>
+      </div>
+    );
+  }
   return (
     <div className=" min-h-screen">
       <HeadOfPages

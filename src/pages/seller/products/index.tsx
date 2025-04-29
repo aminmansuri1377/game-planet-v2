@@ -57,7 +57,7 @@ const Products = () => {
     return null;
   }
 
-  if (isLoading) return <Loading />;
+  // if (isLoading) return <Loading />;
   if (error) return <p>Error: {error.message}</p>;
   if (!products) return <p>No products found.</p>;
 
@@ -94,29 +94,32 @@ const Products = () => {
             </div>
           }
         />
-
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mx-3">
-          {products?.map((product) => (
-            <div key={product.id} className="">
-              <div onClick={() => handleUpdateProduct(product.id)}>
-                <SellerProductCard
-                  imgUrl={product.images ? product.images[0] : ""}
-                  imgAlt={product.name}
-                  name={product.name}
-                  price={`${product.price}`}
-                  // handleSave={(e) => handleSave(product.id, e)}
-                  // isSaved={isSaved}
-                  rate={8}
-                />
-                <AiTwotoneDelete
-                  size={30}
-                  onClick={() => handleDeleteProduct(product.id)}
-                  className=" mt-[-40px]"
-                />
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mx-3">
+            {products?.map((product) => (
+              <div key={product.id} className="">
+                <div onClick={() => handleUpdateProduct(product.id)}>
+                  <SellerProductCard
+                    imgUrl={product.images ? product.images[0] : ""}
+                    imgAlt={product.name}
+                    name={product.name}
+                    price={`${product.price}`}
+                    // handleSave={(e) => handleSave(product.id, e)}
+                    // isSaved={isSaved}
+                    rate={8}
+                  />
+                  <AiTwotoneDelete
+                    size={30}
+                    onClick={() => handleDeleteProduct(product.id)}
+                    className=" mt-[-60px] ml-2"
+                  />
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </WithRole>
   );

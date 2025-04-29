@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { trpc } from "../../utils/trpc";
 import CategoryCart from "./ui/CategoryCart";
+import { FiSearch } from "react-icons/fi";
 
 const SearchBar = () => {
   const router = useRouter();
@@ -38,11 +39,17 @@ const SearchBar = () => {
             handleSearch();
           }
         }}
-        className="rounded-full py-4 px-4 w-full text-white bg-gradient-to-r from-gra-100 to-gra-200"
+        className="rounded-full py-4 px-4 w-full text-white bg-gradient-to-r from-gra-100 to-gra-200 font-PeydaRegular"
       />
+      <button
+        onClick={handleSearch}
+        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white"
+      >
+        <FiSearch size={20} />
+      </button>
       {/* Show suggestions dropdown */}
       {searchQuery && suggestedProducts && suggestedProducts.length > 0 && (
-        <div className="absolute bg-white border border-gray-300 rounded-lg mt-1 w-full z-10 text-amber-950">
+        <div className="absolute bg-secondary border border-gray-300 rounded-lg mt-1 w-full z-10 text-white">
           {suggestedProducts.map((productName, index) => (
             <div
               key={index}

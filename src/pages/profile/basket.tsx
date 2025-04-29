@@ -69,10 +69,17 @@ function Basket() {
     }
   };
 
-  if (isLoading) return <Loading />;
+  // if (isLoading) return <Loading />;
   if (error) return <p>Error: {error.message}</p>;
   if (!session) {
-    return <div>Please log in</div>;
+    return (
+      <div className=" min-h-screen font-PeydaBold my-20">
+        <div onClick={handleBack} className=" m-5">
+          <FaArrowLeftLong />
+        </div>
+        <div>لطفا وارد شوید</div>
+      </div>
+    );
   }
   return (
     <WithRole allowedRoles={["buyer"]}>
@@ -96,28 +103,34 @@ function Basket() {
             </div>
           }
         />
-        {orders ? (
-          orders.length > 0 ? (
-            <div className=" overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
-              {orders
-                .slice()
-                .reverse()
-                .map((order, index) => (
-                  <div key={index}>
-                    <TicketBasket
-                      data={order}
-                      handleStatusChange={handleStatusChange}
-                    />
-                  </div>
-                ))}
-            </div>
-          ) : (
-            <h1 className="text-center font-bold mx-auto items-center">
-              <FcBinoculars size={50} />{" "}
-            </h1>
-          )
+        {isLoading ? (
+          <Loading />
         ) : (
-          "loading"
+          <div>
+            {orders ? (
+              orders.length > 0 ? (
+                <div className=" overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
+                  {orders
+                    .slice()
+                    .reverse()
+                    .map((order, index) => (
+                      <div key={index}>
+                        <TicketBasket
+                          data={order}
+                          handleStatusChange={handleStatusChange}
+                        />
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <h1 className="text-center font-bold mx-auto items-center">
+                  <FcBinoculars size={50} />{" "}
+                </h1>
+              )
+            ) : (
+              "loading"
+            )}
+          </div>
         )}
       </div>
     </WithRole>

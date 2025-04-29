@@ -58,7 +58,14 @@ function profile() {
     return <Loading />;
   }
   if (!session) {
-    return <div>Please log in</div>;
+    return (
+      <div className=" min-h-screen font-PeydaBold my-20">
+        <div onClick={handleBack} className=" m-5">
+          <FaArrowLeftLong />
+        </div>
+        <div>لطفا وارد شوید</div>
+      </div>
+    );
   }
   console.log("seller", seller);
   return (

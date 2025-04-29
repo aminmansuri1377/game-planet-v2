@@ -206,7 +206,7 @@ const CategoryProductsPage = () => {
         })
       : products;
 
-  if (isLoading) return <Loading />;
+  // if (isLoading) return <Loading />;
   if (error) return <p>Error: {error.message}</p>;
 
   return (
@@ -218,7 +218,7 @@ const CategoryProductsPage = () => {
         </div>
 
         <div className="mb-6">
-          <h2 className="font-PeydaBold text-lg mb-2">
+          <h2 className="font-PeydaBold text-lg mb-2 text-center">
             موقعیت مکانی خود را مشخص کنید
           </h2>
           <Map
@@ -237,8 +237,8 @@ const CategoryProductsPage = () => {
         </div>
 
         {/* <h1 className="text-2xl font-bold mb-6">Products in Category</h1> */}
-        <div className="mb-6">
-          <div className="relative mb-4 flex">
+        <div className="mb-6 flex flex-col items-end">
+          <div className="relative mb-4 flex ">
             {selectedCity && (
               <MdOutlineDeleteForever
                 size={30}
@@ -255,7 +255,7 @@ const CategoryProductsPage = () => {
             />
             {/* <PiCityDuotone size={30} className=" mt-2 mx-2" /> */}
             {filteredCities.length > 0 && (
-              <div className="absolute bg-white border border-gray-300 rounded-lg mt-1 w-full z-10 text-amber-950">
+              <div className="absolute bg-secondary border border-gray-300 rounded-lg mt-1 w-full z-10 text-white">
                 {filteredCities.map((city) => (
                   <div
                     key={city.id}
@@ -268,59 +268,63 @@ const CategoryProductsPage = () => {
               </div>
             )}
           </div>
-          <label className="flex items-center space-x-2">
+          <label className="flex items-center space-x-2 my-5">
+            <span className=" font-PeydaRegular">کمترین قیمت ها</span>
             <input
               type="checkbox"
               checked={sortByPrice}
               onChange={handleSortByPriceChange}
               className="form-radio"
             />
-            <span className=" font-PeydaRegular">کمترین قیمت ها</span>
           </label>
           <label className="flex items-center space-x-2">
+            <span className=" font-PeydaRegular">نزدیک ترین محصولات</span>
             <input
               type="checkbox"
               checked={sortByNearest}
               onChange={handleSortByNearestChange}
               className="form-radio"
             />
-            <span className=" font-PeydaRegular">نزدیک ترین محصولات</span>
           </label>
         </div>
-        <div className="space-y-4 ">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-            {sortedProducts?.map((product) => {
-              const isSaved = savedProducts?.some(
-                (sp) => sp.productId === product.id
-              );
-              const distance = coordinates
-                ? haversineDistance(
-                    coordinates[0],
-                    coordinates[1],
-                    product?.latitude,
-                    product?.longitude
-                  )
-                : null;
-              return (
-                <div
-                  key={product.id}
-                  onClick={() => router.push(`/singleProduct/${product.id}`)}
-                >
-                  <ProductCard
-                    imgUrl={product?.images ? product?.images[0] : ProductImg}
-                    imgAlt={product.name}
-                    name={product.name}
-                    price={`${product.price}`}
-                    handleSave={(e) => handleSave(product.id, e)} // Pass the event
-                    isSaved={isSaved}
-                    rate={8}
-                    distance={distance}
-                  />
-                </div>
-              );
-            })}
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <div className="space-y-4 ">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+              {sortedProducts?.map((product) => {
+                const isSaved = savedProducts?.some(
+                  (sp) => sp.productId === product.id
+                );
+                const distance = coordinates
+                  ? haversineDistance(
+                      coordinates[0],
+                      coordinates[1],
+                      product?.latitude,
+                      product?.longitude
+                    )
+                  : null;
+                return (
+                  <div
+                    key={product.id}
+                    onClick={() => router.push(`/singleProduct/${product.id}`)}
+                  >
+                    <ProductCard
+                      imgUrl={product?.images ? product?.images[0] : ProductImg}
+                      imgAlt={product.name}
+                      name={product.name}
+                      price={`${product.price}`}
+                      handleSave={(e) => handleSave(product.id, e)} // Pass the event
+                      isSaved={isSaved}
+                      rate={8}
+                      distance={distance}
+                    />
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

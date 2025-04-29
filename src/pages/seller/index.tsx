@@ -107,6 +107,7 @@ const SellerHomePage = () => {
               title="completeProfile"
               type="primary-btn"
               onClick={() => router.push("/seller/completeProfile")}
+              className=" text-center mx-auto my-5"
             />
           )}
           {/* <CustomButton

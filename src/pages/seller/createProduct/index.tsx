@@ -238,22 +238,29 @@ export default function CreateProductForm() {
     }
   };
   if (userId === null || isNaN(userId)) {
-    return <div>Error: Invalid user ID. Please log in again.</div>;
+    return (
+      <div className=" min-h-screen font-PeydaBold my-20">
+        <div onClick={() => router.back()} className=" m-5">
+          <FaArrowLeftLong />
+        </div>
+        <div>لطفا وارد شوید</div>
+      </div>
+    );
   }
 
   if (!isProfileComplete(seller)) {
     return (
-      <div>
+      <div className=" text-center my-10">
         <div onClick={() => router.back()}>
           <FaArrowLeftLong />
         </div>
-        <div className="mt-4 text-center">
-          <p>Please complete your profile before creating a product.</p>
+        <div className="mt-4 text-center font-PeydaBold min-h-screen">
+          <p className=" my-10">لطفا حساب کاربری خود را تکمیل کنید.</p>
           <button
             onClick={() => router.push("/seller/completeProfile")}
             className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
           >
-            Complete Profile
+            نکمیل پروفایل
           </button>
         </div>
       </div>

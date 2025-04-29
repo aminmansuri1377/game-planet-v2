@@ -17,7 +17,14 @@ function Index() {
 
   // If userId is null or invalid, show an error or redirect
   if (userId === null || isNaN(userId)) {
-    return <div>Error: Invalid user ID. Please log in again.</div>;
+    return (
+      <div className=" min-h-screen font-PeydaBold my-20">
+        <div onClick={handleBack} className=" m-5">
+          <FaArrowLeftLong />
+        </div>
+        <div>لطفا وارد شوید</div>
+      </div>
+    );
   }
   console.log("ttttttt", session);
 

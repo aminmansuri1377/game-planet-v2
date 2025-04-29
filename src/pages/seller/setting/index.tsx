@@ -15,6 +15,8 @@ import Uploader from "@/components/uploader/Uploader";
 import { trpc } from "../../../../utils/trpc";
 import toast from "react-hot-toast";
 import CustomButton from "@/components/ui/CustomButton";
+import HeadOfPages from "@/components/ui/HeadOfPages";
+import RoundButton from "@/components/ui/RoundButton";
 import { WithRole } from "@/components/auth/WithRole";
 import Image from "next/image";
 
@@ -99,38 +101,41 @@ function Setting() {
 
   return (
     <WithRole allowedRoles={["seller"]}>
-      <div className="w-full">
-        <Box>
-          <div className="flex justify-between items-center mx-5">
-            <div onClick={handleBack}>
+      <div className="w-full min-h-screen">
+        <HeadOfPages
+          title="تنظیمات"
+          back={
+            <div onClick={handleBack} className="m-5">
               <FaArrowLeftLong />
             </div>
-            <div className="flex rounded-full bg-gradient-to-tr shadow-xl shadow-purple-800 from-[#9E16BD] to-[#5F1470] p-3 items-center text-center mr-2">
-              <IoSettingsOutline size={34} className="text-gray-300" />
+          }
+          icon={
+            <div className="w-14 text-center mx-auto">
+              <RoundButton
+                Children={
+                  <div>
+                    <IoSettingsOutline size={40} className="text-center" />
+                  </div>
+                }
+              />
             </div>
-            <div></div>
-          </div>
-          <h1 className="font-PeydaBlack my-5">{t("rent.settings")}</h1>
+          }
+        />
+        <div className="p-6">
+          <Box>
+            <div className="">
+              <Box lessPaddingY className={"my-5"}>
+                <div className="flex justify-end items-center">
+                  <h1 className="font-PeydaBold text-white mx-3">
+                    {t("rent.manageNotifications")}
+                  </h1>
+                  <IoIosNotificationsOutline size={30} />
+                </div>
+              </Box>
 
-          <div className="">
-            {/* Edit Profile Section */}
-            <Box lessPaddingY className={"my-5"}>
-              <div
-                className="flex justify-end items-center"
-                onClick={() => setOpen(true)}
-              >
+              <div className="flex flex-col items-end gap-4">
                 <h1 className="font-PeydaBold text-white mx-3">
-                  {t("rent.editProfile")}
-                </h1>
-                <MdOutlineEdit size={30} />
-              </div>
-            </Box>
-
-            {/* Profile Photo Section */}
-            <Box lessPaddingY className={"my-5"}>
-              <div className="flex flex-col items-end gap-4 p-4">
-                <h1 className="font-PeydaBold text-white">
-                  {t("rent.changeProfilePhoto")}
+                  تغییر عکس پروفایل
                 </h1>
 
                 {/* Current Profile Image Display */}
@@ -139,101 +144,59 @@ function Setting() {
                     <Image
                       src={currentProfileImage}
                       alt="Profile"
-                      width={120}
-                      height={120}
-                      className="rounded-full object-cover border-2 border-purple-500"
+                      width={150}
+                      height={150}
+                      className="rounded-full object-cover border-2 border-white"
                     />
                     <button
                       onClick={toggleEditMode}
-                      className="absolute bottom-0 right-0 bg-purple-600 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute bottom-0 right-0 bg-blue-500 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                     >
-                      <MdOutlineEdit size={20} className="text-white" />
+                      <MdOutlineEdit size={20} />
                     </button>
                   </div>
                 )}
 
                 {/* Uploader in Edit Mode */}
                 {editMode && (
-                  <div className="w-full">
+                  <>
                     <Uploader
                       bucket="profile-photo"
                       singleUpload={true}
                       onUpload={(urls) => setImageUrls(urls)}
                     />
-                    <div className="flex gap-2 justify-end mt-3">
+                    <div className="flex gap-2">
                       <CustomButton
-                        title={t("rent.save")}
+                        title="ذخیره"
                         type="primary-btn"
                         onClick={onSubmit}
                         loading={isLoading}
                         disabled={isLoading || imageUrls.length === 0}
                       />
                       <CustomButton
-                        title={t("rent.cancel")}
+                        title="انصراف"
                         type="secondary-btn"
                         onClick={toggleEditMode}
                         disabled={isLoading}
                       />
                     </div>
-                  </div>
+                  </>
                 )}
 
                 {/* Show edit button if not in edit mode and no image exists */}
                 {!currentProfileImage && !editMode && (
                   <button
                     onClick={toggleEditMode}
-                    className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg"
+                    className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg"
                   >
                     <MdOutlineEdit size={20} />
-                    {t("rent.addProfilePhoto")}
+                    افزودن عکس پروفایل
                   </button>
                 )}
               </div>
-            </Box>
-
-            {/* Other Settings Sections */}
-            <Box lessPaddingY className={"my-5"}>
-              <div className="flex justify-end items-center">
-                <h1 className="font-PeydaBold text-white mx-3">
-                  {t("rent.manageNotifications")}
-                </h1>
-                <IoIosNotificationsOutline size={30} />
-              </div>
-            </Box>
-
-            <Box lessPaddingY className={"my-5"}>
-              <div className="flex justify-end items-center">
-                <h1 className="font-PeydaBold text-white mx-3">
-                  {t("rent.wallet")}
-                </h1>
-                <LuWallet size={30} />
-              </div>
-            </Box>
-
-            <div onClick={() => router.push("./MyAddresses")}>
-              <Box lessPaddingY className={"my-5"}>
-                <div className="flex justify-end items-center">
-                  <h1 className="font-PeydaBold text-white mx-3">
-                    {t("rent.myLocations")}
-                  </h1>
-                  <LuWallet size={30} />
-                </div>
-              </Box>
             </div>
-
-            <div onClick={handleOut}>
-              <Box lessPaddingY className={"my-5"}>
-                <div className="flex justify-end items-center">
-                  <h1 className="font-PeydaBold text-white mx-3">
-                    {t("rent.logout")}
-                  </h1>
-                  <HiOutlineLogout size={30} />
-                </div>
-              </Box>
-            </div>
-          </div>
-        </Box>
-
+          </Box>
+        </div>
         <CustomModal type="general" show={open} onClose={closeModal}>
           <EditProfile />
         </CustomModal>

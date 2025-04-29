@@ -7,6 +7,11 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/router";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { WithRole } from "@/components/auth/WithRole";
+import HeadOfPages from "@/components/ui/HeadOfPages";
+import RoundButton from "@/components/ui/RoundButton";
+import { MdOutlineAddLocationAlt } from "react-icons/md";
+import CustomButton from "@/components/ui/CustomButton";
+
 const Map = dynamic(() => import("@/components/MyMap"), {
   ssr: false,
 });
@@ -27,16 +32,25 @@ function MyAddresses() {
     setPosition(coords);
   };
   const addLocation = trpc.main.addLocation.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.custom(
         <ToastContent type="success" message="Location saved successfully!" />
       );
+      await refetch();
+      // Clear the form
+      setTtitle("");
+      setAddress("");
+      setCoordinates(null);
     },
     onError: (err) => {
       toast.custom(<ToastContent type="error" message={err.message} />);
     },
   });
-  const { data: locations, isLoading } = trpc.main.getUserLocations.useQuery(
+  const {
+    data: locations,
+    isLoading,
+    refetch,
+  } = trpc.main.getUserLocations.useQuery(
     {
       buyerId: userId ? userId : undefined,
     },
@@ -63,47 +77,72 @@ function MyAddresses() {
   };
   return (
     <WithRole allowedRoles={["buyer"]}>
-      <div>
-        <div onClick={handleBack}>
-          <FaArrowLeftLong />
-        </div>
+      <HeadOfPages
+        title="آدرس های من"
+        back={
+          <div onClick={() => router.back()} className=" m-5">
+            <FaArrowLeftLong />
+          </div>
+        }
+        icon={
+          <div className="w-14 text-center mx-auto">
+            <RoundButton
+              Children={
+                <div>
+                  <MdOutlineAddLocationAlt size={40} className="text-center" />
+                </div>
+              }
+            />
+          </div>
+        }
+      />
+      <div className=" mt-14">
         <div className="w-4/5 mx-auto my-2 text-end">
           <input
             type="text"
-            placeholder="Enter your title"
+            placeholder="عنوان"
             value={title}
             onChange={(e) => setTtitle(e.target.value)}
-            className=" text-black"
+            className=" text-black rounded-lg p-2 font-PeydaRegular"
           />
-          <label className="block font-PeydaBold text-sm mb-2">Location</label>
-          <Map
-            position={position}
-            zoom={10}
-            setCoordinates={handleSetCoordinates}
-            locations={[]}
-          />
-          {coordinates && (
-            <div className="mt-4">
-              <p>موقعیت مکانی انتخاب شده</p>
-              <p>Latitude: {coordinates[0]}</p>
-              <p>Longitude: {coordinates[1]}</p>
-            </div>
-          )}
+          {/* <label className="block font-PeydaBold text-sm mb-2">Location</label> */}
+          <div className=" my-5">
+            <Map
+              position={position}
+              zoom={10}
+              setCoordinates={handleSetCoordinates}
+              locations={[]}
+            />
+            {coordinates && (
+              <div className="mt-4">
+                <p>موقعیت مکانی انتخاب شده</p>
+                <p>Latitude: {coordinates[0]}</p>
+                <p>Longitude: {coordinates[1]}</p>
+              </div>
+            )}
+          </div>
           <input
             type="text"
-            placeholder="Enter your address"
+            placeholder="آدرس دقیق"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            className=" text-black"
+            className=" text-black rounded-lg p-2 font-PeydaRegular"
           />
         </div>
-        <button onClick={handleSaveLocation}>Save Location</button>
+        <CustomButton
+          type="secondary-btn"
+          title="ذخیره"
+          onClick={handleSaveLocation}
+        />
         {locations?.map((location) => (
-          <div key={location.id}>
-            <p>Address: {location.title}</p>
-            <p>Address: {location.address}</p>
+          <div
+            key={location.id}
+            className=" m-5 text-center p-5 bg-secondary text-white font-PeydaRegular rounded-xl"
+          >
+            <p> {location.title}</p>
+            <p>آدرس: {location.address}</p>
             <p>
-              Coordinates: {location.latitude}, {location.longitude}
+              موقعیت: {location.latitude}, {location.longitude}
             </p>
           </div>
         ))}

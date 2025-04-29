@@ -37,7 +37,9 @@ export const WithRole = ({ children, allowedRoles }: WithRoleProps) => {
     !session ||
     !allowedRoles.includes(session.user?.role as any)
   ) {
-    return <div>Loading or verifying access...</div>;
+    return (
+      <div className=" min-h-screen mt-10">بارگذاری وشناسایی کاربر...</div>
+    );
   }
 
   return <>{children}</>;
