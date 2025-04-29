@@ -85,9 +85,9 @@ function Index() {
         />
         <div className=" mt-12">
           <CustomButton
-            title={t("rent.productCreation")}
+            title="ایجاد"
             type="primary-btn"
-            onClick={() => router.push("/dashboard/createProduct")}
+            onClick={() => router.push("/dashboard/create")}
           />
           <CustomButton
             title={t("rent.products")}
