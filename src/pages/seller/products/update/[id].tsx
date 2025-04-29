@@ -13,6 +13,7 @@ import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
 import { FiEdit } from "react-icons/fi";
 import { WithRole } from "@/components/auth/WithRole";
+import Loading from "@/components/ui/Loading";
 
 const Map = dynamic(() => import("@/components/MyMap"), {
   ssr: false,
@@ -150,11 +151,11 @@ export default function UpdateProductForm() {
 
   const updateProduct = trpc.main.updateProduct.useMutation({
     onSuccess: () => {
-      toast.success("Product updated successfully!");
+      toast.success("محصول با موفقیت بروزرسانی شد!");
       router.push("/seller/products");
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to update product");
+      toast.error(err.message || "مشکلی در بروزرسانی وجود دارد");
     },
   });
 
@@ -181,7 +182,7 @@ export default function UpdateProductForm() {
     });
   };
 
-  if (isProductLoading) return <div>Loading...</div>;
+  // if (isProductLoading) return <div>Loading...</div>;
   if (!product) return <div>Product not found</div>;
 
   return (
@@ -206,185 +207,197 @@ export default function UpdateProductForm() {
             </div>
           }
         />
+        {isProductLoading ? (
+          <Loading />
+        ) : (
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="mx-auto text-center mt-8"
+          >
+            <h1 className="font-PeydaRegular text-lg">
+              Update your product information
+            </h1>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="mx-auto text-center mt-8"
-        >
-          <h1 className="font-PeydaRegular text-lg">
-            Update your product information
-          </h1>
-
-          {/* Product Name */}
-          <Input
-            className="py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
-            type="text"
-            placeholder="Product Name"
-            {...register("name", { required: true })}
-          />
-
-          {/* Product Description */}
-          <Input
-            className="py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
-            type="text"
-            placeholder="Description"
-            {...register("description", { required: true })}
-          />
-
-          {/* Product Price */}
-          <Input
-            className="py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
-            type="number"
-            placeholder="Price"
-            {...register("price", { required: true, valueAsNumber: true })}
-          />
-
-          {/* Product Inventory */}
-          <Input
-            className="py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
-            type="number"
-            placeholder="Inventory"
-            {...register("inventory", { required: true, valueAsNumber: true })}
-          />
-
-          {/* Address */}
-          <Input
-            className="py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
-            type="text"
-            placeholder="Address"
-            {...register("address", { required: true })}
-          />
-
-          {/* Image Uploader */}
-          <Uploader
-            onUpload={(urls) => {
-              setImageUrls(urls);
-              setValue("images", urls, { shouldDirty: true });
-            }}
-            bucket="product-images"
-            initialFiles={product.images as string[] | undefined}
-          />
-
-          {/* City Search */}
-          <div className="w-4/5 mx-auto my-2 text-end relative mb-10">
-            <label className="block font-PeydaBold text-sm mb-2">City</label>
-            <input
+            {/* Product Name */}
+            <Input
+              className="py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
               type="text"
-              placeholder="Search for a city"
-              value={cityQuery}
-              onChange={(e) => handleCitySearch(e.target.value)}
-              className="py-3 px-4 w-full mx-auto my-2 text-end font-PeydaBold rounded-full bg-gradient-to-r from-gra-100 to-gra-200"
+              placeholder="Product Name"
+              {...register("name", { required: true })}
             />
-            {filteredCities.length > 0 && (
-              <div className="absolute bg-cardbg border border-gray-300 rounded-lg mt-1 w-full z-10 text-text1">
-                {filteredCities.map((city) => (
-                  <div
-                    key={city.id}
-                    onClick={() => handleCitySelect(city.name)}
-                    className="p-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    {city.name}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
 
-          {/* Category Selection */}
-          <select
-            className="bg-gradient-to-r from-gra-100 to-gra-200 border-2 border-primary text-black rounded-xl py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
-            {...register("categoryId", { required: true, valueAsNumber: true })}
-          >
-            <option className="bg-primary" value="">
-              Select a category
-            </option>
-            {categoryData?.map((category) => (
-              <option
-                className="bg-primary"
-                key={category.id}
-                value={category.id}
-                selected={category.id === product.categoryId}
-              >
-                {category.name}
-              </option>
-            ))}
-          </select>
+            {/* Product Description */}
+            <Input
+              className="py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
+              type="text"
+              placeholder="Description"
+              {...register("description", { required: true })}
+            />
 
-          {/* Guaranty Selection */}
-          <select
-            className="bg-gradient-to-r from-gra-100 to-gra-200 border-2 border-primary text-black rounded-xl py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
-            {...register("guarantyId", { required: true, valueAsNumber: true })}
-          >
-            <option className="bg-primary" value="">
-              Select a guaranty
-            </option>
-            {guarantyData?.map((guaranty) => (
-              <option
-                className="bg-primary"
-                key={guaranty.id}
-                value={guaranty.id}
-                selected={guaranty.id === product.guarantyId}
-              >
-                {guaranty.text}
-              </option>
-            ))}
-          </select>
+            {/* Product Price */}
+            <Input
+              className="py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
+              type="number"
+              placeholder="Price"
+              {...register("price", { required: true, valueAsNumber: true })}
+            />
 
-          {/* Sending Type */}
-          <div className="w-4/5 mx-auto my-2 text-end">
-            <label className="block font-PeydaBold text-sm mb-2">
-              Sending Type
-            </label>
-            <div className="space-y-2">
-              <label className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={watch("sendingType")?.includes("SELLER_SENDS")}
-                  onChange={() => handleSendingTypeChange("SELLER_SENDS")}
-                  className="form-checkbox"
-                />
-                <span>Seller Sends</span>
-              </label>
-              <label className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={watch("sendingType")?.includes("BUYER_PICKS_UP")}
-                  onChange={() => handleSendingTypeChange("BUYER_PICKS_UP")}
-                  className="form-checkbox"
-                />
-                <span>Buyer Picks Up</span>
-              </label>
+            {/* Product Inventory */}
+            <Input
+              className="py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
+              type="number"
+              placeholder="Inventory"
+              {...register("inventory", {
+                required: true,
+                valueAsNumber: true,
+              })}
+            />
+
+            {/* Address */}
+            <Input
+              className="py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
+              type="text"
+              placeholder="Address"
+              {...register("address", { required: true })}
+            />
+
+            {/* Image Uploader */}
+            <Uploader
+              onUpload={(urls) => {
+                setImageUrls(urls);
+                setValue("images", urls, { shouldDirty: true });
+              }}
+              bucket="product-images"
+              initialFiles={product.images as string[] | undefined}
+            />
+
+            {/* City Search */}
+            <div className="w-4/5 mx-auto my-2 text-end relative mb-10">
+              <label className="block font-PeydaBold text-sm mb-2">City</label>
+              <input
+                type="text"
+                placeholder="Search for a city"
+                value={cityQuery}
+                onChange={(e) => handleCitySearch(e.target.value)}
+                className="py-3 px-4 w-full mx-auto my-2 text-end font-PeydaBold rounded-full bg-gradient-to-r from-gra-100 to-gra-200"
+              />
+              {filteredCities.length > 0 && (
+                <div className="absolute bg-cardbg border border-gray-300 rounded-lg mt-1 w-full z-10 text-text1">
+                  {filteredCities.map((city) => (
+                    <div
+                      key={city.id}
+                      onClick={() => handleCitySelect(city.name)}
+                      className="p-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      {city.name}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
 
-          {/* Location Map */}
-          <div className="w-4/5 mx-auto my-2 text-end">
-            <label className="block font-PeydaBold text-sm mb-2">
-              Product Location
-            </label>
-            <Map
-              position={position}
-              zoom={product.latitude && product.longitude ? 15 : 10}
-              setCoordinates={handleSetCoordinates}
-              locations={[]}
-            />
-            {coordinates && (
-              <div className="mt-4">
-                <p>موقعیت مکانی انتخاب شده</p>
-                <p>Latitude: {coordinates[0]}</p>
-                <p>Longitude: {coordinates[1]}</p>
+            {/* Category Selection */}
+            <select
+              className="bg-gradient-to-r from-gra-100 to-gra-200 border-2 border-primary text-black rounded-xl py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
+              {...register("categoryId", {
+                required: true,
+                valueAsNumber: true,
+              })}
+            >
+              <option className="bg-primary" value="">
+                Select a category
+              </option>
+              {categoryData?.map((category) => (
+                <option
+                  className="bg-primary"
+                  key={category.id}
+                  value={category.id}
+                  selected={category.id === product.categoryId}
+                >
+                  {category.name}
+                </option>
+              ))}
+            </select>
+
+            {/* Guaranty Selection */}
+            <select
+              className="bg-gradient-to-r from-gra-100 to-gra-200 border-2 border-primary text-black rounded-xl py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold text-sm"
+              {...register("guarantyId", {
+                required: true,
+                valueAsNumber: true,
+              })}
+            >
+              <option className="bg-primary" value="">
+                Select a guaranty
+              </option>
+              {guarantyData?.map((guaranty) => (
+                <option
+                  className="bg-primary"
+                  key={guaranty.id}
+                  value={guaranty.id}
+                  selected={guaranty.id === product.guarantyId}
+                >
+                  {guaranty.text}
+                </option>
+              ))}
+            </select>
+
+            {/* Sending Type */}
+            <div className="w-4/5 mx-auto my-2 text-end">
+              <label className="block font-PeydaBold text-sm mb-2">
+                Sending Type
+              </label>
+              <div className="space-y-2">
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={watch("sendingType")?.includes("SELLER_SENDS")}
+                    onChange={() => handleSendingTypeChange("SELLER_SENDS")}
+                    className="form-checkbox"
+                  />
+                  <span>Seller Sends</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={watch("sendingType")?.includes("BUYER_PICKS_UP")}
+                    onChange={() => handleSendingTypeChange("BUYER_PICKS_UP")}
+                    className="form-checkbox"
+                  />
+                  <span>Buyer Picks Up</span>
+                </label>
               </div>
-            )}
-          </div>
+            </div>
 
-          {/* Submit Button */}
-          <CustomButton
-            title="Update Product"
-            type="primary-btn"
-            loading={updateProduct.isLoading}
-            disabled={!isDirty && imageUrls.length === 0}
-          />
-        </form>
+            {/* Location Map */}
+            <div className="w-4/5 mx-auto my-2 text-end">
+              <label className="block font-PeydaBold text-sm mb-2">
+                Product Location
+              </label>
+              <Map
+                position={position}
+                zoom={product.latitude && product.longitude ? 15 : 10}
+                setCoordinates={handleSetCoordinates}
+                locations={[]}
+              />
+              {coordinates && (
+                <div className="mt-4">
+                  <p>موقعیت مکانی انتخاب شده</p>
+                  <p>Latitude: {coordinates[0]}</p>
+                  <p>Longitude: {coordinates[1]}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <CustomButton
+              title="Update Product"
+              type="primary-btn"
+              loading={updateProduct.isLoading}
+              disabled={!isDirty && imageUrls.length === 0}
+            />
+          </form>
+        )}
       </div>
     </WithRole>
   );

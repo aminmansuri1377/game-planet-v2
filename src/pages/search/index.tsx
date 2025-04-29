@@ -125,7 +125,7 @@ const SearchResultsPage = () => {
   );
   const saveProductMutation = trpc.main.saveProduct.useMutation({
     onSuccess: () => {
-      toast.success("Product saved successfully!");
+      toast.success("محصول ذخیره شد!");
     },
     onError: (err) => {
       toast.error(err.message);
@@ -134,7 +134,7 @@ const SearchResultsPage = () => {
 
   const unsaveProductMutation = trpc.main.unsaveProduct.useMutation({
     onSuccess: () => {
-      toast.success("Product unsaved successfully!");
+      toast.success("محصول از ذخیره ها حذف شد!");
     },
     onError: (err) => {
       toast.error(err.message);

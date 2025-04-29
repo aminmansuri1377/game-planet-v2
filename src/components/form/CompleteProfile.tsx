@@ -70,7 +70,7 @@ const CompleteProfile = ({ userId, userType }: CompleteProfileProps) => {
       }
 
       if (response) {
-        toast.success("Profile updated successfully!");
+        toast.success("پروفایل بروززسانی شد!");
         const currentPath = window.location.pathname;
         if (currentPath.includes("/seller")) {
           router.push("/seller");
@@ -79,7 +79,7 @@ const CompleteProfile = ({ userId, userType }: CompleteProfileProps) => {
         }
       }
     } catch (error) {
-      toast.error("Failed to update profile");
+      toast.error("مشکلی در بروزرسانی وجود دارد");
     } finally {
       setIsLoading(false);
     }

@@ -34,7 +34,10 @@ function MyAddresses() {
   const addLocation = trpc.main.addLocation.useMutation({
     onSuccess: async () => {
       toast.custom(
-        <ToastContent type="success" message="Location saved successfully!" />
+        <ToastContent
+          type="success"
+          message="آدرس و موقعیت مکانی شما با موفقیت ثبت شد!"
+        />
       );
       await refetch();
       // Clear the form
@@ -61,7 +64,7 @@ function MyAddresses() {
       toast.custom(
         <ToastContent
           type="error"
-          message="Please select a location and enter an address."
+          message="لطفا موقعیت مکانی و آدرس را صحیح وارد کنید."
         />
       );
       return;

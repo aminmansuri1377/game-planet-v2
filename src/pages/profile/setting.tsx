@@ -69,14 +69,14 @@ function Setting() {
       });
 
       if (response) {
-        toast.success("Profile updated successfully!");
+        toast.success("پروفایل بروزرسانی شد!");
         setCurrentProfileImage(imageUrls[0]);
         setImageUrls([]);
         setEditMode(false);
         refetch();
       }
     } catch (error) {
-      toast.error("Failed to update profile");
+      toast.error("مشکلی در بروزرسانی بوجود آمده");
     } finally {
       setIsLoading(false);
     }

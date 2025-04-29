@@ -126,7 +126,7 @@ export default function CreateProductForm() {
   const createProduct = trpc.main.createProduct.useMutation({
     onSuccess: () => {
       toast.custom(
-        <ToastContent type="success" message="Product created successfully!" />
+        <ToastContent type="success" message="محصول با موفقیت ایجاد شد!" />
       );
       reset();
     },
@@ -149,12 +149,7 @@ export default function CreateProductForm() {
 
   const onSubmit: SubmitHandler<ProductInput> = async (data) => {
     if (!session?.user?.id) {
-      toast.custom(
-        <ToastContent
-          type="error"
-          message="You must be logged in to create a product."
-        />
-      );
+      toast.custom(<ToastContent type="error" message="لطفا وارد شوید." />);
       return;
     }
 
@@ -181,7 +176,7 @@ export default function CreateProductForm() {
         toast.custom(
           <ToastContent
             type="error"
-            message="Please select a location on the map"
+            message="لطفا موقعیت مکانی محصول را وارد کنید"
           />
         );
         return;
@@ -204,12 +199,15 @@ export default function CreateProductForm() {
 
       await createProduct.mutateAsync(productData);
       toast.custom(
-        <ToastContent type="success" message="Product created successfully!" />
+        <ToastContent type="success" message="محصول با موفقیت ایجاد شد!" />
       );
       router.push("/seller/products");
     } catch (error) {
       toast.custom(
-        <ToastContent type="error" message="Failed to create product." />
+        <ToastContent
+          type="error"
+          message="مشکلی در ایجاد محصول بوجود آمده است."
+        />
       );
     }
   };

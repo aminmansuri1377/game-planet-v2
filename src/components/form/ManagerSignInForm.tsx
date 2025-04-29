@@ -20,69 +20,41 @@ import { toast } from "react-hot-toast";
 import ToastContent from "../ui/ToastContent";
 import { FaArrowLeftLong } from "react-icons/fa6";
 
-const SignInForm = () => {
+const ManagerSignInForm = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const handleBack = () => {
     router.back();
   };
-
-  // Determine the sign-up route based on the current route
-  const getSignUpRoute = () => {
-    if (router.pathname.includes("/dashboard/signIn")) {
-      return "/dashboard/signUp";
-    } else if (router.pathname.includes("/seller/signIn")) {
-      return "/seller/signUp";
-    } else {
-      return "/signUp";
-    }
-  };
-
   const FormSchema = z.object({
-    email: z
+    phone: z
       .string()
-      .min(1, t("rent.emailRequired"))
-      .email(t("rent.invalidEmail")),
-    password: z
-      .string()
-      .min(1, t("rent.passwordRequired"))
-      .min(8, t("rent.passwordMinLength")),
+      .length(11, t("rent.usernameRequired")) // Ensures exactly 11 characters
+      .regex(/^\d{11}$/, t("rent.usernameRequired")), // Ensures only digits
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      phone: "",
     },
   });
-
   const [isLoading, setIsLoading] = useState(false);
-
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
     setIsLoading(true); // Start loading
     try {
       const signInData = await signIn("credentials", {
-        email: values.email,
-        password: values.password,
+        phone: values.phone,
         redirect: false,
       });
 
       if (signInData?.error) {
         toast.custom(<ToastContent type="error" message={signInData?.error} />);
       } else {
-        // Fetch the user's role from the session
         const response = await fetch("/api/auth/session");
         const session = await response.json();
-
-        if (session?.user?.role === "BUYER") {
-          router.push("/"); // Redirect to home page for buyers
-        } else if (session?.user?.role === "SELLER") {
-          router.push("/seller"); // Redirect to seller dashboard
-        } else if (session?.user?.role === "APP_MANAGER") {
-          router.push("/dashboard"); // Redirect to app manager dashboard
-        } else {
-          router.push("/"); // Default fallback
+        if (session) {
+          router.push("/dashboard");
         }
       }
     } catch (error) {
@@ -93,7 +65,7 @@ const SignInForm = () => {
   };
 
   return (
-    <div>
+    <div className=" min-h-screen mt-16">
       <div onClick={handleBack}>
         <FaArrowLeftLong />
       </div>
@@ -102,29 +74,12 @@ const SignInForm = () => {
           <div className="space-y-2 font-PeydaBold text-end">
             <FormField
               control={form.control}
-              name="email"
+              name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("rent.email")}</FormLabel>
+                  <FormLabel>تلفن</FormLabel>
                   <FormControl>
-                    <Input placeholder="mail@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("rent.password")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder={t("rent.enterPassword")}
-                      {...field}
-                    />
+                    <Input placeholder="09120000" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -145,7 +100,7 @@ const SignInForm = () => {
           {t("rent.signUpPrompt")}{" "}
           <Link
             className="text-blue-500 hover:underline font-PeydaBlack mx-1"
-            href={getSignUpRoute()} // Use the dynamic sign-up route
+            href="/dashboard/signUp"
           >
             {t("rent.signUp")}
           </Link>
@@ -155,4 +110,4 @@ const SignInForm = () => {
   );
 };
 
-export default SignInForm;
+export default ManagerSignInForm;
