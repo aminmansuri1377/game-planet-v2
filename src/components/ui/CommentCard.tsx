@@ -3,7 +3,7 @@ import React from "react";
 
 function CommentCard({ comments, buyerId, handleDelete, loading }) {
   return (
-    <div className="  mx-3 px-1">
+    <div className="  mx-3 px-1 h-96 overflow-auto">
       {comments &&
         comments.map((comment) => (
           <div

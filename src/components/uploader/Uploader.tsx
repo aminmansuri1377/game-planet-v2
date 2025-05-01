@@ -19,6 +19,7 @@ function Uploader({
   setUploaded?: (value: boolean) => void;
 }) {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [isUploaded, setIsUploaded] = useState(false); // New state to track if upload is complete
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -27,6 +28,7 @@ function Uploader({
       const newImageUrls = filesArray.map((file) => URL.createObjectURL(file));
 
       setImageUrls([...imageUrls, ...newImageUrls]);
+      setIsUploaded(false); // Reset upload status when new images are selected
     }
   };
 
@@ -51,18 +53,18 @@ function Uploader({
         urls.push(imageUrl);
       }
 
-      console.log(urls);
       setImageUrls([]);
       onUpload(urls);
       setUploaded?.(true);
+      setIsUploaded(true); // Mark upload as complete
     });
   };
 
-  // Function to handle deleting an image
   const handleDeleteImage = (urlToDelete: string) => {
     setImageUrls(imageUrls.filter((url) => url !== urlToDelete));
+    setIsUploaded(false); // Reset upload status when images are deleted
   };
-  console.log("imageUrls", imageUrls);
+
   return (
     <div className="bg-transparent border-2 border-primary m-5 rounded-xl flex justify-center items-center flex-col gap-4">
       <input
@@ -71,44 +73,50 @@ function Uploader({
         multiple={!singleUpload}
         ref={imageInputRef}
         onChange={handleImageChange}
-        disabled={isPending}
+        disabled={isPending || isUploaded} // Disable when uploading or already uploaded
       />
-      <CustomButton
-        type="secondary-btn"
-        title="انتخاب عکس"
-        onClick={() => imageInputRef.current?.click()}
-      />
-      {!imageUrls || (imageUrls.length === 0 && <CiImageOn size={40} />)}
-      {/* <button
-        className="bg-slate-600 py-2 w-40 rounded-lg"
-        onClick={() => imageInputRef.current?.click()}
-        disabled={isPending}
-      >
-        Select Images
-      </button> */}
 
-      <div className="m-2">
-        {imageUrls.map((url, index) => (
-          <div key={url} className="relative">
-            <Image src={url} width={300} height={300} alt={`img-${index}`} />
-            {/* Delete button */}
-            <button
-              onClick={() => handleDeleteImage(url)}
-              className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full"
-            >
-              X
-            </button>
-          </div>
-        ))}
-      </div>
-      <CustomButton
-        type="primary-btn"
-        title={isPending ? "Uploading..." : "بارگذاری عکس"}
-        disabled={isPending}
-        onClick={handleClickUploadImagesButton}
-      />
+      {!isUploaded && (
+        <CustomButton
+          type="secondary-btn"
+          title="انتخاب عکس"
+          onClick={() => imageInputRef.current?.click()}
+          disabled={isPending || isUploaded}
+        />
+      )}
+
+      {/* Show different content based on state */}
+      {isUploaded ? (
+        <div className="text-green-500 font-bold">
+          عکس‌ها با موفقیت آپلود شدند
+        </div>
+      ) : imageUrls.length === 0 ? (
+        <CiImageOn size={40} />
+      ) : (
+        <div className="m-2">
+          {imageUrls.map((url, index) => (
+            <div key={url} className="relative">
+              <Image src={url} width={300} height={300} alt={`img-${index}`} />
+              <button
+                onClick={() => handleDeleteImage(url)}
+                className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full"
+              >
+                X
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {imageUrls.length > 0 && !isUploaded && (
+        <CustomButton
+          type="primary-btn"
+          title={isPending ? "Uploading..." : "بارگذاری عکس"}
+          disabled={isPending}
+          onClick={handleClickUploadImagesButton}
+        />
+      )}
     </div>
   );
 }
-
 export default Uploader;

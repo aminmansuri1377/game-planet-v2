@@ -90,6 +90,7 @@ const CompleteProfile = ({ userId, userType }: CompleteProfileProps) => {
       <h1 className="text-2xl font-bold mb-6 font-PeydaBold">
         تکمیل حساب کاربری
       </h1>
+      <h1 className="font-PeydaRegular">عکس کارت ملی</h1>
       <Uploader
         onUpload={(urls) => setImageUrls(urls)}
         bucket="idcard"

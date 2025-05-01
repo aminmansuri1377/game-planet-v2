@@ -65,7 +65,11 @@ const Products = () => {
     router.push(`/seller/products/update/${productId}`);
   };
 
-  const handleDeleteProduct = async (productId: number) => {
+  const handleDeleteProduct = async (
+    productId: number,
+    e: React.MouseEvent
+  ) => {
+    e.stopPropagation();
     await deleteProductMutation.mutateAsync({
       productId,
       sellerId: session?.user?.id as number, // Ensure only the seller can delete their own product
@@ -112,7 +116,7 @@ const Products = () => {
                   />
                   <AiTwotoneDelete
                     size={30}
-                    onClick={() => handleDeleteProduct(product.id)}
+                    onClick={(e) => handleDeleteProduct(product.id, e)}
                     className=" mt-[-60px] ml-2"
                   />
                 </div>

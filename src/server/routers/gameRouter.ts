@@ -288,7 +288,7 @@ export const gameRouter = router({
           latitude: input.latitude,
           longitude: input.longitude,
           city: input.city,
-          address: input.city,
+          address: input.address,
           images: input.images,
         },
       });
@@ -400,19 +400,26 @@ export const gameRouter = router({
         city: z.string().optional(),
         address: z.string().optional(),
         images: z.array(z.string()).optional(),
+        deletedImages: z.array(z.string()).optional(), // Add this for tracking deleted images
       })
     )
     .mutation(async ({ input }) => {
-      const { id, ...data } = input;
+      const { id, deletedImages = [], ...data } = input;
+
+      // First delete any images marked for deletion
+      if (deletedImages.length > 0) {
+        // You might want to implement actual file deletion from storage here
+      }
+
       return await prisma.product.update({
         where: { id },
         data: {
           ...data,
-          updatedAt: new Date(), // Always update the timestamp
+          images: data.images, // This will replace all images
+          updatedAt: new Date(),
         },
       });
     }),
-
   // Create an order (for BUYER)
   createOrder: procedure
     .input(

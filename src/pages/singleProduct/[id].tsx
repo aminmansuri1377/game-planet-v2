@@ -272,7 +272,7 @@ function SingleProductPage() {
           )}
         </div>
 
-        <div>
+        <div className="">
           {productData && userId && (
             <CommentsSection productId={productData.id} buyerId={userId} />
           )}

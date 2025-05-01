@@ -151,11 +151,11 @@ export default function UpdateProductForm() {
 
   const updateProduct = trpc.main.updateProduct.useMutation({
     onSuccess: () => {
-      toast.success("محصول با موفقیت بروزرسانی شد!");
+      toast.success("Product updated successfully!");
       router.push("/seller/products");
     },
     onError: (err) => {
-      toast.error(err.message || "مشکلی در بروزرسانی وجود دارد");
+      toast.error(err.message || "Failed to update product");
     },
   });
 
