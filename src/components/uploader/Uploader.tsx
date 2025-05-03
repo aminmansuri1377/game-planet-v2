@@ -87,7 +87,7 @@ function Uploader({
 
       {/* Show different content based on state */}
       {isUploaded ? (
-        <div className="text-green-500 font-bold">
+        <div className="text-green-500 font-PeydaBold">
           عکس‌ها با موفقیت آپلود شدند
         </div>
       ) : imageUrls.length === 0 ? (

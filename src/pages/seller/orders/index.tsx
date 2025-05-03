@@ -18,6 +18,7 @@ import RoundButton from "@/components/ui/RoundButton";
 import { LiaClipboardListSolid } from "react-icons/lia";
 import TicketBasket from "@/components/basket/TicketBasket";
 import { WithRole } from "@/components/auth/WithRole";
+import { MdProductionQuantityLimits } from "react-icons/md";
 
 function SellerOrderManagement() {
   const { t } = useTranslation();
@@ -93,7 +94,7 @@ function SellerOrderManagement() {
   if (!isMounted) return null;
   if (!isAuthenticated) return null;
   // if (isLoading) return <Loading />;
-  if (error) return <p>Error: {error.message}</p>;
+  // if (error) return <p>Error: {error.message}</p>;
 
   return (
     <WithRole allowedRoles={["seller"]}>
@@ -131,15 +132,29 @@ function SellerOrderManagement() {
           <Loading />
         ) : (
           <div>
-            {orders &&
-              orders.map((order) => (
-                <div key={order.id}>
-                  <TicketOrder
-                    data={order}
-                    handleStatusChange={handleStatusChange}
-                  />
-                </div>
-              ))}
+            {error ? (
+              <p>Error: {error.message}</p>
+            ) : (
+              <div>
+                {orders && orders.length === 0 ? (
+                  <div className=" text-primary text-center">
+                    <MdProductionQuantityLimits size={80} />
+                    <h1 className="  font-PeydaBold">
+                      شما هنوز هیچ سفارشی ندارید
+                    </h1>
+                  </div>
+                ) : (
+                  orders.map((order) => (
+                    <div key={order.id}>
+                      <TicketOrder
+                        data={order}
+                        handleStatusChange={handleStatusChange}
+                      />
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>

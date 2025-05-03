@@ -15,6 +15,7 @@ import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
 import { AiFillProduct } from "react-icons/ai";
 import { WithRole } from "@/components/auth/WithRole";
+import { AiOutlineProduct } from "react-icons/ai";
 
 const Products = () => {
   const router = useRouter();
@@ -102,26 +103,35 @@ const Products = () => {
           <Loading />
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mx-3">
-            {products?.map((product) => (
-              <div key={product.id} className="">
-                <div onClick={() => handleUpdateProduct(product.id)}>
-                  <SellerProductCard
-                    imgUrl={product.images ? product.images[0] : ""}
-                    imgAlt={product.name}
-                    name={product.name}
-                    price={`${product.price}`}
-                    // handleSave={(e) => handleSave(product.id, e)}
-                    // isSaved={isSaved}
-                    rate={8}
-                  />
-                  <AiTwotoneDelete
-                    size={30}
-                    onClick={(e) => handleDeleteProduct(product.id, e)}
-                    className=" mt-[-60px] ml-2"
-                  />
-                </div>
+            {products && products.length === 0 ? (
+              <div className=" text-primary font-PeydaBold text-center">
+                <AiOutlineProduct size={80} />
+                <h1>شما هنوز هیچ محصولی ندارید</h1>
               </div>
-            ))}
+            ) : (
+              <div>
+                {products?.map((product) => (
+                  <div key={product.id} className="">
+                    <div onClick={() => handleUpdateProduct(product.id)}>
+                      <SellerProductCard
+                        imgUrl={product.images ? product.images[0] : ""}
+                        imgAlt={product.name}
+                        name={product.name}
+                        price={`${product.price}`}
+                        // handleSave={(e) => handleSave(product.id, e)}
+                        // isSaved={isSaved}
+                        rate={8}
+                      />
+                      <AiTwotoneDelete
+                        size={30}
+                        onClick={(e) => handleDeleteProduct(product.id, e)}
+                        className=" mt-[-60px] ml-2"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -123,9 +123,10 @@ function Basket() {
                     ))}
                 </div>
               ) : (
-                <h1 className="text-center font-bold mx-auto items-center">
-                  <FcBinoculars size={50} />{" "}
-                </h1>
+                <div className="text-center font-PeydaBold text-primary mx-auto items-center">
+                  <FcBinoculars size={50} />
+                  <h1>شما هنوز محصولی را سفارش ندادید</h1>
+                </div>
               )
             ) : (
               "loading"

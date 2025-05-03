@@ -12,6 +12,7 @@ import HeadOfPages from "@/components/ui/HeadOfPages";
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import RoundButton from "@/components/ui/RoundButton";
 import { WithRole } from "@/components/auth/WithRole";
+import { PiBookmarksSimpleThin } from "react-icons/pi";
 
 const SavedProductsPage = () => {
   const router = useRouter();
@@ -102,28 +103,37 @@ const SavedProductsPage = () => {
         />
 
         <div className="space-y-4 p-6">
-          {savedProducts?.map(({ product }) => {
-            const isSaved = savedProducts?.some(
-              (sp) => sp.productId === product.id
-            );
-            return (
-              <div
-                key={product.id}
-                onClick={() => router.push(`/singleProduct/${product.id}`)}
-                className=" grid grid-cols-2 gap-2"
-              >
-                <ProductCard
-                  imgUrl={ProductImg}
-                  imgAlt={product.name}
-                  name={product.name}
-                  price={`شبی $${product.price} تومان`}
-                  handleSave={(e) => handleSave(product.id, e)} // Pass the event
-                  isSaved={isSaved}
-                  rate={8}
-                />
-              </div>
-            );
-          })}
+          {savedProducts && savedProducts.length === 0 ? (
+            <div className=" text-primary font-PeydaBold text-center">
+              <PiBookmarksSimpleThin size={80} />
+              <h1>شما هنوز پستی را ذخیره نکردید</h1>
+            </div>
+          ) : (
+            <div>
+              {savedProducts?.map(({ product }) => {
+                const isSaved = savedProducts?.some(
+                  (sp) => sp.productId === product.id
+                );
+                return (
+                  <div
+                    key={product.id}
+                    onClick={() => router.push(`/singleProduct/${product.id}`)}
+                    className=" grid grid-cols-2 gap-2"
+                  >
+                    <ProductCard
+                      imgUrl={ProductImg}
+                      imgAlt={product.name}
+                      name={product.name}
+                      price={`شبی $${product.price} تومان`}
+                      handleSave={(e) => handleSave(product.id, e)} // Pass the event
+                      isSaved={isSaved}
+                      rate={8}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </WithRole>
