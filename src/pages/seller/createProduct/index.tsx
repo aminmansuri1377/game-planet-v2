@@ -159,7 +159,7 @@ export default function CreateProductForm() {
         toast.custom(
           <ToastContent
             type="error"
-            message="Please select one of your saved locations"
+            message="لطفا موقعیت مکانی محصول را مشخص کنید"
           />
         );
         return;
@@ -176,7 +176,7 @@ export default function CreateProductForm() {
         toast.custom(
           <ToastContent
             type="error"
-            message="لطفا موقعیت مکانی محصول را وارد کنید"
+            message="لطفا موقعیت مکانی محصول را در صفحه قبل مشخص کنید"
           />
         );
         return;
