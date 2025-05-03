@@ -145,6 +145,7 @@ const CompleteProfile = ({ userId, userType }: CompleteProfileProps) => {
             loading={isLoading}
             className="w-full"
             title="تایید"
+            disabled={!imageUrls}
           />
         </form>
       </Form>
