@@ -104,8 +104,8 @@ const Products = () => {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-5 gap-2 mx-3">
             {products && products.length === 0 ? (
-              <div className=" text-primary font-PeydaBold text-center">
-                <AiOutlineProduct size={80} />
+              <div className=" text-primary font-PeydaBold text-center min-h-screen mt-52">
+                <AiOutlineProduct className=" mx-auto" size={80} />
                 <h1>شما هنوز هیچ محصولی ندارید</h1>
               </div>
             ) : (

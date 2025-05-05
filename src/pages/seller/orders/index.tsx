@@ -137,8 +137,11 @@ function SellerOrderManagement() {
             ) : (
               <div>
                 {orders && orders.length === 0 ? (
-                  <div className=" text-primary text-center">
-                    <MdProductionQuantityLimits size={80} />
+                  <div className=" text-primary text-center min-h-screen mt-52">
+                    <MdProductionQuantityLimits
+                      className=" mx-auto"
+                      size={80}
+                    />
                     <h1 className="  font-PeydaBold">
                       شما هنوز هیچ سفارشی ندارید
                     </h1>

@@ -77,7 +77,7 @@ const AuthForm = ({ userType, formType }: AuthFormProps) => {
 
         if (response.ok) {
           toast.custom(
-            <ToastContent type="success" message="User created successfully!" />
+            <ToastContent type="success" message="کاربر با موفقیت ایجاد شد!" />
           );
           router.push(`${userType === "seller" ? "/seller" : ""}/signIn`);
         } else {
@@ -85,7 +85,7 @@ const AuthForm = ({ userType, formType }: AuthFormProps) => {
           toast.custom(
             <ToastContent
               type="error"
-              message={errorData.message || "Failed to sign up"}
+              message={errorData.message || "خطا در ثبت نام"}
             />
           );
         }
@@ -108,7 +108,7 @@ const AuthForm = ({ userType, formType }: AuthFormProps) => {
         }
       }
     } catch (error) {
-      toast.custom(<ToastContent type="error" message="Unexpected error" />);
+      toast.custom(<ToastContent type="error" message="خطایی بوجود آمده" />);
     } finally {
       setIsLoading(false);
     }

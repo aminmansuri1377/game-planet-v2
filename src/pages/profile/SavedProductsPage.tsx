@@ -104,8 +104,8 @@ const SavedProductsPage = () => {
 
         <div className="space-y-4 p-6">
           {savedProducts && savedProducts.length === 0 ? (
-            <div className=" text-primary font-PeydaBold text-center">
-              <PiBookmarksSimpleThin size={80} />
+            <div className=" text-primary font-PeydaBold text-center  min-h-screen mt-52">
+              <PiBookmarksSimpleThin className=" mx-auto" size={80} />
               <h1>شما هنوز پستی را ذخیره نکردید</h1>
             </div>
           ) : (

@@ -123,8 +123,8 @@ function Basket() {
                     ))}
                 </div>
               ) : (
-                <div className="text-center font-PeydaBold text-primary mx-auto items-center">
-                  <FcBinoculars size={50} />
+                <div className="text-center font-PeydaBold text-primary mx-auto items-center min-h-screen mt-52">
+                  <FcBinoculars className=" mx-auto" size={50} />
                   <h1>شما هنوز محصولی را سفارش ندادید</h1>
                 </div>
               )

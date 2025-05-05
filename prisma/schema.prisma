@@ -7,203 +7,211 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Buyer {
-  id           Int    @id @default(autoincrement())
-  phone        String    @unique
-  firstName    String?
-  lastName     String?
-  IDnumber     String?
-  orders       Order[]   @relation("BuyerOrders")
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  SavedProduct SavedProduct[]
-  Comment Comment[]
-  chatRooms ChatRoom[]
-  idCardImage  Json? 
-  profileImage  Json? 
+  id            Int             @id @default(autoincrement())
+  phone         String          @unique
+  firstName     String?
+  lastName      String?
+  IDnumber      String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  idCardImage   Json?
+  profileImage  Json?
+  confirmed     Boolean         @default(false)
+  chatRooms     ChatRoom[]
+  Comment       Comment[]
+  Location      Location[]
+  orders        Order[]         @relation("BuyerOrders")
+  SavedProduct  SavedProduct[]
   SupportTicket SupportTicket[]
-  Location Location[]
-  confirmed    Boolean @default(false)
 }
+
 model Seller {
-  id           Int       @id @default(autoincrement())
-  phone        String    @unique
-  firstName    String?
-  lastName     String?
-  IDnumber     String?
-  sellerOrders Order[]   @relation("SellerOrders")
-  products     Product[] @relation("SellerProducts")
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  chatRooms ChatRoom[]
-  idCardImage  Json? 
-  profileImage  Json? 
+  id            Int             @id @default(autoincrement())
+  phone         String          @unique
+  firstName     String?
+  lastName      String?
+  IDnumber      String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  idCardImage   Json?
+  profileImage  Json?
+  confirmed     Boolean         @default(false)
+  chatRooms     ChatRoom[]
+  Location      Location[]
+  sellerOrders  Order[]         @relation("SellerOrders")
+  products      Product[]       @relation("SellerProducts")
   SupportTicket SupportTicket[]
-  Location Location[]
-  confirmed    Boolean @default(false)
 }
+
 model Manager {
-  id           Int       @id @default(autoincrement())
-  phone        String    @unique
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  chatRooms ChatRoom[]
-  profileImage  Json? 
+  id            Int             @id @default(autoincrement())
+  phone         String          @unique
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  profileImage  Json?
+  chatRooms     ChatRoom[]
   SupportTicket SupportTicket[]
 }
 
 model Category {
-  id          Int         @id @default(autoincrement())
-  name        String      @unique
-  products    Product[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
 }
+
 model Guaranty {
-  id          Int         @id @default(autoincrement())
-  text        String      @unique
-  products    Product[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        Int       @id @default(autoincrement())
+  text      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
 }
 
 model Product {
-  id          Int         @id @default(autoincrement())
-  name        String
-  description String
-  price       Float
-  inventory   Int         @default(0)
-  sendingType SendingType[]
-  categoryId  Int?
-  category    Category?    @relation(fields: [categoryId], references: [id])
-  guarantyId  Int?
-  guaranty    Guaranty?    @relation(fields: [guarantyId], references: [id])
-  sellerId    Int
-  seller      Seller        @relation("SellerProducts", fields: [sellerId], references: [id])
-  orders      Order[]     @relation("ProductOrders")
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id           Int            @id @default(autoincrement())
+  name         String
+  description  String
+  price        Float
+  inventory    Int            @default(0)
+  sendingType  SendingType[]
+  categoryId   Int?
+  guarantyId   Int?
+  sellerId     Int
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  latitude     Float?
+  longitude    Float?
+  city         String?
+  images       Json?
+  address      String?
+  Comment      Comment[]
+  orders       Order[]        @relation("ProductOrders")
+  category     Category?      @relation(fields: [categoryId], references: [id])
+  guaranty     Guaranty?      @relation(fields: [guarantyId], references: [id])
+  seller       Seller         @relation("SellerProducts", fields: [sellerId], references: [id])
   SavedProduct SavedProduct[]
-  Comment Comment[]
-  latitude    Float?     
-  longitude   Float?
-  city        String?
-  images      Json?
-  address     String?
 }
+
 model SavedProduct {
   id        Int      @id @default(autoincrement())
   buyerId   Int
   productId Int
-  buyer     Buyer    @relation(fields: [buyerId], references: [id])
-  product   Product  @relation(fields: [productId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  buyer     Buyer    @relation(fields: [buyerId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
 
-  @@unique([buyerId, productId]) 
+  @@unique([buyerId, productId])
 }
+
 model Comment {
   id        Int      @id @default(autoincrement())
   text      String
   buyerId   Int
-  buyer     Buyer    @relation(fields: [buyerId], references: [id])
   productId Int
-  product   Product  @relation(fields: [productId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  buyer     Buyer    @relation(fields: [buyerId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
 }
+
 model Order {
   id          Int         @id @default(autoincrement())
   productId   Int
   userId      Int
   sellerId    Int
   status      String
-  sendingType SendingType 
-  startDate     DateTime?  
-  endDate       DateTime?
+  sendingType SendingType
+  startDate   DateTime?
+  endDate     DateTime?
   totalPrice  Float
   quantity    Int         @default(1)
-  product     Product     @relation("ProductOrders", fields: [productId], references: [id])
-  seller      Seller        @relation("SellerOrders", fields: [sellerId], references: [id])
-  user        Buyer        @relation("BuyerOrders", fields: [userId], references: [id])
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  latitude    Float?      
+  latitude    Float?
   longitude   Float?
   address     String?
+  product     Product     @relation("ProductOrders", fields: [productId], references: [id])
+  seller      Seller      @relation("SellerOrders", fields: [sellerId], references: [id])
+  user        Buyer       @relation("BuyerOrders", fields: [userId], references: [id])
 }
-enum SendingType {
-  SELLER_SENDS
-  BUYER_PICKS_UP
-}
-
 
 model ChatRoom {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   buyerId   Int?
   sellerId  Int?
   managerId Int?
-  buyer     Buyer?   @relation(fields: [buyerId], references: [id])
-  seller    Seller?  @relation(fields: [sellerId], references: [id])
-  manager   Manager? @relation(fields: [managerId], references: [id])
-  messages Message[]
+  buyer     Buyer?    @relation(fields: [buyerId], references: [id])
+  manager   Manager?  @relation(fields: [managerId], references: [id])
+  seller    Seller?   @relation(fields: [sellerId], references: [id])
+  messages  Message[]
+
   @@unique([buyerId, sellerId])
   @@unique([buyerId, managerId])
   @@unique([sellerId, managerId])
 }
 
 model Message {
-  id        Int      @id @default(autoincrement())
-  content   String
-  createdAt DateTime @default(now())
-  imageUrl  String?
-  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
+  id         Int      @id @default(autoincrement())
+  content    String
+  createdAt  DateTime @default(now())
+  imageUrl   String?
   chatRoomId Int
-  senderType String    // "BUYER" | "SELLER" | "MANAGER"
+  senderType String
   senderId   Int
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
 }
+
 model SupportTicket {
-  id           Int       @id @default(autoincrement())
-  buyerId      Int?      
-  sellerId     Int?      
-  managerId    Int?
-  status       String    @default("OPEN") // "OPEN" or "CLOSED"
-  chatRoomSupportId   Int       @unique
-  messages     SupportMessage[]
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  buyer        Buyer?    @relation(fields: [buyerId], references: [id])
-  seller       Seller?   @relation(fields: [sellerId], references: [id])
-  manager      Manager?  @relation(fields: [managerId], references: [id])
+  id                Int              @id @default(autoincrement())
+  buyerId           Int?
+  sellerId          Int?
+  managerId         Int?
+  status            String           @default("OPEN")
+  chatRoomSupportId Int              @unique
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  buyer             Buyer?           @relation(fields: [buyerId], references: [id])
+  manager           Manager?         @relation(fields: [managerId], references: [id])
+  seller            Seller?          @relation(fields: [sellerId], references: [id])
+  messages          SupportMessage[] @relation("SupportMessageToSupportTicket")
+
   @@unique([buyerId, sellerId])
 }
 
 model SupportMessage {
-  id           Int       @id @default(autoincrement())
-  content      String
-  senderType   String    // "BUYER", "SELLER", "MANAGER"
-  senderId     Int
-  imageUrl  String?
-  chatRoomSupportId   Int
-  createdAt    DateTime  @default(now())
+  id                Int             @id @default(autoincrement())
+  content           String
+  senderType        String
+  senderId          Int
+  imageUrl          String?
+  chatRoomSupportId Int
+  createdAt         DateTime        @default(now())
+  SupportTicket     SupportTicket[] @relation("SupportMessageToSupportTicket")
+
   @@index([chatRoomSupportId])
-  SupportTicket SupportTicket[]
 }
 
 model Location {
-  id          Int      @id @default(autoincrement())
-  title       String
-  latitude    Float
-  longitude   Float
-  address     String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  buyerId     Int?     
-  sellerId    Int?     
-  buyer       Buyer?   @relation(fields: [buyerId], references: [id], onDelete: Cascade)
-  seller      Seller?  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  id        Int      @id @default(autoincrement())
+  title     String
+  latitude  Float
+  longitude Float
+  address   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  buyerId   Int?
+  sellerId  Int?
+  buyer     Buyer?   @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  seller    Seller?  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
 }
 
+enum SendingType {
+  SELLER_SENDS
+  BUYER_PICKS_UP
+}

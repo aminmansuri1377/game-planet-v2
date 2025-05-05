@@ -139,9 +139,9 @@ const WelcomePage = () => {
               <Loading />
             ) : (
               <div className="grid grid-cols-3 md:grid-cols-5 gap-2 mb-8">
+                {/* <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} />
                 <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} />
-                <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} />
-                <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} />
+                <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} /> */}
                 {categories
                   ? categories.map((category) => (
                       <div
