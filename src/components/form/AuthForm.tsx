@@ -23,6 +23,7 @@ import { signIn } from "next-auth/react";
 import CustomModal from "../ui/CustomModal";
 import SellerRules from "./SellerRules";
 import BuyerRules from "./BuyerRules";
+import toast from "react-hot-toast";
 
 interface AuthFormProps {
   userType: "seller" | "buyer";
