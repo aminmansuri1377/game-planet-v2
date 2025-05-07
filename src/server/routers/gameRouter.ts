@@ -741,10 +741,6 @@ export const gameRouter = router({
     return await prisma.category.findMany();
   }),
 
-  getCategories: procedure.query(async () => {
-    return await prisma.category.findMany();
-  }),
-
   getCategoryById: procedure
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {
@@ -767,6 +763,21 @@ export const gameRouter = router({
   getGuaranty: procedure.query(async () => {
     return await prisma.guaranty.findMany();
   }),
+  deleteCategory: procedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      return await prisma.category.delete({
+        where: { id: input.id },
+      });
+    }),
+
+  deleteGuaranty: procedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      return await prisma.guaranty.delete({
+        where: { id: input.id },
+      });
+    }),
   getProductNames: procedure
     .input(
       z.object({
