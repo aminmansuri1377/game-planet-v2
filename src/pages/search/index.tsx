@@ -237,7 +237,7 @@ const SearchResultsPage = () => {
           )}{" "}
           <input
             type="text"
-            placeholder="Filter by city"
+            placeholder="جستجوی شهر"
             value={cityQuery}
             onChange={(e) => handleCitySearch(e.target.value)}
             className="py-3 px-4 text-end font-PeydaBold rounded-full bg-gradient-to-r from-gra-100 to-gra-200"

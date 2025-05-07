@@ -16,6 +16,8 @@ import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
 import { LiaClipboardListSolid } from "react-icons/lia";
 import { WithRole } from "@/components/auth/WithRole";
+import { debounce } from "../../../../utils/debounce";
+import { MdProductionQuantityLimits } from "react-icons/md";
 
 function index() {
   const router = useRouter();
@@ -25,12 +27,21 @@ function index() {
   const [page, setPage] = useState(1);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const { data: orders, isLoading, error } = trpc.main.getAllOrders.useQuery();
-
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
-    setPage(1);
-  };
+  const {
+    data: orders,
+    isLoading,
+    error,
+  } = trpc.main.getAllOrders.useQuery(
+    {
+      phone: searchQuery, // Pass search query to the backend
+    },
+    {
+      keepPreviousData: true, // Smooth transition between searches
+    }
+  );
+  const handleSearch = debounce((query: string) => {
+    setSearchQuery(query);
+  }, 300);
   const handleNextPage = () => setPage((prev) => prev + 1);
   const handlePrevPage = () => setPage((prev) => Math.max(prev - 1, 1));
 
@@ -95,21 +106,35 @@ function index() {
         />
 
         <div className=" text-end mt-12">
-          <input
-            type="text"
-            placeholder="Search user..."
-            value={searchQuery}
-            onChange={handleSearch}
-            className="border p-2 rounded text-black my-2"
-          />
+          <div className="mx-4 mt-4 mb-6">
+            <input
+              type="text"
+              placeholder="جستجو با شماره تلفن مشتری..."
+              onChange={(e) => handleSearch(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-lg text-right text-black"
+            />
+          </div>
         </div>
         <div>
-          {orders &&
-            orders?.map((i) => (
-              <div key={i.id}>
-                <TicketOrder data={i} handleStatusChange={handleStatusChange} />
+          {orders && orders.length === 0 ? (
+            <div className="text-primary text-center min-h-screen mt-52">
+              <MdProductionQuantityLimits className="mx-auto" size={80} />
+              <h1 className="font-PeydaBold">
+                {searchQuery
+                  ? "هیچ سفارشی با این شماره تلفن یافت نشد"
+                  : "شما هنوز هیچ سفارشی ندارید"}
+              </h1>
+            </div>
+          ) : (
+            orders?.map((order) => (
+              <div key={order.id}>
+                <TicketOrder
+                  data={order}
+                  handleStatusChange={handleStatusChange}
+                />
               </div>
-            ))}
+            ))
+          )}
         </div>
         <div className="flex justify-center mt-4">
           <button onClick={handlePrevPage} disabled={page === 1}>

@@ -1,8 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { trpc } from "../../../../utils/trpc";
-import Box from "../../../components/Box";
-import Loading from "../../../components/ui/Loading";
 import { useAuthRedirect } from "../../../components/hooks/useAuthRedirect";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useRouter } from "next/router";
@@ -11,22 +9,44 @@ import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
 import { MdOutlinePersonAdd } from "react-icons/md";
 import { WithRole } from "@/components/auth/WithRole";
+import { debounce } from "../../../../utils/debounce";
 
-function index() {
+function BuyersPage() {
   const router = useRouter();
+  const { t } = useTranslation();
+  const { isAuthenticated, isMounted } = useAuthRedirect();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [displayBuyers, setDisplayBuyers] = useState<any[]>([]);
+
+  // Fetch all buyers
+  const { data: allBuyers, isLoading: isLoadingAll } =
+    trpc.main.getBuyers.useQuery();
+
+  // Fetch searched buyers
+  const { data: searchedBuyers, isLoading: isLoadingSearch } =
+    trpc.main.getBuyersByPhone.useQuery(
+      { phone: searchTerm },
+      {
+        enabled: searchTerm.length > 0,
+      }
+    );
+
+  // Update displayBuyers based on search state
+  useEffect(() => {
+    if (searchTerm.length > 0) {
+      setDisplayBuyers(searchedBuyers || []);
+    } else {
+      setDisplayBuyers(allBuyers || []);
+    }
+  }, [searchTerm, allBuyers, searchedBuyers]);
+
+  const handleSearch = debounce((term: string) => {
+    setSearchTerm(term);
+  }, 300);
+
   const handleBack = () => {
     router.back();
   };
-  const [page, setPage] = useState(1);
-  const limit = 10;
-
-  const { data: buyers } = trpc.main.getBuyers.useQuery();
-  const handleNextPage = () => setPage((prev) => prev + 1);
-  const handlePrevPage = () => setPage((prev) => Math.max(prev - 1, 1));
-
-  const { t } = useTranslation();
-
-  const { isAuthenticated, isMounted } = useAuthRedirect();
 
   if (!isMounted) {
     return null;
@@ -35,15 +55,14 @@ function index() {
   if (!isAuthenticated) {
     return null;
   }
-  // if (isLoading) return <Loading />;
-  // if (error) return <p>Error: {error.message}</p>;
+
   return (
     <WithRole allowedRoles={["manager"]}>
-      <div className=" w-full min-h-screen">
+      <div className="w-full min-h-screen">
         <HeadOfPages
           title="اجاره کنندگان"
           back={
-            <div onClick={handleBack} className=" m-5">
+            <div onClick={handleBack} className="m-5">
               <FaArrowLeftLong />
             </div>
           }
@@ -60,35 +79,66 @@ function index() {
           }
         />
 
-        <div className=" mt-12 mx-2 bg-cardbg p-1 rounded-lg">
-          <table>
-            <thead>
-              <tr>
-                <th>تلفن</th>
-                <th>نام</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {buyers &&
-                buyers?.map((buyer) => (
-                  <tr key={buyer.id}>
-                    <td>
-                      <Link href={`/dashboard/singleBuyer/${buyer.id}`}>
-                        {buyer.phone}
-                      </Link>
+        {/* Search Input */}
+        <div className="mx-4 mt-4 mb-6">
+          <input
+            type="text"
+            placeholder="جستجو با شماره تلفن..."
+            className="w-full p-2 border border-gray-300 rounded-lg text-right text-black"
+            onChange={(e) => handleSearch(e.target.value)}
+          />
+        </div>
+
+        <div className="mt-4 mx-2 bg-cardbg p-1 rounded-lg">
+          {isLoadingAll || (searchTerm && isLoadingSearch) ? (
+            <div className="text-center py-4">در حال بارگذاری...</div>
+          ) : (
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="p-2 text-right">تلفن</th>
+                  <th className="p-2 text-right">نام</th>
+                  <th className="p-2 text-right">نام خانوادگی</th>
+                  <th className="p-2 text-right">تایید شده</th>
+                </tr>
+              </thead>
+              <tbody>
+                {displayBuyers.length ? (
+                  displayBuyers.map((buyer) => (
+                    <tr key={buyer.id} className="border-b hover:bg-gray-50">
+                      <td className="p-2 text-right">
+                        <Link
+                          href={`/dashboard/singleBuyer/${buyer.id}`}
+                          className="text-blue-600 hover:underline"
+                        >
+                          {buyer.phone}
+                        </Link>
+                      </td>
+                      <td className="p-2 text-right">
+                        {buyer.firstName || "-"}
+                      </td>
+                      <td className="p-2 text-right">
+                        {buyer.lastName || "-"}
+                      </td>
+                      <td className="p-2 text-center">
+                        {buyer.confirmed ? "✅" : "❌"}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="p-4 text-center text-gray-500">
+                      {searchTerm ? "موردی یافت نشد" : "لیست خریداران خالی است"}
                     </td>
-                    <td>{buyer.firstName}</td>
-                    <td>{buyer.lastName}</td>
-                    <td>{buyer.confirmed ? "✅" : "❌"}</td>
                   </tr>
-                ))}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </WithRole>
   );
 }
 
-export default index;
+export default BuyersPage;

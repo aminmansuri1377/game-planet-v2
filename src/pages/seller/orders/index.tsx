@@ -1,14 +1,10 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { trpc } from "../../../../utils/trpc";
-import Box from "../../../components/Box";
-import TicketOrder from "../../../components/TicketOrder";
 import Loading from "../../../components/ui/Loading";
 import { useAuthRedirect } from "../../../components/hooks/useAuthRedirect";
 import ToastContent from "../../../components/ui/ToastContent";
 import { toast } from "react-hot-toast";
-import { LuArrowBigRightDash } from "react-icons/lu";
-import { LuArrowBigLeftDash } from "react-icons/lu";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
@@ -16,9 +12,10 @@ import jalaali from "jalaali-js";
 import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
 import { LiaClipboardListSolid } from "react-icons/lia";
-import TicketBasket from "@/components/basket/TicketBasket";
 import { WithRole } from "@/components/auth/WithRole";
 import { MdProductionQuantityLimits } from "react-icons/md";
+import { debounce } from "../../../../utils/debounce";
+import TicketOrder from "../../../components/TicketOrder";
 
 function SellerOrderManagement() {
   const { t } = useTranslation();
@@ -26,23 +23,26 @@ function SellerOrderManagement() {
   const handleBack = () => {
     router.back();
   };
-  const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const { data: session } = useSession();
-  const sellerId = session?.user?.id ? Number(session.user.id) : null; // Ensure sellerId is a number or null
 
+  const { data: session } = useSession();
+  const sellerId = session?.user?.id ? Number(session.user.id) : null;
+
+  // Main query that handles both cases (with and without search)
   const {
     data: orders,
     isLoading,
     error,
   } = trpc.main.getSellerOrders.useQuery(
-    { sellerId: sellerId! }, // Use non-null assertion (!) since we check enabled
-    { enabled: !!sellerId } // Only enable the query if sellerId is defined
+    {
+      sellerId: sellerId!,
+      phone: searchQuery, // Pass search query to the backend
+    },
+    {
+      enabled: !!sellerId,
+      keepPreviousData: true, // Smooth transition between searches
+    }
   );
-
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
-  };
 
   const updateOrderStatus = trpc.main.updateOrderStatus.useMutation({
     onSuccess: () => {
@@ -61,15 +61,11 @@ function SellerOrderManagement() {
 
   const handleStatusChange = async (id: number, newStatus: string) => {
     try {
-      // Update order status
       await updateOrderStatus.mutateAsync({ id, status: newStatus });
-
-      // Update contract step
       await trpc.main.updateContractStep.mutate({
         orderId: id,
         newStatus,
       });
-
       toast.custom(
         <ToastContent
           type="success"
@@ -81,20 +77,30 @@ function SellerOrderManagement() {
       toast.custom(<ToastContent type="error" message={err?.message} />);
     }
   };
+
   const gregorianToPersian = (date: Date): string => {
     const gregorianDate = new Date(date);
     const { jy, jm, jd } = jalaali.toJalaali(
       gregorianDate.getFullYear(),
-      gregorianDate.getMonth() + 1, // Months are 0-based in JS
+      gregorianDate.getMonth() + 1,
       gregorianDate.getDate()
     );
-    return `${jy}/${jm}/${jd}`; // Format: YYYY/MM/DD
+    return `${jy}/${jm}/${jd}`;
   };
+
   const { isAuthenticated, isMounted } = useAuthRedirect();
   if (!isMounted) return null;
   if (!isAuthenticated) return null;
-  // if (isLoading) return <Loading />;
-  // if (error) return <p>Error: {error.message}</p>;
+
+  // Debounced search handler
+  const handleSearch = debounce((query: string) => {
+    setSearchQuery(query);
+  }, 300);
+
+  // Immediate handler for input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleSearch(e.target.value);
+  };
 
   return (
     <WithRole allowedRoles={["seller"]}>
@@ -102,7 +108,7 @@ function SellerOrderManagement() {
         <HeadOfPages
           title="سفارشات"
           back={
-            <div onClick={handleBack} className=" m-5">
+            <div onClick={handleBack} className="m-5">
               <FaArrowLeftLong />
             </div>
           }
@@ -122,32 +128,33 @@ function SellerOrderManagement() {
         <div className="text-end mx-5 mt-5">
           <input
             type="text"
-            placeholder="جستجوی مشتری..."
-            value={searchQuery}
-            onChange={handleSearch}
-            className="border p-2 rounded text-black my-2 font-PeydaRegular"
+            placeholder="جستجو با شماره تلفن مشتری..."
+            onChange={handleInputChange}
+            className="border p-2 rounded text-black my-2 font-PeydaRegular w-full"
           />
         </div>
+
         {isLoading ? (
           <Loading />
         ) : (
           <div>
             {error ? (
-              <p>Error: {error.message}</p>
+              <p className="text-red-500 text-center py-4">
+                خطا: {error.message}
+              </p>
             ) : (
               <div>
                 {orders && orders.length === 0 ? (
-                  <div className=" text-primary text-center min-h-screen mt-52">
-                    <MdProductionQuantityLimits
-                      className=" mx-auto"
-                      size={80}
-                    />
-                    <h1 className="  font-PeydaBold">
-                      شما هنوز هیچ سفارشی ندارید
+                  <div className="text-primary text-center min-h-screen mt-52">
+                    <MdProductionQuantityLimits className="mx-auto" size={80} />
+                    <h1 className="font-PeydaBold">
+                      {searchQuery
+                        ? "هیچ سفارشی با این شماره تلفن یافت نشد"
+                        : "شما هنوز هیچ سفارشی ندارید"}
                     </h1>
                   </div>
                 ) : (
-                  orders.map((order) => (
+                  orders?.map((order) => (
                     <div key={order.id}>
                       <TicketOrder
                         data={order}

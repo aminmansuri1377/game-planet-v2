@@ -99,7 +99,7 @@ function MyAddresses() {
           </div>
         }
       />
-      <div className=" mt-14">
+      <div className=" mt-14 w-full">
         <div className="w-4/5 mx-auto my-2 text-end">
           <input
             type="text"
