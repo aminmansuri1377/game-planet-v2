@@ -60,6 +60,7 @@ model Category {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   products  Product[]
+  icon      String?
 }
 
 model Guaranty {

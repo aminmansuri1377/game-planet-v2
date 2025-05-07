@@ -620,14 +620,24 @@ export const gameRouter = router({
     }),
   ///////////////category
   createCategory: procedure
-    .input(z.object({ name: z.string() }))
+    .input(
+      z.object({
+        name: z.string(),
+        icon: z.string().optional(), // Base64 encoded SVG or filename
+      })
+    )
     .mutation(async ({ input }) => {
       return await prisma.category.create({
         data: {
           name: input.name,
+          icon: input.icon, // Store the SVG data or filename
         },
       });
     }),
+
+  getCategories: procedure.query(async () => {
+    return await prisma.category.findMany();
+  }),
 
   getCategories: procedure.query(async () => {
     return await prisma.category.findMany();

@@ -150,7 +150,7 @@ const WelcomePage = () => {
                       >
                         <CategoryCart
                           text={category.name}
-                          Icon={GiConsoleController}
+                          Icon={category.icon ? category.icon : undefined}
                         />
                       </div>
                     ))
