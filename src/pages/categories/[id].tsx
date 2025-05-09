@@ -45,7 +45,7 @@ const CategoryProductsPage = () => {
   const buyerId = session?.user?.id ? parseInt(session.user.id, 10) : null;
   const [buyerLocation, setBuyerLocation] = useRecoilState(buyerLocationAtom);
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
-  const [position, setPosition] = useState([35.6892, 51.389]);
+  const [position, setPosition] = useState<[number, number]>([35.6892, 51.389]);
   const [sortByPrice, setSortByPrice] = useState(false); // State for sorting by price
   const [sortByNearest, setSortByNearest] = useState(false); // State for sorting by nearest
   const utils = trpc.useUtils();
@@ -59,16 +59,23 @@ const CategoryProductsPage = () => {
   const [selectedCity, setSelectedCity] = useState(""); // State for selected city
   const [cities, setCities] = useState<{ id: number; name: string }[]>([]); // State for all cities
   const [filteredCities, setFilteredCities] = useState<
-    { id: number; name: string }[]
-  >([]); // State for filtered cities
+    Array<{ id: number; name: string }>
+  >([]);
 
   // Load cities from JSON file
   useEffect(() => {
-    fetch("/data/iran-cities.json")
-      .then((response) => response.json())
-      .then((data) => {
+    const fetchCities = async () => {
+      try {
+        const response = await fetch("/data/iran-cities.json");
+        if (!response.ok) throw new Error("Failed to fetch cities");
+        const data = await response.json();
         setCities(data);
-      });
+      } catch (error) {
+        console.error("Error loading cities:", error);
+        setCities([]);
+      }
+    };
+    void fetchCities();
   }, []);
   useEffect(() => {
     if (cityQuery) {
@@ -177,32 +184,38 @@ const CategoryProductsPage = () => {
     }
   }, [coordinates, setBuyerLocation]);
 
-  const productLocations =
-    products &&
-    products.map((product) => ({
+  const productLocations = products
+    ?.map((product) => ({
       name: product.name,
-      coordinates: [product?.latitude, product?.longitude],
-    }));
+      coordinates:
+        product?.latitude && product?.longitude
+          ? ([product.latitude, product.longitude] as [number, number])
+          : null,
+    }))
+    .filter((loc) => loc.coordinates !== null);
 
   // Sort products by nearest location if sortByNearest is true
-  const sortedProducts =
-    sortByNearest && coordinates
-      ? products?.slice().sort((a, b) => {
-          const distanceA = haversineDistance(
-            coordinates[0],
-            coordinates[1],
-            a.latitude,
-            a.longitude
-          );
-          const distanceB = haversineDistance(
-            coordinates[0],
-            coordinates[1],
-            b.latitude,
-            b.longitude
-          );
-          return distanceA - distanceB;
-        })
-      : products;
+  const sortedProducts = React.useMemo(() => {
+    if (!sortByNearest || !coordinates || !products) return products;
+
+    return [...products].sort((a, b) => {
+      if (!a.latitude || !a.longitude || !b.latitude || !b.longitude) return 0;
+
+      const distanceA = haversineDistance(
+        coordinates[0],
+        coordinates[1],
+        a.latitude,
+        a.longitude
+      );
+      const distanceB = haversineDistance(
+        coordinates[0],
+        coordinates[1],
+        b.latitude,
+        b.longitude
+      );
+      return distanceA - distanceB;
+    });
+  }, [products, sortByNearest, coordinates]);
 
   // if (isLoading) return <Loading />;
   if (error) return <p>Error: {error.message}</p>;
