@@ -42,7 +42,7 @@ const WelcomePage = () => {
   };
   console.log("first", session);
   const handleCategoryClick = (categoryId: number) => {
-    router.push(`/categories/${categoryId}`);
+    router.push(`/categories?id=${categoryId}`);
   };
 
   const sellerSignUp = () => {

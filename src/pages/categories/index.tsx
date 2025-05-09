@@ -302,38 +302,50 @@ const CategoryProductsPage = () => {
           <Loading />
         ) : (
           <div className="space-y-4 ">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-              {sortedProducts?.map((product) => {
-                const isSaved = savedProducts?.some(
-                  (sp) => sp.productId === product.id
-                );
-                const distance = coordinates
-                  ? haversineDistance(
-                      coordinates[0],
-                      coordinates[1],
-                      product?.latitude,
-                      product?.longitude
-                    )
-                  : null;
-                return (
-                  <div
-                    key={product.id}
-                    onClick={() => router.push(`/singleProduct/${product.id}`)}
-                  >
-                    <ProductCard
-                      imgUrl={product?.images ? product?.images[0] : ProductImg}
-                      imgAlt={product.name}
-                      name={product.name}
-                      price={`${product.price}`}
-                      handleSave={(e) => handleSave(product.id, e)} // Pass the event
-                      isSaved={isSaved}
-                      rate={8}
-                      distance={distance}
-                    />
-                  </div>
-                );
-              })}
-            </div>
+            {sortedProducts && sortedProducts?.length === 0 ? (
+              <div>
+                <h1 className=" font-PeydaBold mt-10 text-primary mx-auto text-center">
+                  هیچ محصولی یافت نشد
+                </h1>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                {sortedProducts?.map((product) => {
+                  const isSaved = savedProducts?.some(
+                    (sp) => sp.productId === product.id
+                  );
+                  const distance = coordinates
+                    ? haversineDistance(
+                        coordinates[0],
+                        coordinates[1],
+                        product?.latitude,
+                        product?.longitude
+                      )
+                    : null;
+                  return (
+                    <div
+                      key={product.id}
+                      onClick={() =>
+                        router.push(`/singleProduct/${product.id}`)
+                      }
+                    >
+                      <ProductCard
+                        imgUrl={
+                          product?.images ? product?.images[0] : ProductImg
+                        }
+                        imgAlt={product.name}
+                        name={product.name}
+                        price={`${product.price}`}
+                        handleSave={(e) => handleSave(product.id, e)} // Pass the event
+                        isSaved={isSaved}
+                        rate={8}
+                        distance={distance}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
       </div>
