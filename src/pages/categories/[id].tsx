@@ -1,4 +1,3 @@
-"use client";
 import { useRouter } from "next/router";
 import { trpc } from "../../../utils/trpc";
 import Loading from "../../components/ui/Loading";
