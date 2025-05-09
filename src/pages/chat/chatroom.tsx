@@ -18,13 +18,12 @@ const ChatRoomPage = () => {
   const { chatroomId, sellerId } = router.query;
   const { data: session } = useSession();
   const numericSellerId = sellerId ? Number(sellerId) : null;
-
   const [message, setMessage] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
-
+  console.log("chatroomId", chatroomId);
   const { data: messages, refetch } = trpc.main.getMessages.useQuery(
     { chatRoomId: Number(chatroomId) },
     {
