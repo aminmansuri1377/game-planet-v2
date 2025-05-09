@@ -342,3 +342,8 @@ const CategoryProductsPage = () => {
 };
 
 export default CategoryProductsPage;
+export async function getServerSideProps() {
+  return {
+    props: {}, // no need to pass anything for now
+  };
+}
