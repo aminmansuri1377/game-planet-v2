@@ -63,13 +63,7 @@ const CategoryProductsPage = () => {
   const [filteredCities, setFilteredCities] = useState<
     { id: number; name: string }[]
   >([]); // State for filtered cities
-  if (!router.isReady) {
-    return <Loading />;
-  }
 
-  if (!id) {
-    return <div className=" min-h-screen mt-10">Invalid category ID</div>;
-  }
   // Load cities from JSON file
   useEffect(() => {
     fetch("/data/iran-cities.json")
