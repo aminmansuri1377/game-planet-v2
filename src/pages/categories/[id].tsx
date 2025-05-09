@@ -1,3 +1,4 @@
+"use client";
 import { useRouter } from "next/router";
 import { trpc } from "../../../utils/trpc";
 import Loading from "../../components/ui/Loading";
@@ -11,8 +12,8 @@ import Header from "../../components/Header";
 import ProductCard from "../../components/ui/ProductCard";
 import ProductImg from "../../../public/images/p2.webp";
 import { MdOutlineDeleteForever } from "react-icons/md";
+
 import toast from "react-hot-toast";
-export const dynamicParams = true;
 const Map = dynamic(() => import("../../components/MyMap"), {
   ssr: false,
 });
