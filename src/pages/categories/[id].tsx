@@ -1,21 +1,19 @@
 import { useRouter } from "next/router";
 import { trpc } from "../../../utils/trpc";
 import Loading from "../../components/ui/Loading";
-import DeviceCard from "../../components/ui/DeviceCard";
 import React, { useEffect, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import { useRecoilState } from "recoil";
 import { buyerLocationAtom } from "../../../store/atoms/buyerLocationAtom";
-import Header from "@/components/Header";
-import ProductCard from "@/components/ui/ProductCard";
+import Header from "../../components/Header";
+import ProductCard from "../../components/ui/ProductCard";
 import ProductImg from "../../../public/images/p2.webp";
-import { PiCityDuotone } from "react-icons/pi";
 import { MdOutlineDeleteForever } from "react-icons/md";
 
 import toast from "react-hot-toast";
-const Map = dynamic(() => import("@/components/MyMap"), {
+const Map = dynamic(() => import("../../components/MyMap"), {
   ssr: false,
 });
 
