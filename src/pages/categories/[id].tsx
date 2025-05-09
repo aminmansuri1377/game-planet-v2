@@ -13,6 +13,7 @@ import ProductCard from "@/components/ui/ProductCard";
 import ProductImg from "../../../public/images/p2.webp";
 import { PiCityDuotone } from "react-icons/pi";
 import { MdOutlineDeleteForever } from "react-icons/md";
+import citiesData from "../../../public/data/iran-cities.json";
 
 import toast from "react-hot-toast";
 const Map = dynamic(() => import("@/components/MyMap"), {
@@ -66,11 +67,7 @@ const CategoryProductsPage = () => {
 
   // Load cities from JSON file
   useEffect(() => {
-    fetch("/data/iran-cities.json")
-      .then((response) => response.json())
-      .then((data) => {
-        setCities(data);
-      });
+    setCities(citiesData);
   }, []);
   useEffect(() => {
     if (cityQuery) {
