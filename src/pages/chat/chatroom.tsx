@@ -8,11 +8,6 @@ import Image from "next/image";
 import { ImageUploadButton } from "@/components/Chat/ImageUploadButton";
 import { MessageBubble } from "@/components/Chat/MessageBubble";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 const ChatRoomPage = () => {
   const router = useRouter();
   const { chatroomId, sellerId } = router.query;
@@ -23,6 +18,15 @@ const ChatRoomPage = () => {
   const [isUploading, setIsUploading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
+  const getSupabaseClient = () => {
+    return createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+  };
+
+  // Then use it inside your component
+  const supabase = getSupabaseClient();
   console.log("chatroomId", chatroomId);
   const { data: messages, refetch } = trpc.main.getMessages.useQuery(
     { chatRoomId: Number(chatroomId) },
