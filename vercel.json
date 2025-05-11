@@ -7,7 +7,7 @@
       "config": {
         "runtime": "edge",
         "regions": ["iad1"],
-        "includeFiles": ["public/**", ".next/**", "node_modules/**"]
+        "includeFiles": ["public/**", "next.config.js", "package.json", ".env*"]
       }
     }
   ],
@@ -16,6 +16,16 @@
       "src": "/dashboard(.*)",
       "dest": "/dashboard",
       "continue": true
+    },
+    {
+      "src": "/api/trpc/(.*)",
+      "dest": "/api/trpc/$1",
+      "methods": ["GET", "POST"]
+    },
+    {
+      "src": "/api/auth/(.*)",
+      "dest": "/api/auth/$1",
+      "methods": ["GET", "POST"]
     }
   ]
 }

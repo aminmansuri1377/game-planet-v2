@@ -1,8 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "standalone",
+
   experimental: {
     serverActions: true,
     esmExternals: "loose",
+    middlewarePrefetch: "flexible",
+    serverComponentsExternalPackages: ["next-auth", "@trpc/server"],
   },
   typescript: {
     // !! WARN !!
@@ -31,6 +35,7 @@ const nextConfig = {
       },
     ],
   },
+  runtime: "nodejs",
 };
 
 export default nextConfig;
