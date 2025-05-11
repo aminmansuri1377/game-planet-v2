@@ -1,6 +1,9 @@
+// components/auth/WithRole.tsx
+"use client"; // Add this at the top (critical for Next.js 13+)
+
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect } from "react";
 
 interface WithRoleProps {
   children: ReactNode;
@@ -10,41 +13,26 @@ interface WithRoleProps {
 export const WithRole = ({ children, allowedRoles }: WithRoleProps) => {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [isClient, setIsClient] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  // Block rendering until session is loaded
+  if (status === "loading") {
+    return <div className="min-h-screen mt-20 font-PeydaBold">Loading...</div>;
+  }
 
-  useEffect(() => {
-    if (!isClient || status === "loading") return;
-
-    if (!session) {
-      router.push("/");
-      return;
-    }
-
-    if (!allowedRoles.includes(session.user?.role as any)) {
-      if (session.user?.role === "seller") {
+  // Redirect logic (handled client-side)
+  if (!session || !allowedRoles.includes(session.user?.role as any)) {
+    useEffect(() => {
+      if (!session) {
+        router.push("/");
+      } else if (session.user?.role === "seller") {
         router.push("/seller");
       } else if (session.user?.role === "manager") {
         router.push("/dashboard");
       } else {
         router.push("/");
       }
-    }
-  }, [status, session, allowedRoles, router, isClient]);
-
-  if (!isClient || status === "loading") {
-    return (
-      <div className="min-h-screen mt-20 font-PeydaBold">
-        بارگذاری و شناسایی کاربر...
-      </div>
-    );
-  }
-
-  if (!session || !allowedRoles.includes(session.user?.role as any)) {
-    return null; // Redirect will happen in useEffect
+    }, [session, router]);
+    return null;
   }
 
   return <>{children}</>;

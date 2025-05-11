@@ -6,7 +6,8 @@
       "use": "@vercel/next",
       "config": {
         "runtime": "nodejs",
-        "regions": ["iad1"]
+        "regions": ["iad1"],
+        "includeFiles": ["public/**", ".next/**", "node_modules/**"]
       }
     }
   ],
