@@ -1,7 +1,6 @@
-// components/auth/WithRole.tsx
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 interface WithRoleProps {
   children: ReactNode;
@@ -11,9 +10,14 @@ interface WithRoleProps {
 export const WithRole = ({ children, allowedRoles }: WithRoleProps) => {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    if (status === "loading") return;
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient || status === "loading") return;
 
     if (!session) {
       router.push("/");
@@ -21,7 +25,6 @@ export const WithRole = ({ children, allowedRoles }: WithRoleProps) => {
     }
 
     if (!allowedRoles.includes(session.user?.role as any)) {
-      // Redirect to default page based on role
       if (session.user?.role === "seller") {
         router.push("/seller");
       } else if (session.user?.role === "manager") {
@@ -30,18 +33,18 @@ export const WithRole = ({ children, allowedRoles }: WithRoleProps) => {
         router.push("/");
       }
     }
-  }, [status, session, allowedRoles, router]);
+  }, [status, session, allowedRoles, router, isClient]);
 
-  if (
-    status === "loading" ||
-    !session ||
-    !allowedRoles.includes(session.user?.role as any)
-  ) {
+  if (!isClient || status === "loading") {
     return (
-      <div className=" min-h-screen mt-20 font-PeydaBold">
-        بارگذاری وشناسایی کاربر...
+      <div className="min-h-screen mt-20 font-PeydaBold">
+        بارگذاری و شناسایی کاربر...
       </div>
     );
+  }
+
+  if (!session || !allowedRoles.includes(session.user?.role as any)) {
+    return null; // Redirect will happen in useEffect
   }
 
   return <>{children}</>;
