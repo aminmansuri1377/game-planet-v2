@@ -4,7 +4,17 @@
     {
       "src": "package.json",
       "use": "@vercel/next",
-      "config": { "runtime": "nodejs" }
+      "config": {
+        "runtime": "nodejs",
+        "regions": ["iad1"]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/dashboard(.*)",
+      "dest": "/dashboard",
+      "continue": true
     }
   ]
 }
