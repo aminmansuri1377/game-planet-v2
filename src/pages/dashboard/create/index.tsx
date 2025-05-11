@@ -20,17 +20,16 @@ type CategoryInput = {
 type GuarantyInput = {
   text: string;
 };
-// interface CategoryManagementPageProps {
-//   session: Session;
-// }
-export default function CategoryManagementPage() {
-  // {session,}: CategoryManagementPageProps
+interface CategoryManagementPageProps {
+  session: Session;
+}
+export default function CategoryManagementPage({
+  session,
+}: CategoryManagementPageProps) {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  // const { data: session } = useSession();
   const [iconPreview, setIconPreview] = useState<string | null>(null);
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
+
   // Forms
   const { register, handleSubmit, reset } = useForm<CategoryInput>();
   const {
@@ -302,24 +301,28 @@ export default function CategoryManagementPage() {
   );
 }
 
-// export async function getServerSideProps(context: GetServerSidePropsContext) {
-//   const session = await getServerSession(context.req, context.res, authOptions);
-//   if (!session) {
-//     return {
-//       redirect: {
-//         destination: "/login",
-//         permanent: false,
-//       },
-//     };
-//   }
-//   const cleanedSession = JSON.parse(
-//     JSON.stringify(session, (key, value) =>
-//       value === undefined ? null : value
-//     )
-//   );
-//   return {
-//     props: {
-//       session: cleanedSession,
-//     },
-//   };
-// }
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  // Clean the session object by replacing undefined with null
+  const cleanedSession = JSON.parse(
+    JSON.stringify(session, (key, value) =>
+      value === undefined ? null : value
+    )
+  );
+
+  return {
+    props: {
+      session: cleanedSession,
+    },
+  };
+}

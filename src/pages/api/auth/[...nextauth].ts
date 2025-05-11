@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { db } from "../../../lib/db";
 
-const authOptions = {
+export const authOptions = {
   adapter: PrismaAdapter(db),
   secret: process.env.NEXTAUTH_SECRET,
   session: {
@@ -23,10 +23,11 @@ const authOptions = {
         if (!credentials?.phone) {
           return null;
         }
-        const path = req.headers?.referer?.split("?")[0];
+        const path = req.headers?.referer?.split("?")[0]; // Get the URL path
         let model;
         let role;
 
+        // Map the path to the corresponding Prisma model and role
         if (path?.includes("/seller")) {
           model = "seller";
           role = "seller";
@@ -34,7 +35,7 @@ const authOptions = {
           model = "manager";
           role = "manager";
         } else {
-          model = "buyer";
+          model = "buyer"; // Default model
           role = "buyer";
         }
 
@@ -49,7 +50,7 @@ const authOptions = {
         return {
           phone: existingUser.phone,
           id: existingUser.id,
-          role,
+          role, // Add role to the user object
         };
       },
     }),
@@ -61,7 +62,7 @@ const authOptions = {
           ...token,
           id: user.id,
           phone: user.phone,
-          role: user.role,
+          role: user.role, // Include role in JWT
         };
       }
       return token;
@@ -73,7 +74,7 @@ const authOptions = {
           ...session.user,
           id: token.id,
           phone: token.phone,
-          role: token.role,
+          role: token.role, // Include role in session
         },
       };
     },
@@ -81,11 +82,9 @@ const authOptions = {
 };
 
 export default NextAuth(authOptions);
-
-// Important: Add this configuration for Vercel
-export const config = {
-  api: {
-    bodyParser: false, // Disables body parsing for better static optimization
-    externalResolver: true, // Tells Vercel this is an external resolver
-  },
-};
+// export const config = {
+//   api: {
+//     bodyParser: false, // Disables body parsing for better static optimization
+//     externalResolver: true, // Tells Vercel this is an external resolver
+//   },
+// };
