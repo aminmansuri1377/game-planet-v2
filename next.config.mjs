@@ -6,7 +6,7 @@ const nextConfig = {
     serverActions: true,
     esmExternals: "loose",
     middlewarePrefetch: "flexible",
-    fullyDynamic: true,
+    incrementalStaticRegeneration: true,
     serverComponentsExternalPackages: ["next-auth", "@trpc/server"],
   },
   typescript: {
