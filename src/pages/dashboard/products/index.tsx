@@ -114,5 +114,6 @@ function AllProducts() {
     </WithRole>
   );
 }
+export const dynamic = "force-dynamic";
 
 export default AllProducts;
