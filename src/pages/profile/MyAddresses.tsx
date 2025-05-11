@@ -153,5 +153,6 @@ function MyAddresses() {
     </WithRole>
   );
 }
+export const dynamic = "force-dynamic";
 
 export default MyAddresses;

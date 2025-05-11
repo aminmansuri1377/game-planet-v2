@@ -171,5 +171,6 @@ function SellerOrderManagement() {
     </WithRole>
   );
 }
+export const dynamic = "force-dynamic";
 
 export default SellerOrderManagement;

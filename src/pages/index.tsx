@@ -188,5 +188,6 @@ const WelcomePage = () => {
     </div>
   );
 };
+export const dynamic = "force-dynamic";
 
 export default WelcomePage;
