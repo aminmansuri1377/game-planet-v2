@@ -4,7 +4,7 @@ import { trpc } from "../../../../../utils/trpc";
 import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import dynamic from "next/dynamic";
+import Dynamic from "next/dynamic";
 import { Input } from "@/components/ui/input";
 import Uploader from "@/components/uploader/Uploader";
 import CustomButton from "@/components/ui/CustomButton";
@@ -15,7 +15,7 @@ import { FiEdit } from "react-icons/fi";
 import { WithRole } from "@/components/auth/WithRole";
 import Loading from "@/components/ui/Loading";
 
-const Map = dynamic(() => import("@/components/MyMap"), {
+const Map = Dynamic(() => import("@/components/MyMap"), {
   ssr: false,
 });
 
@@ -402,4 +402,6 @@ function UpdateProductForm() {
     </WithRole>
   );
 }
+export const dynamic = "force-dynamic";
+
 export default UpdateProductForm;
