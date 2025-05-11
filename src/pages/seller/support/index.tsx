@@ -75,5 +75,6 @@ function index() {
     </div>
   );
 }
+export const dynamic = "force-dynamic";
 
 export default index;

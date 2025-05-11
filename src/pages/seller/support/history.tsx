@@ -53,5 +53,6 @@ const SupportHistoryPage = () => {
     </div>
   );
 };
+export const dynamic = "force-dynamic";
 
 export default SupportHistoryPage;

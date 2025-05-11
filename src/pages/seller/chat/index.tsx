@@ -9,8 +9,7 @@ import { GoMail } from "react-icons/go";
 import Image from "next/image";
 import Divider from "@/components/ui/Divider";
 import { WithRole } from "@/components/auth/WithRole";
-
-export default function ChatHistory() {
+function ChatHistory() {
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -139,3 +138,5 @@ export default function ChatHistory() {
     </WithRole>
   );
 }
+export const dynamic = "force-dynamic";
+export default ChatHistory;
