@@ -35,7 +35,9 @@ export default function ChatHistory() {
   };
 
   const handleRoomClick = (roomId: number, buyerId: number) => {
-    router.push(`/seller/chat/${roomId}?buyerId=${buyerId}`);
+    router.push(
+      `/seller/chat/chatRoom?chatRoomId=${roomId}&&buyerId=${buyerId}`
+    );
   };
   const handleSupportHistory = () => {
     router.push("/seller/support/history");

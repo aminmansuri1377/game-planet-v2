@@ -29,7 +29,9 @@ function index() {
       const newTicket = await createTicket.mutateAsync({
         sellerId: currentUserId,
       });
-      router.push(`/seller/support/${newTicket.chatRoomSupportId}`);
+      router.push(
+        `/seller/support/chatRoom?chatRoomId=${newTicket.chatRoomSupportId}`
+      );
     }
   };
 

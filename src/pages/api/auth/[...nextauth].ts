@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { db } from "../../../lib/db";
 
-export const authOptions = {
+const authOptions = {
   adapter: PrismaAdapter(db),
   secret: process.env.NEXTAUTH_SECRET,
   session: {
@@ -23,11 +23,10 @@ export const authOptions = {
         if (!credentials?.phone) {
           return null;
         }
-        const path = req.headers?.referer?.split("?")[0]; // Get the URL path
+        const path = req.headers?.referer?.split("?")[0];
         let model;
         let role;
 
-        // Map the path to the corresponding Prisma model and role
         if (path?.includes("/seller")) {
           model = "seller";
           role = "seller";
@@ -35,7 +34,7 @@ export const authOptions = {
           model = "manager";
           role = "manager";
         } else {
-          model = "buyer"; // Default model
+          model = "buyer";
           role = "buyer";
         }
 
@@ -50,7 +49,7 @@ export const authOptions = {
         return {
           phone: existingUser.phone,
           id: existingUser.id,
-          role, // Add role to the user object
+          role,
         };
       },
     }),
@@ -62,7 +61,7 @@ export const authOptions = {
           ...token,
           id: user.id,
           phone: user.phone,
-          role: user.role, // Include role in JWT
+          role: user.role,
         };
       }
       return token;
@@ -74,7 +73,7 @@ export const authOptions = {
           ...session.user,
           id: token.id,
           phone: token.phone,
-          role: token.role, // Include role in session
+          role: token.role,
         },
       };
     },
@@ -82,3 +81,11 @@ export const authOptions = {
 };
 
 export default NextAuth(authOptions);
+
+// Important: Add this configuration for Vercel
+export const config = {
+  api: {
+    bodyParser: false, // Disables body parsing for better static optimization
+    externalResolver: true, // Tells Vercel this is an external resolver
+  },
+};
