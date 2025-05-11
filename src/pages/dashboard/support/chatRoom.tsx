@@ -45,5 +45,6 @@ const ManagerSupportChatRoom = () => {
     </WithRole>
   );
 };
+export const dynamic = "force-dynamic";
 
 export default ManagerSupportChatRoom;

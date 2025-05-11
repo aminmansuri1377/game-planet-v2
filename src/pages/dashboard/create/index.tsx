@@ -10,6 +10,9 @@ import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { useCallback, useState } from "react";
 import Image from "next/image";
+import { getServerSession, Session } from "next-auth";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { GetServerSidePropsContext } from "next";
 
 type CategoryInput = {
   name: string;
@@ -17,8 +20,13 @@ type CategoryInput = {
 type GuarantyInput = {
   text: string;
 };
-
+interface CategoryManagementPageProps {
+  session: Session;
+}
 export default function CategoryManagementPage() {
+  //   {
+  //   session,
+  // }: CategoryManagementPageProps
   const router = useRouter();
   const { data: session } = useSession();
   const [iconPreview, setIconPreview] = useState<string | null>(null);
@@ -30,7 +38,7 @@ export default function CategoryManagementPage() {
     handleSubmit: GuarantyHandel,
     reset: GuarantyReset,
   } = useForm<GuarantyInput>();
-
+  console.log("session", session);
   // Queries
   const { data: categories, refetch: refetchCategories } =
     trpc.main.getCategories.useQuery();
@@ -293,3 +301,29 @@ export default function CategoryManagementPage() {
     </div>
   );
 }
+
+// export async function getServerSideProps(context: GetServerSidePropsContext) {
+//   const session = await getServerSession(context.req, context.res, authOptions);
+
+//   if (!session) {
+//     return {
+//       redirect: {
+//         destination: "/login",
+//         permanent: false,
+//       },
+//     };
+//   }
+
+//   // Clean the session object by replacing undefined with null
+//   const cleanedSession = JSON.parse(
+//     JSON.stringify(session, (key, value) =>
+//       value === undefined ? null : value
+//     )
+//   );
+
+//   return {
+//     props: {
+//       session: cleanedSession,
+//     },
+//   };
+// }

@@ -63,7 +63,7 @@ const Products = () => {
   if (!products) return <p>No products found.</p>;
 
   const handleUpdateProduct = (productId: number) => {
-    router.push(`/seller/products/update/${productId}`);
+    router.push(`/seller/products/update?id=${productId}`);
   };
 
   const handleDeleteProduct = async (
@@ -138,5 +138,6 @@ const Products = () => {
     </WithRole>
   );
 };
+export const dynamic = "force-dynamic";
 
 export default Products;

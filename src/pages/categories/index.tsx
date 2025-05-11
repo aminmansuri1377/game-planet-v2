@@ -4,7 +4,7 @@ import Loading from "../../components/ui/Loading";
 import React, { useEffect, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useSession } from "next-auth/react";
-import dynamic from "next/dynamic";
+import Dynamic from "next/dynamic";
 import { useRecoilState } from "recoil";
 import { buyerLocationAtom } from "../../../store/atoms/buyerLocationAtom";
 import Header from "../../components/Header";
@@ -13,7 +13,8 @@ import ProductImg from "../../../public/images/p2.webp";
 import { MdOutlineDeleteForever } from "react-icons/md";
 
 import toast from "react-hot-toast";
-const Map = dynamic(() => import("../../components/MyMap"), {
+import { GetServerSideProps } from "next";
+const Map = Dynamic(() => import("../../components/MyMap"), {
   ssr: false,
 });
 
@@ -352,10 +353,10 @@ const CategoryProductsPage = () => {
     </div>
   );
 };
-
+// export const dynamic = "force-dynamic";
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  return {
+    props: {},
+  };
+};
 export default CategoryProductsPage;
-// export async function getServerSideProps() {
-//   return {
-//     props: {}, // no need to pass anything for now
-//   };
-// }

@@ -41,7 +41,7 @@ type ProductInput = {
   savedLocationId?: number;
 };
 
-export default function CreateProductForm() {
+function CreateProductForm() {
   const prisma = new PrismaClient();
 
   const router = useRouter();
@@ -497,3 +497,5 @@ export default function CreateProductForm() {
     </WithRole>
   );
 }
+// export const dynamic = "force-dynamic";
+export default CreateProductForm;

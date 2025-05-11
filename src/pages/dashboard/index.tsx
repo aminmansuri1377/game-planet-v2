@@ -4,11 +4,9 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuthRedirect } from "../../components/hooks/useAuthRedirect";
 import Cookies from "js-cookie";
-import { HiOutlineSquaresPlus } from "react-icons/hi2";
 import { trpc } from "../../../utils/trpc";
 import { signOut, useSession } from "next-auth/react";
 import HeadOfPages from "@/components/ui/HeadOfPages";
-import { BiSupport } from "react-icons/bi";
 import RoundButton from "@/components/ui/RoundButton";
 import { MdOutlineManageAccounts } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
@@ -144,4 +142,5 @@ function Index() {
   );
 }
 
+export const dynamic = "force-dynamic";
 export default Index;

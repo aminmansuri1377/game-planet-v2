@@ -149,5 +149,5 @@ function index() {
     </WithRole>
   );
 }
-
+export const dynamic = "force-dynamic";
 export default index;

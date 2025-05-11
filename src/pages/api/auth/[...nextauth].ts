@@ -82,3 +82,9 @@ export const authOptions = {
 };
 
 export default NextAuth(authOptions);
+// export const config = {
+//   api: {
+//     bodyParser: false, // Disables body parsing for better static optimization
+//     externalResolver: true, // Tells Vercel this is an external resolver
+//   },
+// };
