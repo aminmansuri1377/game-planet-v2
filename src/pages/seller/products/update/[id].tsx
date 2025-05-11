@@ -34,7 +34,7 @@ type ProductInput = {
   address?: string;
 };
 
-export default function UpdateProductForm() {
+function UpdateProductForm() {
   const router = useRouter();
   const { id } = router.query;
   const { data: session } = useSession();
@@ -402,3 +402,4 @@ export default function UpdateProductForm() {
     </WithRole>
   );
 }
+export default UpdateProductForm;
