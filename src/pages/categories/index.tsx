@@ -353,7 +353,7 @@ const CategoryProductsPage = () => {
     </div>
   );
 };
-// export const dynamic = "force-dynamic";
+// //export const dynamic = "force-dynamic";
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {},

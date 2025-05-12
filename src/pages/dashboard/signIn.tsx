@@ -8,6 +8,6 @@ function signIn() {
     </div>
   );
 }
-export const dynamic = "force-dynamic";
+//export const dynamic = "force-dynamic";
 
 export default signIn;
