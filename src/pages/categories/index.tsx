@@ -13,7 +13,6 @@ import ProductImg from "../../../public/images/p2.webp";
 import { MdOutlineDeleteForever } from "react-icons/md";
 
 import toast from "react-hot-toast";
-import { GetServerSideProps } from "next";
 const Map = Dynamic(() => import("../../components/MyMap"), {
   ssr: false,
 });
@@ -353,10 +352,5 @@ const CategoryProductsPage = () => {
     </div>
   );
 };
-// //export const dynamic = "force-dynamic";
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  return {
-    props: {},
-  };
-};
+
 export default CategoryProductsPage;

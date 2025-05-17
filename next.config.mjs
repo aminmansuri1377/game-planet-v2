@@ -1,13 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "standalone",
-
   experimental: {
-    serverActions: true,
-    esmExternals: "loose",
-    middlewarePrefetch: "flexible",
-    incrementalStaticRegeneration: true,
-    serverComponentsExternalPackages: ["next-auth", "@trpc/server"],
+    serverComponentsExternalPackages: ["@prisma/client"],
   },
   typescript: {
     // !! WARN !!
@@ -33,6 +27,7 @@ const nextConfig = {
         protocol: "https",
         hostname: "ybkqlbrfanevwwmeykpr.supabase.co",
         port: "",
+        // pathname: "/storage/v1/object/public/**",
       },
     ],
   },

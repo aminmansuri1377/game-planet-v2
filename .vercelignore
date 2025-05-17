@@ -1,0 +1,8 @@
+node_modules/
+.next/
+public/
+*.md
+*.log
+.env*
+dist/
+.DS_Store

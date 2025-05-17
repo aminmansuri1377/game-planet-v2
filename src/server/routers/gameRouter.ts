@@ -323,19 +323,29 @@ export const gameRouter = router({
       z.object({
         categoryId: z.number(),
         sortByPrice: z.boolean().optional(),
-        city: z.string().optional(), // Add city filter
+        city: z.string().optional(),
       })
     )
     .query(async ({ input }) => {
-      return await prisma.product.findMany({
-        where: {
-          categoryId: input.categoryId,
-          city: input.city
-            ? { contains: input.city, mode: "insensitive" }
-            : undefined, // Filter by city
-        },
-        orderBy: input.sortByPrice ? { price: "asc" } : undefined,
-      });
+      try {
+        return await prisma.product.findMany({
+          where: {
+            categoryId: input.categoryId,
+            city: input.city
+              ? { contains: input.city, mode: "insensitive" }
+              : undefined,
+          },
+          include: {
+            category: true,
+            seller: true,
+            guaranty: true,
+          },
+          orderBy: input.sortByPrice ? { price: "asc" } : undefined,
+        });
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        throw new Error("Failed to fetch products");
+      }
     }),
 
   searchProducts: procedure
