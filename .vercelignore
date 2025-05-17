@@ -1,8 +1,4 @@
 node_modules/
-.next/
-public/
-*.md
-*.log
-.env*
-dist/
-.DS_Store
+**/node_modules/*
+**/.next/*
+**/public/*
