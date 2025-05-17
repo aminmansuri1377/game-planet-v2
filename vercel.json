@@ -5,7 +5,7 @@
       "src": "package.json",
       "use": "@vercel/next",
       "env": {
-        "DATABASE_URL": "postgresql://postgres.ybkqlbrfanevwwmeykpr:amin123456789A@aws-0-eu-central-1.pooler.supabase.com:5432/postgres"
+        "DATABASE_URL": "@database_url"
       }
     }
   ],
