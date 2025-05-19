@@ -6,7 +6,7 @@ import DeviceCard from "../../components/ui/DeviceCard";
 import React, { useEffect, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useSession } from "next-auth/react";
-import dynamic from "next/dynamic";
+import Dynamic from "next/dynamic";
 import { useRecoilState } from "recoil";
 import { buyerLocationAtom } from "../../../store/atoms/buyerLocationAtom";
 import ProductCard from "@/components/ui/ProductCard";
@@ -15,7 +15,7 @@ import toast from "react-hot-toast";
 import Header from "@/components/Header";
 import { MdOutlineDeleteForever } from "react-icons/md";
 
-const Map = dynamic(() => import("@/components/MyMap"), {
+const Map = Dynamic(() => import("@/components/MyMap"), {
   ssr: false,
 });
 const haversineDistance = (

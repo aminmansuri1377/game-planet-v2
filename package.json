@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "seed": "ts-node prisma/seed.ts",
-    "postbuild": "prisma migrate deploy"
+    "postbuild": "prisma migrate deploy",
+    "vercel-build": "prisma generate --schema=./prisma/schema.prisma && next build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
