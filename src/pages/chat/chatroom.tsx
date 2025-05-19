@@ -26,6 +26,7 @@ const ChatRoomPage = () => {
   //     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   //   );
   // };
+  // const supabase = createSupabaseClient();
 
   // Then use it inside your component
   const supabase = createSupabaseClient();
@@ -51,7 +52,7 @@ const ChatRoomPage = () => {
   });
 
   useEffect(() => {
-    if (!chatroomId) return;
+    if (!chatroomId || !supabase) return;
 
     const channel = supabase
       .channel(`room:${chatroomId}`)

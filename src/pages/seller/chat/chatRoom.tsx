@@ -50,7 +50,7 @@ const ChatRoomPage = () => {
   });
 
   useEffect(() => {
-    if (!chatroomId) return;
+    if (!chatroomId || !supabase) return;
 
     const channel = supabase
       .channel(`room:${chatroomId}`)
