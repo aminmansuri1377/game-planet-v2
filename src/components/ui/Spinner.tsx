@@ -1,7 +1,11 @@
-import { memo, FC } from "react"                             
-                        import { useTranslation } from "react-i18next";;
+import { memo, FC } from "react";
+import { useTranslation } from "react-i18next";
 import * as buttonLoading from "../../../public/lottie/buttonLoading.json";
-import Lottie from "react-lottie";
+// import Lottie from "react-lottie";
+import dynamic from "next/dynamic";
+const Lottie = dynamic(() => import("react-lottie"), {
+  ssr: false,
+});
 
 interface IProps {
   type?: string;

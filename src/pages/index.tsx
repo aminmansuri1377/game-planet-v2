@@ -20,7 +20,10 @@ import { LuAlarmClock } from "react-icons/lu";
 import { useSession } from "next-auth/react";
 import { WithRole } from "@/components/auth/WithRole";
 import Divider from "@/components/ui/Divider";
-
+import dynamic from "next/dynamic";
+// const Loading = dynamic(() => import("@/components/ui/Loading"), {
+//   ssr: false,
+// });
 const WelcomePage = () => {
   const { t } = useTranslation();
   const router = useRouter();

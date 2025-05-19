@@ -10,11 +10,16 @@ import { RecoilRoot } from "recoil";
 import RecoilNexus from "recoil-nexus";
 import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
-
+import { useEffect } from "react";
 const MyApp: AppType = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  useEffect(() => {
+    // This will run only in the browser
+    console.log("document", document.title);
+  }, []);
+
   return (
     <RecoilRoot>
       <Toaster position="top-right" reverseOrder={false} />

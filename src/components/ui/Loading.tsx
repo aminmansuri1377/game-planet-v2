@@ -1,12 +1,16 @@
 import { memo, FC } from "react";
 import * as handLoading from "../../../public/lottie/handLoadingnew.json";
-import Lottie from "react-lottie";
+import dynamic from "next/dynamic";
+// import Lottie from "react-lottie";
+const Lottie = dynamic(() => import("react-lottie"), {
+  ssr: false,
+});
 
 interface IProps {
   type?: string;
 }
 
-const Spinner: FC<IProps> = ({ type }) => {
+const Loading: FC<IProps> = ({ type }) => {
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -19,4 +23,4 @@ const Spinner: FC<IProps> = ({ type }) => {
   );
 };
 
-export default memo(Spinner);
+export default memo(Loading);
