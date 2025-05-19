@@ -4,7 +4,7 @@ import Loading from "../../components/ui/Loading";
 import React, { useEffect, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useSession } from "next-auth/react";
-import dynamic from "next/dynamic";
+import Dynamic from "next/dynamic";
 import { useRecoilState } from "recoil";
 import { buyerLocationAtom } from "../../../store/atoms/buyerLocationAtom";
 import Header from "../../components/Header";
@@ -13,7 +13,11 @@ import ProductImg from "../../../public/images/p2.webp";
 import { MdOutlineDeleteForever } from "react-icons/md";
 
 import toast from "react-hot-toast";
+<<<<<<< HEAD
 const Map = dynamic(() => import("../../components/MyMap"), {
+=======
+const Map = Dynamic(() => import("../../components/MyMap"), {
+>>>>>>> 12ee0f2f7e50d722364be51ee7dee69ba63f87e5
   ssr: false,
 });
 
