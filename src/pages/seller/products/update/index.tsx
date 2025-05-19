@@ -52,7 +52,7 @@ function UpdateProductForm() {
     trpc.main.getProductById.useQuery({ id: Number(id) }, { enabled: !!id });
 
   // Fetch categories and guaranties
-  const { data: categoryData } = trpc.main.getCategories.useQuery();
+  const { data: categoryData } = trpc.category.getCategories.useQuery();
   const { data: guarantyData } = trpc.main.getGuaranty.useQuery();
 
   const {

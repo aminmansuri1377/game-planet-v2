@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverExternalPackages: ["@prisma/client"], // Moved from experimental
+    // serverExternalPackages: ["@prisma/client"],
   },
   typescript: {
     // !! WARN !!

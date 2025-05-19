@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react";
-import Dynamic from "next/dynamic";
+import dynamic from "next/dynamic";
 import React, { useState } from "react";
 import { trpc } from "../../../utils/trpc";
 import ToastContent from "@/components/ui/ToastContent";
@@ -12,7 +12,7 @@ import RoundButton from "@/components/ui/RoundButton";
 import { MdOutlineAddLocationAlt } from "react-icons/md";
 import CustomButton from "@/components/ui/CustomButton";
 
-const Map = Dynamic(() => import("@/components/MyMap"), {
+const Map = dynamic(() => import("@/components/MyMap"), {
   ssr: false,
 });
 function MyAddresses() {
