@@ -41,17 +41,13 @@ export default function CategoryManagementPage() {
   console.log("session", session);
   // Queries
   const { data: categories, refetch: refetchCategories } =
-<<<<<<< HEAD
-    trpc.category.getCategories.useQuery();
-=======
     trpc.main.getCategories.useQuery();
->>>>>>> 12ee0f2f7e50d722364be51ee7dee69ba63f87e5
   const { data: guarantees, refetch: refetchGuarantees } =
     trpc.main.getGuaranty.useQuery();
 
   // Mutations
   const { t } = useTranslation();
-  const createCategory = trpc.category.createCategory.useMutation({
+  const createCategory = trpc.main.createCategory.useMutation({
     onSuccess: () => {
       toast.custom(
         <ToastContent type="success" message="دسته بندی با موفقیت ایجاد شد!" />
@@ -65,11 +61,7 @@ export default function CategoryManagementPage() {
     },
   });
 
-<<<<<<< HEAD
-  const deleteCategory = trpc.category.deleteCategory.useMutation({
-=======
   const deleteCategory = trpc.main.deleteCategory.useMutation({
->>>>>>> 12ee0f2f7e50d722364be51ee7dee69ba63f87e5
     onSuccess: () => {
       toast.custom(
         <ToastContent type="success" message="دسته بندی با موفقیت ایجاد شد!" />

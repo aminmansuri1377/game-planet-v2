@@ -23,7 +23,6 @@ import { signIn } from "next-auth/react";
 import CustomModal from "../ui/CustomModal";
 import SellerRules from "./SellerRules";
 import BuyerRules from "./BuyerRules";
-import toast from "react-hot-toast";
 
 interface AuthFormProps {
   userType: "seller" | "buyer";
@@ -77,7 +76,7 @@ const AuthForm = ({ userType, formType }: AuthFormProps) => {
 
         if (response.ok) {
           toast.custom(
-            <ToastContent type="success" message="کاربر با موفقیت ایجاد شد!" />
+            <ToastContent type="success" message="User created successfully!" />
           );
           router.push(`${userType === "seller" ? "/seller" : ""}/signIn`);
         } else {
@@ -85,7 +84,7 @@ const AuthForm = ({ userType, formType }: AuthFormProps) => {
           toast.custom(
             <ToastContent
               type="error"
-              message={errorData.message || "خطا در ثبت نام"}
+              message={errorData.message || "Failed to sign up"}
             />
           );
         }
@@ -108,7 +107,7 @@ const AuthForm = ({ userType, formType }: AuthFormProps) => {
         }
       }
     } catch (error) {
-      toast.custom(<ToastContent type="error" message="خطایی بوجود آمده" />);
+      toast.custom(<ToastContent type="error" message="Unexpected error" />);
     } finally {
       setIsLoading(false);
     }
