@@ -69,7 +69,7 @@ export const ChatComponent = ({
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [chatRoomId, refetch]);
+  }, [chatRoomId, refetch, supabase]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

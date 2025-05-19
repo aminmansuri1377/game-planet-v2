@@ -71,7 +71,7 @@ const ChatRoomPage = () => {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [chatroomId, refetch]);
+  }, [chatroomId, refetch, supabase]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
