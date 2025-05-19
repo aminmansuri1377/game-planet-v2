@@ -31,7 +31,7 @@ const nextConfig = {
       },
     ],
   },
-  runtime: "nodejs",
+  // runtime: "nodejs",
 };
 
 export default nextConfig;

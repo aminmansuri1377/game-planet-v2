@@ -108,7 +108,7 @@ function BuyersPage() {
                     <tr key={buyer.id} className="border-b hover:bg-gray-50">
                       <td className="p-2 text-right">
                         <Link
-                          href={`/dashboard/singleBuyer/${buyer.id}`}
+                          href={`/dashboard/singleBuyer?userId=${buyer.id}`}
                           className="text-blue-600 hover:underline"
                         >
                           {buyer.phone}
