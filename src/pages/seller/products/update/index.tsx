@@ -4,7 +4,7 @@ import { trpc } from "../../../../../utils/trpc";
 import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import dynamic from "next/dynamic";
+import Dynamic from "next/dynamic";
 import { Input } from "@/components/ui/input";
 import Uploader from "@/components/uploader/Uploader";
 import CustomButton from "@/components/ui/CustomButton";
@@ -15,7 +15,7 @@ import { FiEdit } from "react-icons/fi";
 import { WithRole } from "@/components/auth/WithRole";
 import Loading from "@/components/ui/Loading";
 
-const Map = dynamic(() => import("@/components/MyMap"), {
+const Map = Dynamic(() => import("@/components/MyMap"), {
   ssr: false,
 });
 
@@ -34,7 +34,7 @@ type ProductInput = {
   address?: string;
 };
 
-export default function UpdateProductForm() {
+function UpdateProductForm() {
   const router = useRouter();
   const { id } = router.query;
   const { data: session } = useSession();
@@ -151,11 +151,11 @@ export default function UpdateProductForm() {
 
   const updateProduct = trpc.main.updateProduct.useMutation({
     onSuccess: () => {
-      toast.success("Product updated successfully!");
+      toast.success("محصول با موفقیت بروزرسانی شد!");
       router.push("/seller/products");
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to update product");
+      toast.error(err.message || "خطایی در بروزرسانی بوجود آمده");
     },
   });
 
@@ -183,13 +183,13 @@ export default function UpdateProductForm() {
   };
 
   // if (isProductLoading) return <div>Loading...</div>;
-  if (!product) return <div>Product not found</div>;
+  if (!product) return <div className=" font-PeydaBlack">محصول یافت نشد</div>;
 
   return (
     <WithRole allowedRoles={["seller"]}>
       <div>
         <HeadOfPages
-          title="Update Product"
+          title="بروزرسانی مشخصات محصول"
           back={
             <div onClick={() => router.back()} className="m-5">
               <FaArrowLeftLong />
@@ -214,15 +214,15 @@ export default function UpdateProductForm() {
             onSubmit={handleSubmit(onSubmit)}
             className="mx-auto text-center mt-8"
           >
-            <h1 className="font-PeydaRegular text-lg">
+            {/* <h1 className="font-PeydaRegular text-lg">
               Update your product information
-            </h1>
+            </h1> */}
 
             {/* Product Name */}
             <Input
               className="py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
               type="text"
-              placeholder="Product Name"
+              placeholder="نام محصول"
               {...register("name", { required: true })}
             />
 
@@ -230,7 +230,7 @@ export default function UpdateProductForm() {
             <Input
               className="py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
               type="text"
-              placeholder="Description"
+              placeholder="توضیحات"
               {...register("description", { required: true })}
             />
 
@@ -238,7 +238,7 @@ export default function UpdateProductForm() {
             <Input
               className="py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
               type="number"
-              placeholder="Price"
+              placeholder="قیمت"
               {...register("price", { required: true, valueAsNumber: true })}
             />
 
@@ -246,7 +246,7 @@ export default function UpdateProductForm() {
             <Input
               className="py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
               type="number"
-              placeholder="Inventory"
+              placeholder="موجودی"
               {...register("inventory", {
                 required: true,
                 valueAsNumber: true,
@@ -257,26 +257,26 @@ export default function UpdateProductForm() {
             <Input
               className="py-3 px-4 w-4/5 mx-auto my-2 text-end font-PeydaBold"
               type="text"
-              placeholder="Address"
+              placeholder="آدرس"
               {...register("address", { required: true })}
             />
 
             {/* Image Uploader */}
-            <Uploader
+            {/* <Uploader
               onUpload={(urls) => {
                 setImageUrls(urls);
                 setValue("images", urls, { shouldDirty: true });
               }}
               bucket="product-images"
               initialFiles={product.images as string[] | undefined}
-            />
+            /> */}
 
             {/* City Search */}
             <div className="w-4/5 mx-auto my-2 text-end relative mb-10">
-              <label className="block font-PeydaBold text-sm mb-2">City</label>
+              <label className="block font-PeydaBold text-sm mb-2">شهر</label>
               <input
                 type="text"
-                placeholder="Search for a city"
+                placeholder="جستجوی شهر"
                 value={cityQuery}
                 onChange={(e) => handleCitySearch(e.target.value)}
                 className="py-3 px-4 w-full mx-auto my-2 text-end font-PeydaBold rounded-full bg-gradient-to-r from-gra-100 to-gra-200"
@@ -305,7 +305,7 @@ export default function UpdateProductForm() {
               })}
             >
               <option className="bg-primary" value="">
-                Select a category
+                دسته بندی
               </option>
               {categoryData?.map((category) => (
                 <option
@@ -328,7 +328,7 @@ export default function UpdateProductForm() {
               })}
             >
               <option className="bg-primary" value="">
-                Select a guaranty
+                نوع ضمانت
               </option>
               {guarantyData?.map((guaranty) => (
                 <option
@@ -345,7 +345,7 @@ export default function UpdateProductForm() {
             {/* Sending Type */}
             <div className="w-4/5 mx-auto my-2 text-end">
               <label className="block font-PeydaBold text-sm mb-2">
-                Sending Type
+                نوع ارسال
               </label>
               <div className="space-y-2">
                 <label className="flex items-center space-x-2">
@@ -355,7 +355,7 @@ export default function UpdateProductForm() {
                     onChange={() => handleSendingTypeChange("SELLER_SENDS")}
                     className="form-checkbox"
                   />
-                  <span>Seller Sends</span>
+                  <span>براش میفرستم</span>
                 </label>
                 <label className="flex items-center space-x-2">
                   <input
@@ -364,7 +364,7 @@ export default function UpdateProductForm() {
                     onChange={() => handleSendingTypeChange("BUYER_PICKS_UP")}
                     className="form-checkbox"
                   />
-                  <span>Buyer Picks Up</span>
+                  <span>بیاد بگیره ازم</span>
                 </label>
               </div>
             </div>
@@ -372,7 +372,7 @@ export default function UpdateProductForm() {
             {/* Location Map */}
             <div className="w-4/5 mx-auto my-2 text-end">
               <label className="block font-PeydaBold text-sm mb-2">
-                Product Location
+                موقعیت مکانی محصول
               </label>
               <Map
                 position={position}
@@ -391,7 +391,7 @@ export default function UpdateProductForm() {
 
             {/* Submit Button */}
             <CustomButton
-              title="Update Product"
+              title="بروزرسانی"
               type="primary-btn"
               loading={updateProduct.isLoading}
               disabled={!isDirty && imageUrls.length === 0}
@@ -402,3 +402,6 @@ export default function UpdateProductForm() {
     </WithRole>
   );
 }
+//export const dynamic = "force-dynamic";
+
+export default UpdateProductForm;

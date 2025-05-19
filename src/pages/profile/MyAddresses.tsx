@@ -1,5 +1,5 @@
 import { useSession } from "next-auth/react";
-import dynamic from "next/dynamic";
+import Dynamic from "next/dynamic";
 import React, { useState } from "react";
 import { trpc } from "../../../utils/trpc";
 import ToastContent from "@/components/ui/ToastContent";
@@ -12,7 +12,7 @@ import RoundButton from "@/components/ui/RoundButton";
 import { MdOutlineAddLocationAlt } from "react-icons/md";
 import CustomButton from "@/components/ui/CustomButton";
 
-const Map = dynamic(() => import("@/components/MyMap"), {
+const Map = Dynamic(() => import("@/components/MyMap"), {
   ssr: false,
 });
 function MyAddresses() {
@@ -99,7 +99,7 @@ function MyAddresses() {
           </div>
         }
       />
-      <div className=" mt-14">
+      <div className=" mt-14 w-full">
         <div className="w-4/5 mx-auto my-2 text-end">
           <input
             type="text"
@@ -153,5 +153,6 @@ function MyAddresses() {
     </WithRole>
   );
 }
+//export const dynamic = "force-dynamic";
 
 export default MyAddresses;

@@ -41,7 +41,7 @@ type ProductInput = {
   savedLocationId?: number;
 };
 
-export default function CreateProductForm() {
+function CreateProductForm() {
   const prisma = new PrismaClient();
 
   const router = useRouter();
@@ -159,7 +159,7 @@ export default function CreateProductForm() {
         toast.custom(
           <ToastContent
             type="error"
-            message="Please select one of your saved locations"
+            message="لطفا موقعیت مکانی محصول را مشخص کنید"
           />
         );
         return;
@@ -176,7 +176,7 @@ export default function CreateProductForm() {
         toast.custom(
           <ToastContent
             type="error"
-            message="لطفا موقعیت مکانی محصول را وارد کنید"
+            message="لطفا موقعیت مکانی محصول را در صفحه قبل مشخص کنید"
           />
         );
         return;
@@ -497,3 +497,5 @@ export default function CreateProductForm() {
     </WithRole>
   );
 }
+// //export const dynamic = "force-dynamic";
+export default CreateProductForm;

@@ -35,5 +35,6 @@ const SupportChatRoom = () => {
     </div>
   );
 };
+//export const dynamic = "force-dynamic";
 
 export default SupportChatRoom;

@@ -15,7 +15,7 @@ function ProductCard({
 }) {
   // console.log("distance", distance);
   return (
-    <div className="rounded-xl bg-cardbg my-4 ">
+    <div className="rounded-xl bg-cardbg my-4 h-full ">
       <div className="relative">
         <Image
           src={imgUrl}

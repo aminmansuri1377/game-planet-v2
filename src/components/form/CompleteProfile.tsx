@@ -86,7 +86,7 @@ const CompleteProfile = ({ userId, userType }: CompleteProfileProps) => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 rounded-lg shadow-md">
+    <div className="max-w-md mx-auto p-6 rounded-lg shadow-md mt-20">
       <h1 className="text-2xl font-bold mb-6 font-PeydaBold">
         تکمیل حساب کاربری
       </h1>
@@ -145,6 +145,7 @@ const CompleteProfile = ({ userId, userType }: CompleteProfileProps) => {
             loading={isLoading}
             className="w-full"
             title="تایید"
+            disabled={!imageUrls}
           />
         </form>
       </Form>

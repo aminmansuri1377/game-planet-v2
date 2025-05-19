@@ -51,7 +51,9 @@ const ManagerSupportHistoryPage = () => {
               </p>
               <button
                 onClick={() =>
-                  router.push(`/dashboard/support/${ticket.chatRoomSupportId}`)
+                  router.push(
+                    `/dashboard/support/chatRoom?chatRoomId=${ticket.chatRoomSupportId}`
+                  )
                 }
                 className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
               >
@@ -64,5 +66,6 @@ const ManagerSupportHistoryPage = () => {
     </WithRole>
   );
 };
+//export const dynamic = "force-dynamic";
 
 export default ManagerSupportHistoryPage;

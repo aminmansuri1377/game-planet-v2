@@ -204,5 +204,6 @@ function Setting() {
     </WithRole>
   );
 }
+//export const dynamic = "force-dynamic";
 
 export default Setting;

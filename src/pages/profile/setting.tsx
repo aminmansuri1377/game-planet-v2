@@ -167,7 +167,7 @@ function Setting() {
                     />
                     <div className="flex gap-2">
                       <CustomButton
-                        title="ذخیره"
+                        title="ذخیرiiiiه"
                         type="primary-btn"
                         onClick={onSubmit}
                         loading={isLoading}
@@ -204,5 +204,6 @@ function Setting() {
     </WithRole>
   );
 }
+//export const dynamic = "force-dynamic";
 
 export default Setting;

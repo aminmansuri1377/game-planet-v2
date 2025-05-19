@@ -55,7 +55,11 @@ const SupportHistoryPage = () => {
           <p>چت پشتیانی: {ticket.chatRoomSupportId}</p>
           <p>وضعیت: {ticket.status}</p>
           <CustomButton
-            onClick={() => router.push(`/support/${ticket.chatRoomSupportId}`)}
+            onClick={() =>
+              router.push(
+                `/support/chatRoom?chatRoomId=${ticket.chatRoomSupportId}`
+              )
+            }
             disabled={ticket.status === "بسته شده"}
             title={ticket.status === "CLOSED" ? "نمایش چت" : "ادامه چت"}
             type="secondary-btn"
@@ -65,5 +69,6 @@ const SupportHistoryPage = () => {
     </div>
   );
 };
+//export const dynamic = "force-dynamic";
 
 export default SupportHistoryPage;

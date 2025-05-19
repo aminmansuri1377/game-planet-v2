@@ -104,7 +104,7 @@ const SellerHomePage = () => {
           </div>
           {!isProfileComplete(seller) && (
             <CustomButton
-              title="completeProfile"
+              title="تکمیل پروفایل"
               type="primary-btn"
               onClick={() => router.push("/seller/completeProfile")}
               className=" text-center mx-auto my-5"
@@ -121,5 +121,6 @@ const SellerHomePage = () => {
     </WithRole>
   );
 };
+//export const dynamic = "force-dynamic";
 
 export default SellerHomePage;

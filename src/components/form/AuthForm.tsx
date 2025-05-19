@@ -17,10 +17,13 @@ import { useRouter } from "next/router";
 import CustomButton from "../ui/CustomButton";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "react-hot-toast";
 import ToastContent from "../ui/ToastContent";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { signIn } from "next-auth/react";
+import CustomModal from "../ui/CustomModal";
+import SellerRules from "./SellerRules";
+import BuyerRules from "./BuyerRules";
+import toast from "react-hot-toast";
 
 interface AuthFormProps {
   userType: "seller" | "buyer";
@@ -31,6 +34,14 @@ const AuthForm = ({ userType, formType }: AuthFormProps) => {
   const router = useRouter();
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
+  const [acceptRules, setAcceptRules] = useState(false);
+  const [showRuleModal, setShowRuleModal] = useState(false);
+
+  // Define rules per user type
+  const rulesText = {
+    seller: <SellerRules />,
+    buyer: <BuyerRules />,
+  };
 
   const FormSchema = z.object({
     phone: z
@@ -51,6 +62,8 @@ const AuthForm = ({ userType, formType }: AuthFormProps) => {
   };
 
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
+    if (!acceptRules && formType === "signUp") return;
+
     setIsLoading(true);
     try {
       if (formType === "signUp") {
@@ -64,7 +77,7 @@ const AuthForm = ({ userType, formType }: AuthFormProps) => {
 
         if (response.ok) {
           toast.custom(
-            <ToastContent type="success" message="User created successfully!" />
+            <ToastContent type="success" message="کاربر با موفقیت ایجاد شد!" />
           );
           router.push(`${userType === "seller" ? "/seller" : ""}/signIn`);
         } else {
@@ -72,7 +85,7 @@ const AuthForm = ({ userType, formType }: AuthFormProps) => {
           toast.custom(
             <ToastContent
               type="error"
-              message={errorData.message || "Failed to sign up"}
+              message={errorData.message || "خطا در ثبت نام"}
             />
           );
         }
@@ -95,7 +108,7 @@ const AuthForm = ({ userType, formType }: AuthFormProps) => {
         }
       }
     } catch (error) {
-      toast.custom(<ToastContent type="error" message="Unexpected error" />);
+      toast.custom(<ToastContent type="error" message="خطایی بوجود آمده" />);
     } finally {
       setIsLoading(false);
     }
@@ -103,13 +116,14 @@ const AuthForm = ({ userType, formType }: AuthFormProps) => {
 
   return (
     <div>
-      <div onClick={handleBack} className="mt-8">
+      <div onClick={handleBack} className="mt-8 cursor-pointer">
         <FaArrowLeftLong />
       </div>
-      <div className="content-center min-h-screen ">
-        <div className=" bg-cardbg px-8 pb-24 pt-10 rounded-xl  ">
+
+      <div className="content-center min-h-screen">
+        <div className="bg-cardbg px-8 pb-24 pt-10 rounded-xl">
           <Form {...form}>
-            <h1 className=" font-PeydaBlack text-text2 text-center my-5">
+            <h1 className="font-PeydaBlack text-text2 text-center my-5">
               {formType === "signUp" ? "ثبت نام" : "ورود"}
             </h1>
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
@@ -131,16 +145,56 @@ const AuthForm = ({ userType, formType }: AuthFormProps) => {
                   )}
                 />
               </div>
+
+              {/* Accept Terms Checkbox - Only for SignUp */}
+              {formType === "signUp" && (
+                <div className="flex items-start mt-4 font-PeydaMedium text-sm text-white space-x-2 space-x-reverse">
+                  <label className=" mx-2">
+                    من قوانین را میپذیرم{" "}
+                    <span
+                      className="text-blue-500 underline cursor-pointer"
+                      onClick={() => setShowRuleModal(true)}
+                    >
+                      مشاهده قوانین
+                    </span>
+                  </label>
+                  <input
+                    type="checkbox"
+                    id="acceptRules"
+                    checked={acceptRules}
+                    onChange={(e) => setAcceptRules(e.target.checked)}
+                    className="mt-1"
+                  />
+                </div>
+              )}
+
               <CustomButton
                 className="w-full mt-6"
                 type="primary-btn"
                 title={formType === "signUp" ? "ثبت نام" : "ورود"}
                 loading={isLoading}
-              ></CustomButton>
+                disabled={formType === "signUp" && !acceptRules}
+              />
+
+              <CustomModal
+                show={showRuleModal}
+                onClose={() => setShowRuleModal(false)}
+                type="general"
+              >
+                <h3 className="text-lg mb-4 font-PeydaBold">
+                  قوانین{" "}
+                  {userType === "seller" ? "اجاره دهنده" : "اجاره گیرنده"}
+                </h3>
+                <p className="text-right whitespace-pre-line">
+                  {rulesText[userType]}
+                </p>
+              </CustomModal>
             </form>
+
             <div className="mx-auto my-4 flex w-full items-center justify-evenly before:mr-4 before:block before:h-px before:flex-grow before:bg-stone-400 after:ml-4 after:block after:h-px after:flex-grow after:bg-stone-400">
               یا
             </div>
+
             <p className="text-center text-sm text-white mt-2 font-PeydaRegular">
               {t(
                 `rent.${formType === "signUp" ? "loginPrompt" : "signUpPrompt"}`

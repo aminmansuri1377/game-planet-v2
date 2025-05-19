@@ -42,7 +42,7 @@ const WelcomePage = () => {
   };
   console.log("first", session);
   const handleCategoryClick = (categoryId: number) => {
-    router.push(`/categories/${categoryId}`);
+    router.push(`/categories?id=${categoryId}`);
   };
 
   const sellerSignUp = () => {
@@ -58,7 +58,7 @@ const WelcomePage = () => {
     router.push("/signIn");
   };
   // if (isCategoriesLoading) return <Loading />;
-  if (categoriesError) return <p>Error: {categoriesError.message}</p>;
+  // if (categoriesError) return <p>Error: {categoriesError.message}</p>;
 
   return (
     <div className="text-center min-h-screen px-3">
@@ -131,26 +131,32 @@ const WelcomePage = () => {
         </div>
 
         {/* Categories */}
-        {isCategoriesLoading ? (
-          <Loading />
+        {categoriesError ? (
+          <p className=" mx-auto">Error: {categoriesError?.message}</p>
         ) : (
-          <div className="grid grid-cols-3 md:grid-cols-5 gap-2 mb-8">
-            <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} />
-            <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} />
-            <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} />
-            {categories
-              ? categories.map((category) => (
-                  <div
-                    key={category.id}
-                    onClick={() => handleCategoryClick(category.id)}
-                  >
-                    <CategoryCart
-                      text={category.name}
-                      Icon={GiConsoleController}
-                    />
-                  </div>
-                ))
-              : ""}
+          <div>
+            {isCategoriesLoading ? (
+              <Loading />
+            ) : (
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-2 mb-8">
+                {/* <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} />
+                <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} />
+                <CategoryCart text="فیلم برداری" Icon={ImVideoCamera} /> */}
+                {categories
+                  ? categories.map((category) => (
+                      <div
+                        key={category.id}
+                        onClick={() => handleCategoryClick(category.id)}
+                      >
+                        <CategoryCart
+                          text={category.name}
+                          Icon={category.icon ? category.icon : undefined}
+                        />
+                      </div>
+                    ))
+                  : ""}
+              </div>
+            )}
           </div>
         )}
         <h1 className="font-PeydaBlack text-center mt-10 text-2xl">
@@ -182,5 +188,6 @@ const WelcomePage = () => {
     </div>
   );
 };
+//export const dynamic = "force-dynamic";
 
 export default WelcomePage;

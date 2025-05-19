@@ -253,6 +253,31 @@ export const gameRouter = router({
   getSellers: procedure.query(async () => {
     return await prisma.seller.findMany();
   }),
+  getBuyersByPhone: procedure
+    .input(z.object({ phone: z.string() }))
+    .query(async ({ input }) => {
+      return await prisma.buyer.findMany({
+        where: {
+          phone: {
+            contains: input.phone, // Partial match
+            mode: "insensitive", // Case insensitive
+          },
+        },
+      });
+    }),
+  // In your gameRouter or buyerRouter file
+  getSellersByPhone: procedure
+    .input(z.object({ phone: z.string() }))
+    .query(async ({ input }) => {
+      return await prisma.seller.findMany({
+        where: {
+          phone: {
+            contains: input.phone, // Partial match
+            mode: "insensitive", // Case insensitive
+          },
+        },
+      });
+    }),
   // server/routers/productRouter.ts
   createProduct: procedure
     .input(
@@ -298,19 +323,29 @@ export const gameRouter = router({
       z.object({
         categoryId: z.number(),
         sortByPrice: z.boolean().optional(),
-        city: z.string().optional(), // Add city filter
+        city: z.string().optional(),
       })
     )
     .query(async ({ input }) => {
-      return await prisma.product.findMany({
-        where: {
-          categoryId: input.categoryId,
-          city: input.city
-            ? { contains: input.city, mode: "insensitive" }
-            : undefined, // Filter by city
-        },
-        orderBy: input.sortByPrice ? { price: "asc" } : undefined,
-      });
+      try {
+        return await prisma.product.findMany({
+          where: {
+            categoryId: input.categoryId,
+            city: input.city
+              ? { contains: input.city, mode: "insensitive" }
+              : undefined,
+          },
+          include: {
+            category: true,
+            seller: true,
+            guaranty: true,
+          },
+          orderBy: input.sortByPrice ? { price: "asc" } : undefined,
+        });
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        throw new Error("Failed to fetch products");
+      }
     }),
 
   searchProducts: procedure
@@ -483,31 +518,84 @@ export const gameRouter = router({
     }),
   // Get orders for a seller (for SELLER or APP_MANAGER)
   getSellerOrders: procedure
-    .input(z.object({ sellerId: z.number() }))
+    .input(
+      z.object({
+        sellerId: z.number(),
+        phone: z.string().optional(),
+      })
+    )
     .query(async ({ input }) => {
       return await prisma.order.findMany({
         where: {
           sellerId: input.sellerId,
+          ...(input.phone && {
+            user: {
+              phone: {
+                contains: input.phone,
+                mode: "insensitive",
+              },
+            },
+          }),
         },
         include: {
-          user: true, // Include buyer details
-          product: true, // Include product details
+          user: true,
+          product: true,
+        },
+      });
+    }),
+  getSellerOrdersSearch: procedure
+    .input(
+      z.object({
+        sellerId: z.number(),
+        phone: z.string().optional(), // Add optional phone search
+      })
+    )
+    .query(async ({ input }) => {
+      return await prisma.order.findMany({
+        where: {
+          sellerId: input.sellerId,
+          // Add phone search condition if provided
+          ...(input.phone && {
+            user: {
+              phone: {
+                contains: input.phone,
+                mode: "insensitive", // Case insensitive search
+              },
+            },
+          }),
+        },
+        include: {
+          user: true,
+          product: true,
         },
       });
     }),
   getOrders: procedure
     .input(
       z.object({
-        userId: z.number(), // Buyer's user ID
+        userId: z.number(),
+        productName: z.string().optional(), // Add optional product name search
       })
     )
     .query(async ({ input }) => {
       return await prisma.order.findMany({
         where: {
-          userId: input.userId, // Filter orders by the buyer's ID
+          userId: input.userId,
+          ...(input.productName && {
+            // Add product name filter if provided
+            product: {
+              name: {
+                contains: input.productName,
+                mode: "insensitive", // Case insensitive search
+              },
+            },
+          }),
         },
         include: {
-          product: true, // Include product details
+          product: true,
+        },
+        orderBy: {
+          createdAt: "desc", // Default to newest first
         },
       });
     }),
@@ -588,14 +676,38 @@ export const gameRouter = router({
     }),
 
   // Get all orders (for APP_MANAGER)
-  getAllOrders: procedure.query(async () => {
-    return await prisma.order.findMany({
-      include: {
-        user: true, // Include buyer details
-        product: true, // Include product details
-      },
-    });
-  }),
+  // getAllOrders: procedure.query(async () => {
+  //   return await prisma.order.findMany({
+  //     include: {
+  //       user: true, // Include buyer details
+  //       product: true, // Include product details
+  //     },
+  //   });
+  // }),
+  getAllOrders: procedure
+    .input(
+      z.object({
+        phone: z.string().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await prisma.order.findMany({
+        where: {
+          ...(input.phone && {
+            user: {
+              phone: {
+                contains: input.phone,
+                mode: "insensitive",
+              },
+            },
+          }),
+        },
+        include: {
+          user: true,
+          product: true,
+        },
+      });
+    }),
   deleteProduct: procedure
     .input(
       z.object({
@@ -620,11 +732,17 @@ export const gameRouter = router({
     }),
   ///////////////category
   createCategory: procedure
-    .input(z.object({ name: z.string() }))
+    .input(
+      z.object({
+        name: z.string(),
+        icon: z.string().optional(), // Base64 encoded SVG or filename
+      })
+    )
     .mutation(async ({ input }) => {
       return await prisma.category.create({
         data: {
           name: input.name,
+          icon: input.icon, // Store the SVG data or filename
         },
       });
     }),
@@ -655,6 +773,21 @@ export const gameRouter = router({
   getGuaranty: procedure.query(async () => {
     return await prisma.guaranty.findMany();
   }),
+  deleteCategory: procedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      return await prisma.category.delete({
+        where: { id: input.id },
+      });
+    }),
+
+  deleteGuaranty: procedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      return await prisma.guaranty.delete({
+        where: { id: input.id },
+      });
+    }),
   getProductNames: procedure
     .input(
       z.object({

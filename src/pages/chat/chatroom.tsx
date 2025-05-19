@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { trpc } from "../../../../utils/trpc";
+import { trpc } from "../../../utils/trpc";
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useRef, useState } from "react";
 import { FaArrowLeftLong, FaPaperPlane } from "react-icons/fa6";
@@ -8,23 +8,26 @@ import Image from "next/image";
 import { ImageUploadButton } from "@/components/Chat/ImageUploadButton";
 import { MessageBubble } from "@/components/Chat/MessageBubble";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 const ChatRoomPage = () => {
   const router = useRouter();
-  const { chatroomId, buyerId } = router.query;
+  const { chatroomId, sellerId } = router.query;
   const { data: session } = useSession();
-  const numericBuyerId = buyerId ? Number(buyerId) : null;
-
+  const numericSellerId = sellerId ? Number(sellerId) : null;
   const [message, setMessage] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
+  const getSupabaseClient = () => {
+    return createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+  };
 
+  // Then use it inside your component
+  const supabase = getSupabaseClient();
+  console.log("chatroomId", chatroomId);
   const { data: messages, refetch } = trpc.main.getMessages.useQuery(
     { chatRoomId: Number(chatroomId) },
     {
@@ -33,9 +36,9 @@ const ChatRoomPage = () => {
     }
   );
 
-  const { data: buyer } = trpc.main.getBuyerById.useQuery(
-    { userId: numericBuyerId! },
-    { enabled: !!numericBuyerId }
+  const { data: seller } = trpc.main.getSellerById.useQuery(
+    { userId: numericSellerId! },
+    { enabled: !!numericSellerId }
   );
 
   const sendMessage = trpc.main.sendMessage.useMutation({
@@ -115,7 +118,7 @@ const ChatRoomPage = () => {
     await sendMessage.mutateAsync({
       chatRoomId: Number(chatroomId),
       content: message || (imageFile ? "Sent an image" : ""),
-      senderType: "SELLER",
+      senderType: "BUYER",
       senderId: userId!,
       imageUrl: imageUrl || undefined,
     });
@@ -127,20 +130,20 @@ const ChatRoomPage = () => {
       <div onClick={() => router.back()} className="m-5">
         <FaArrowLeftLong />
       </div>
-      <div className="text-center">
-        {buyer && (
+      <div className="text-center my-5">
+        {seller && (
           <div className="flex gap-3 justify-center items-center">
-            {buyer?.profileImage && (
+            {seller?.profileImage && (
               <Image
-                src={buyer?.profileImage[0] || "/default-profile.png"}
-                alt={buyer?.firstName || "Buyer"}
+                src={seller?.profileImage[0] || "/default-profile.png"}
+                alt={seller?.firstName || "Seller"}
                 width={40}
                 height={40}
                 className="rounded-full"
               />
             )}
             <h1 className="text-lg font-medium">
-              {buyer.firstName} {buyer.lastName}
+              {seller.firstName} {seller.lastName}
             </h1>
           </div>
         )}
@@ -151,7 +154,7 @@ const ChatRoomPage = () => {
           <div
             key={msg.id}
             className={`mb-4 flex ${
-              msg.senderType === "SELLER" && msg.senderId === userId
+              msg.senderType === "BUYER" && msg.senderId === userId
                 ? "justify-end"
                 : "justify-start"
             }`}
@@ -160,7 +163,7 @@ const ChatRoomPage = () => {
               content={msg.content}
               imageUrl={msg.imageUrl || undefined}
               isCurrentUser={
-                msg.senderType === "SELLER" && msg.senderId === userId
+                msg.senderType === "BUYER" && msg.senderId === userId
               }
             />
           </div>
@@ -212,5 +215,6 @@ const ChatRoomPage = () => {
     </div>
   );
 };
+//export const dynamic = "force-dynamic";
 
 export default ChatRoomPage;

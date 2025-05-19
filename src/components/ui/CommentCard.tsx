@@ -1,5 +1,6 @@
 import Image from "next/image";
 import React from "react";
+import { MdOutlineDeleteForever } from "react-icons/md";
 
 function CommentCard({ comments, buyerId, handleDelete, loading }) {
   return (
@@ -36,7 +37,7 @@ function CommentCard({ comments, buyerId, handleDelete, loading }) {
                   className="mt-2 px-2 py-1 bg-red-500 text-white rounded text-sm"
                   disabled={loading}
                 >
-                  {loading ? "Deleting..." : "Delete"}
+                  {loading ? "..." : <MdOutlineDeleteForever size={10} />}
                 </button>
               )}
             </div>

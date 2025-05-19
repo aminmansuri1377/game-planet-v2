@@ -29,7 +29,7 @@ type ProductInput = {
   packages?: PackageInput[];
 };
 
-export default function UpdateProductForm() {
+function UpdateProductForm() {
   const router = useRouter();
   const handleBack = () => {
     router.back();
@@ -302,3 +302,6 @@ export default function UpdateProductForm() {
     </div>
   );
 }
+//export const dynamic = "force-dynamic";
+
+export default UpdateProductForm;

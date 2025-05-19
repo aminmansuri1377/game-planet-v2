@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    serverExternalPackages: ["@prisma/client"], // Moved from experimental
+  },
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if
@@ -24,9 +27,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "ybkqlbrfanevwwmeykpr.supabase.co",
         port: "",
+        // pathname: "/storage/v1/object/public/**",
       },
     ],
   },
+  runtime: "nodejs",
 };
 
 export default nextConfig;

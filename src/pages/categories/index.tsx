@@ -1,21 +1,19 @@
 import { useRouter } from "next/router";
 import { trpc } from "../../../utils/trpc";
 import Loading from "../../components/ui/Loading";
-import DeviceCard from "../../components/ui/DeviceCard";
 import React, { useEffect, useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useSession } from "next-auth/react";
-import dynamic from "next/dynamic";
+import Dynamic from "next/dynamic";
 import { useRecoilState } from "recoil";
 import { buyerLocationAtom } from "../../../store/atoms/buyerLocationAtom";
-import Header from "@/components/Header";
-import ProductCard from "@/components/ui/ProductCard";
+import Header from "../../components/Header";
+import ProductCard from "../../components/ui/ProductCard";
 import ProductImg from "../../../public/images/p2.webp";
-import { PiCityDuotone } from "react-icons/pi";
 import { MdOutlineDeleteForever } from "react-icons/md";
 
 import toast from "react-hot-toast";
-const Map = dynamic(() => import("@/components/MyMap"), {
+const Map = Dynamic(() => import("../../components/MyMap"), {
   ssr: false,
 });
 
@@ -47,7 +45,7 @@ const CategoryProductsPage = () => {
   const buyerId = session?.user?.id ? parseInt(session.user.id, 10) : null;
   const [buyerLocation, setBuyerLocation] = useRecoilState(buyerLocationAtom);
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
-  const [position, setPosition] = useState([35.6892, 51.389]);
+  const [position, setPosition] = useState<[number, number]>([35.6892, 51.389]);
   const [sortByPrice, setSortByPrice] = useState(false); // State for sorting by price
   const [sortByNearest, setSortByNearest] = useState(false); // State for sorting by nearest
   const utils = trpc.useUtils();
@@ -61,16 +59,23 @@ const CategoryProductsPage = () => {
   const [selectedCity, setSelectedCity] = useState(""); // State for selected city
   const [cities, setCities] = useState<{ id: number; name: string }[]>([]); // State for all cities
   const [filteredCities, setFilteredCities] = useState<
-    { id: number; name: string }[]
-  >([]); // State for filtered cities
+    Array<{ id: number; name: string }>
+  >([]);
 
   // Load cities from JSON file
   useEffect(() => {
-    fetch("/data/iran-cities.json")
-      .then((response) => response.json())
-      .then((data) => {
+    const fetchCities = async () => {
+      try {
+        const response = await fetch("/data/iran-cities.json");
+        if (!response.ok) throw new Error("Failed to fetch cities");
+        const data = await response.json();
         setCities(data);
-      });
+      } catch (error) {
+        console.error("Error loading cities:", error);
+        setCities([]);
+      }
+    };
+    void fetchCities();
   }, []);
   useEffect(() => {
     if (cityQuery) {
@@ -179,32 +184,38 @@ const CategoryProductsPage = () => {
     }
   }, [coordinates, setBuyerLocation]);
 
-  const productLocations =
-    products &&
-    products.map((product) => ({
+  const productLocations = products
+    ?.map((product) => ({
       name: product.name,
-      coordinates: [product?.latitude, product?.longitude],
-    }));
+      coordinates:
+        product?.latitude && product?.longitude
+          ? ([product.latitude, product.longitude] as [number, number])
+          : null,
+    }))
+    .filter((loc) => loc.coordinates !== null);
 
   // Sort products by nearest location if sortByNearest is true
-  const sortedProducts =
-    sortByNearest && coordinates
-      ? products?.slice().sort((a, b) => {
-          const distanceA = haversineDistance(
-            coordinates[0],
-            coordinates[1],
-            a.latitude,
-            a.longitude
-          );
-          const distanceB = haversineDistance(
-            coordinates[0],
-            coordinates[1],
-            b.latitude,
-            b.longitude
-          );
-          return distanceA - distanceB;
-        })
-      : products;
+  const sortedProducts = React.useMemo(() => {
+    if (!sortByNearest || !coordinates || !products) return products;
+
+    return [...products].sort((a, b) => {
+      if (!a.latitude || !a.longitude || !b.latitude || !b.longitude) return 0;
+
+      const distanceA = haversineDistance(
+        coordinates[0],
+        coordinates[1],
+        a.latitude,
+        a.longitude
+      );
+      const distanceB = haversineDistance(
+        coordinates[0],
+        coordinates[1],
+        b.latitude,
+        b.longitude
+      );
+      return distanceA - distanceB;
+    });
+  }, [products, sortByNearest, coordinates]);
 
   // if (isLoading) return <Loading />;
   if (error) return <p>Error: {error.message}</p>;
@@ -291,38 +302,50 @@ const CategoryProductsPage = () => {
           <Loading />
         ) : (
           <div className="space-y-4 ">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-              {sortedProducts?.map((product) => {
-                const isSaved = savedProducts?.some(
-                  (sp) => sp.productId === product.id
-                );
-                const distance = coordinates
-                  ? haversineDistance(
-                      coordinates[0],
-                      coordinates[1],
-                      product?.latitude,
-                      product?.longitude
-                    )
-                  : null;
-                return (
-                  <div
-                    key={product.id}
-                    onClick={() => router.push(`/singleProduct/${product.id}`)}
-                  >
-                    <ProductCard
-                      imgUrl={product?.images ? product?.images[0] : ProductImg}
-                      imgAlt={product.name}
-                      name={product.name}
-                      price={`${product.price}`}
-                      handleSave={(e) => handleSave(product.id, e)} // Pass the event
-                      isSaved={isSaved}
-                      rate={8}
-                      distance={distance}
-                    />
-                  </div>
-                );
-              })}
-            </div>
+            {sortedProducts && sortedProducts?.length === 0 ? (
+              <div>
+                <h1 className=" font-PeydaBold mt-10 text-primary mx-auto text-center">
+                  هیچ محصولی یافت نشد
+                </h1>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                {sortedProducts?.map((product) => {
+                  const isSaved = savedProducts?.some(
+                    (sp) => sp.productId === product.id
+                  );
+                  const distance = coordinates
+                    ? haversineDistance(
+                        coordinates[0],
+                        coordinates[1],
+                        product?.latitude,
+                        product?.longitude
+                      )
+                    : null;
+                  return (
+                    <div
+                      key={product.id}
+                      onClick={() =>
+                        router.push(`/singleProduct/${product.id}`)
+                      }
+                    >
+                      <ProductCard
+                        imgUrl={
+                          product?.images ? product?.images[0] : ProductImg
+                        }
+                        imgAlt={product.name}
+                        name={product.name}
+                        price={`${product.price}`}
+                        handleSave={(e) => handleSave(product.id, e)} // Pass the event
+                        isSaved={isSaved}
+                        rate={8}
+                        distance={distance}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -16,5 +16,6 @@ function panel() {
     </div>
   );
 }
+//export const dynamic = "force-dynamic";
 
 export default panel;

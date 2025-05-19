@@ -162,5 +162,6 @@ function newDesign() {
     </div>
   );
 }
+//export const dynamic = "force-dynamic";
 
 export default newDesign;

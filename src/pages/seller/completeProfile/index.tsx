@@ -30,7 +30,7 @@ function Index() {
 
   return (
     <WithRole allowedRoles={["seller"]}>
-      <div>
+      <div className=" mt-10">
         <div onClick={handleBack}>
           <FaArrowLeftLong />
         </div>
@@ -39,5 +39,6 @@ function Index() {
     </WithRole>
   );
 }
+//export const dynamic = "force-dynamic";
 
 export default Index;
