@@ -326,7 +326,7 @@ const CategoryProductsPage = () => {
                     <div
                       key={product.id}
                       onClick={() =>
-                        router.push(`/singleProduct/${product.id}`)
+                        router.push(`/singleProduct?id=${product.id}`)
                       }
                     >
                       <ProductCard

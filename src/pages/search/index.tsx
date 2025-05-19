@@ -295,7 +295,7 @@ const SearchResultsPage = () => {
               return (
                 <div
                   key={product.id}
-                  onClick={() => router.push(`/singleProduct/${product.id}`)}
+                  onClick={() => router.push(`/singleProduct?id=${product.id}`)}
                 >
                   <ProductCard
                     imgUrl={product?.images ? product?.images[0] : ProductImg}

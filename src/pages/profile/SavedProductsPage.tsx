@@ -117,7 +117,9 @@ const SavedProductsPage = () => {
                 return (
                   <div
                     key={product.id}
-                    onClick={() => router.push(`/singleProduct/${product.id}`)}
+                    onClick={() =>
+                      router.push(`/singleProduct?id=${product.id}`)
+                    }
                     className=" grid grid-cols-2 gap-2"
                   >
                     <ProductCard
