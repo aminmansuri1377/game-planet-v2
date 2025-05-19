@@ -16,7 +16,13 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   reactStrictMode: true,
-
+  env: {
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    NEXT_PUBLIC_ADMINPASS: process.env.NEXT_PUBLIC_ADMINPASS,
+    DATABASE_URL: process.env.DATABASE_URL,
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  },
   i18n: {
     locales: ["en", "de", "es", "tr", "ar", "fa"], // Supported languages
     defaultLocale: "fa", // Default language
