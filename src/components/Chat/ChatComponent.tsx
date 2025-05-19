@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { trpc } from "../../../utils/trpc";
-import { createClient } from "@supabase/supabase-js";
+// import { createClient } from "@supabase/supabase-js";
 import { useRouter } from "next/router";
 import { FaPaperPlane } from "react-icons/fa6";
 import { ImageUploadButton } from "@/components/Chat/ImageUploadButton";
 import { MessageBubble } from "@/components/Chat/MessageBubble";
 import Image from "next/image";
+import { createSupabaseClient } from "../../../supabase/client";
 
 interface ChatComponentProps {
   chatRoomId: number;
@@ -23,15 +24,15 @@ export const ChatComponent = ({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const getSupabaseClient = () => {
-    return createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
-  };
+  // const getSupabaseClient = () => {
+  //   return createClient(
+  //     process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  //     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  //   );
+  // };
 
   // Then use it inside your component
-  const supabase = getSupabaseClient();
+  const supabase = createSupabaseClient();
   const { data: messages, refetch } = trpc.main.getSupportMessages.useQuery(
     { chatRoomId },
     {

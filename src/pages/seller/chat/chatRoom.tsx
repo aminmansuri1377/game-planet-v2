@@ -1,27 +1,28 @@
 import { useRouter } from "next/router";
 import { trpc } from "../../../../utils/trpc";
-import { createClient } from "@supabase/supabase-js";
+// import { createClient } from "@supabase/supabase-js";
 import { useEffect, useRef, useState } from "react";
 import { FaArrowLeftLong, FaPaperPlane } from "react-icons/fa6";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { ImageUploadButton } from "@/components/Chat/ImageUploadButton";
 import { MessageBubble } from "@/components/Chat/MessageBubble";
+import { createSupabaseClient } from "../../../../supabase/client";
 
 const ChatRoomPage = () => {
   const router = useRouter();
   const { chatroomId, buyerId } = router.query;
   const { data: session } = useSession();
   const numericBuyerId = buyerId ? Number(buyerId) : null;
-  const getSupabaseClient = () => {
-    return createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
-  };
+  // const getSupabaseClient = () => {
+  //   return createClient(
+  //     process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  //     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  //   );
+  // };
 
   // Then use it inside your component
-  const supabase = getSupabaseClient();
+  const supabase = createSupabaseClient();
   const [message, setMessage] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
