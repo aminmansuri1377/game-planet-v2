@@ -127,7 +127,7 @@ const WelcomePage = () => {
         </div>
         {/* Search Input */}
         <h1 className="font-PeydaBlack text-center mt-10 text-3xl">
-          دنبال چه چیزی میگردی ؟
+          دنبال چه چیزی میگردی ؟??
         </h1>
         <div className="my-4">
           <SearchBar />
