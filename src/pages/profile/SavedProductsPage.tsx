@@ -123,7 +123,7 @@ const SavedProductsPage = () => {
                     className=" grid grid-cols-2 gap-2"
                   >
                     <ProductCard
-                      imgUrl={ProductImg}
+                      imgUrl={product?.images ? product?.images[0] : ProductImg}
                       imgAlt={product.name}
                       name={product.name}
                       price={`شبی $${product.price} تومان`}

@@ -4,7 +4,11 @@ import { MdOutlineDeleteForever } from "react-icons/md";
 
 function CommentCard({ comments, buyerId, handleDelete, loading }) {
   return (
-    <div className="  mx-3 px-1 h-96 overflow-auto">
+    <div
+      className={`mx-3 px-1 ${
+        comments.length === 0 ? "h-2" : "h-96"
+      } overflow-auto`}
+    >
       {comments &&
         comments.map((comment) => (
           <div

@@ -415,7 +415,32 @@ export const gameRouter = router({
         },
       });
     }),
-
+  getSimilarProducts: procedure
+    .input(
+      z.object({
+        categoryId: z.number(),
+        city: z.string().optional(),
+        excludeProductId: z.number(), // To exclude the current product
+        limit: z.number().optional().default(4), // Limit number of similar products
+      })
+    )
+    .query(async ({ input }) => {
+      return await prisma.product.findMany({
+        where: {
+          categoryId: input.categoryId,
+          city: input.city
+            ? { contains: input.city, mode: "insensitive" }
+            : undefined,
+          id: { not: input.excludeProductId },
+        },
+        include: {
+          category: true,
+          seller: true,
+          guaranty: true,
+        },
+        take: input.limit,
+      });
+    }),
   // Update a product
   updateProduct: procedure
     .input(

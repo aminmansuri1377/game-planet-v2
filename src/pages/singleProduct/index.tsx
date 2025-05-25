@@ -20,6 +20,7 @@ import CommentsSection from "@/components/ui/CommentsSection";
 import { ProductDetails } from "@/components/ProductDetails";
 import { OrderModal } from "@/components/OrderModal";
 import { ProfileIncomplete } from "@/components/ProfileIncomplete";
+import SimilarProducts from "@/components/ui/SimilarProducts";
 
 function SingleProductPage() {
   const { t } = useTranslation();
@@ -27,6 +28,7 @@ function SingleProductPage() {
   const { id } = router.query;
   const { data: session, status } = useSession();
   const userId = session?.user?.id ? parseInt(session.user.id, 10) : null;
+  const utils = trpc.useUtils();
 
   // State management
   const [finalAmount, setFinalAmount] = useState<number>(1);
@@ -49,7 +51,73 @@ function SingleProductPage() {
     isLoading,
     error,
   } = trpc.main.getProductById.useQuery({ id: Number(id) }, { enabled: !!id });
+  const { data: similarProducts } = trpc.main.getSimilarProducts.useQuery(
+    {
+      categoryId: productData?.categoryId || 0,
+      city: productData?.city || undefined,
+      excludeProductId: Number(id) || 0,
+      limit: 4,
+    },
+    { enabled: !!productData && !!id }
+  );
+  const { data: savedProducts } = trpc.main.getSavedProducts.useQuery(
+    {
+      buyerId: userId,
+    },
+    {
+      enabled: !!userId, // Only fetch if buyerId is available
+    }
+  );
+  const saveProductMutation = trpc.main.saveProduct.useMutation({
+    onSuccess: () => {
+      toast.success("محصول ذخیره شد!");
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+  console.log("useridd", userId);
+  const unsaveProductMutation = trpc.main.unsaveProduct.useMutation({
+    onSuccess: () => {
+      toast.success("محصول از ذخیره ها حذف شد!");
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+  const handleSave = async (productId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!userId) return;
 
+    const isSaved = savedProducts?.some((sp) => sp.productId === productId);
+
+    // Optimistic update
+    utils.main.getSavedProducts.setData({ userId }, (old) => {
+      if (!old) return old;
+      return isSaved
+        ? old.filter((sp) => sp.productId !== productId)
+        : [
+            ...old,
+            {
+              userId,
+              productId,
+              product: similarProducts?.find((p) => p.id === productId),
+            },
+          ];
+    });
+
+    try {
+      if (isSaved) {
+        await unsaveProductMutation.mutateAsync({ buyerId: userId, productId });
+      } else {
+        await saveProductMutation.mutateAsync({ buyerId: userId, productId });
+      }
+    } catch (err) {
+      // Revert if error
+      utils.main.getSavedProducts.invalidate({ buyerId: userId });
+      console.error(err);
+    }
+  };
   // Mutations
   const createOrderMutation = trpc.main.createOrder.useMutation({
     onSuccess: () => {
@@ -277,6 +345,13 @@ function SingleProductPage() {
             <CommentsSection productId={productData.id} buyerId={userId} />
           )}
         </div>
+        {similarProducts && similarProducts.length > 0 && (
+          <SimilarProducts
+            products={similarProducts}
+            onProductClick={(id) => router.push(`/singleProduct?id=${id}`)}
+            onSave={handleSave}
+          />
+        )}
       </div>
     </WithRole>
   );

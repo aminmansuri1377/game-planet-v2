@@ -21,6 +21,7 @@ import Divider from "./ui/Divider";
 import { useResetRecoilState } from "recoil";
 import { sessionAtom } from "../../store/atoms/sessionAtom";
 import { CiLogout } from "react-icons/ci";
+import { BiBasket } from "react-icons/bi";
 
 function Header() {
   const router = useRouter();
@@ -61,7 +62,7 @@ function Header() {
       >
         <div className="text-center items-center " onClick={handleHome}>
           <h1 className="text-center font-black text-text2 text-4xl  ">
-            RENTAA{" "}
+            RENTTA{" "}
           </h1>
         </div>
         {/* {session ? (
@@ -78,7 +79,7 @@ function Header() {
         <div className=" flex justify-around gap-3 ">
           <RoundButton
             handleClick={handleBasket}
-            Children={<CiShoppingBasket size={28} className="text-gray-300" />}
+            Children={<BiBasket size={28} className="text-gray-300" />}
           />
           <RoundButton
             handleClick={handleChat}
