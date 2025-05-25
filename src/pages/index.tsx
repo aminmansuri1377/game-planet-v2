@@ -151,6 +151,7 @@ const WelcomePage = () => {
                       <div
                         key={category.id}
                         onClick={() => handleCategoryClick(category.id)}
+                        className=""
                       >
                         <CategoryCart
                           text={category.name}
