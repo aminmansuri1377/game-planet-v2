@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { WithRole } from "@/components/auth/WithRole";
+import PleaseLogin from "@/components/ui/PleaseLogin";
 
 function Index() {
   const { data: session, status } = useSession();
@@ -17,14 +18,7 @@ function Index() {
 
   // If userId is null or invalid, show an error or redirect
   if (userId === null || isNaN(userId)) {
-    return (
-      <div className=" min-h-screen font-PeydaBold my-20">
-        <div onClick={handleBack} className=" m-5">
-          <FaArrowLeftLong />
-        </div>
-        <div>لطفا وارد شوید</div>
-      </div>
-    );
+    return <PleaseLogin handleBack={handleBack} />;
   }
   console.log("ttttttt", session);
 

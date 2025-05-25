@@ -19,6 +19,7 @@ import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
 import { GoPlusCircle } from "react-icons/go";
 import { WithRole } from "@/components/auth/WithRole";
+import PleaseLogin from "@/components/ui/PleaseLogin";
 
 const Map = dynamic(() => import("@/components/MyMap"), {
   ssr: false,
@@ -236,14 +237,7 @@ function CreateProductForm() {
     }
   };
   if (userId === null || isNaN(userId)) {
-    return (
-      <div className=" min-h-screen font-PeydaBold my-20">
-        <div onClick={() => router.back()} className=" m-5">
-          <FaArrowLeftLong />
-        </div>
-        <div>لطفا وارد شوید</div>
-      </div>
-    );
+    return <PleaseLogin handleBack={() => router.back()} />;
   }
 
   if (!isProfileComplete(seller)) {

@@ -8,6 +8,7 @@ import RoundButton from "@/components/ui/RoundButton";
 import { GoMail } from "react-icons/go";
 import Image from "next/image";
 import Divider from "@/components/ui/Divider";
+import PleaseLogin from "@/components/ui/PleaseLogin";
 
 function ChatHistory() {
   const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
@@ -40,14 +41,7 @@ function ChatHistory() {
     router.push("/support/history");
   };
   if (!session) {
-    return (
-      <div className=" min-h-screen font-PeydaBold my-20">
-        <div onClick={() => router.back()} className=" m-5">
-          <FaArrowLeftLong />
-        </div>
-        <div>لطفا وارد شوید</div>
-      </div>
-    );
+    return <PleaseLogin handleBack={() => router.back()} />;
   }
   return (
     <div className="h-screen bg-secondary">

@@ -14,6 +14,7 @@ import RoundButton from "@/components/ui/RoundButton";
 import HeadOfPages from "@/components/ui/HeadOfPages";
 import { WithRole } from "@/components/auth/WithRole";
 import { debounce } from "../../../utils/debounce";
+import PleaseLogin from "@/components/ui/PleaseLogin";
 
 function Basket() {
   const { t } = useTranslation();
@@ -82,14 +83,7 @@ function Basket() {
 
   if (error) return <p>Error: {error.message}</p>;
   if (!session) {
-    return (
-      <div className="min-h-screen font-PeydaBold my-20">
-        <div onClick={handleBack} className="m-5">
-          <FaArrowLeftLong />
-        </div>
-        <div>لطفا وارد شوید</div>
-      </div>
-    );
+    return <PleaseLogin handleBack={handleBack} />;
   }
 
   return (

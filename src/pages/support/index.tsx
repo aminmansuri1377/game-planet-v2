@@ -7,6 +7,7 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
 import { BiSupport } from "react-icons/bi";
+import PleaseLogin from "@/components/ui/PleaseLogin";
 
 function index() {
   const { data: session, status } = useSession();
@@ -39,14 +40,7 @@ function index() {
     router.push("/support/history");
   };
   if (!session) {
-    return (
-      <div className=" min-h-screen font-PeydaBold my-20">
-        <div onClick={handleBack} className=" m-5">
-          <FaArrowLeftLong />
-        </div>
-        <div>لطفا وارد شوید</div>
-      </div>
-    );
+    return <PleaseLogin handleBack={handleBack} />;
   }
   return (
     <div className=" min-h-screen">

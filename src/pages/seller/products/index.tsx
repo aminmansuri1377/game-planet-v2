@@ -111,7 +111,7 @@ const Products = () => {
             ) : (
               <div>
                 {products?.map((product) => (
-                  <div key={product.id} className="">
+                  <div key={product.id} className=" grid grid-cols-2 gap-2">
                     <div onClick={() => handleUpdateProduct(product.id)}>
                       <SellerProductCard
                         imgUrl={product.images ? product.images[0] : ""}

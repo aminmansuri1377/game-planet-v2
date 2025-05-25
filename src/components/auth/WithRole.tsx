@@ -4,6 +4,7 @@
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { ReactNode, useEffect } from "react";
+import Loading from "../ui/Loading";
 
 interface WithRoleProps {
   children: ReactNode;
@@ -16,7 +17,11 @@ export const WithRole = ({ children, allowedRoles }: WithRoleProps) => {
 
   // Block rendering until session is loaded
   if (status === "loading") {
-    return <div className="min-h-screen mt-20 font-PeydaBold">Loading...</div>;
+    return (
+      <div className="min-h-screen mt-20 font-PeydaBold">
+        <Loading />
+      </div>
+    );
   }
 
   // Redirect logic (handled client-side)

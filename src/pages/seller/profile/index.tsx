@@ -20,6 +20,7 @@ import Image from "next/image";
 import HeadOfPages from "@/components/ui/HeadOfPages";
 import RoundButton from "@/components/ui/RoundButton";
 import { WithRole } from "@/components/auth/WithRole";
+import PleaseLogin from "@/components/ui/PleaseLogin";
 function profile() {
   const { t } = useTranslation();
   const { data: session, status } = useSession();
@@ -58,14 +59,7 @@ function profile() {
     return <Loading />;
   }
   if (!session) {
-    return (
-      <div className=" min-h-screen font-PeydaBold my-20">
-        <div onClick={handleBack} className=" m-5">
-          <FaArrowLeftLong />
-        </div>
-        <div>لطفا وارد شوید</div>
-      </div>
-    );
+    return <PleaseLogin handleBack={handleBack} />;
   }
   console.log("seller", seller);
   return (
